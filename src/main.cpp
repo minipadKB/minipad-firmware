@@ -134,10 +134,7 @@ void handleSerialInput()
   while (Serial.available())
   {
     String str = Serial.readStringUntil('\n');
-    char input[str.length() + 1];
-    str.toCharArray(input, str.length() + 1);
-    input[str.length()] = 0;
-    serialHandler.handleSerialInput(input);
+    serialHandler.handleSerialInput(&str);
   }
 }
 
