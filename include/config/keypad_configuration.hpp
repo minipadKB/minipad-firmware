@@ -2,12 +2,10 @@
 
 #include <stdint.h>
 
-#define KEYPAD_CONFIGURATION_VERSION 0
-
 struct KeypadConfiguration
 {
   // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
-  uint16_t version;
+  uint32_t version;
 
   // Bool whether rapid trigger is enabled or not
   bool rapidTrigger;
@@ -28,4 +26,10 @@ struct KeypadConfiguration
   // Bools whether HID commands are sent on that key
   bool key1HIDEnabled;
   bool key2HIDEnabled;
+
+  static uint32_t getVersion()
+  {
+    // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
+    return 2301030040;
+  }
 };

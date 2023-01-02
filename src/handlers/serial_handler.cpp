@@ -36,12 +36,12 @@ bool SerialHandler::handleCommand(char *command)
 {
   if (isEqual(command, "ping"))
     Serial.println("pong " + String(firmwareVersion) + " | " + configController->config.name);
-  else if(isEqual(command, "reset"))
+  else if (isEqual(command, "reset"))
   {
     configController->config.keypad = configController->defaultConfig->keypad;
     Serial.println("RESET OK");
   }
-  else if(isEqual(command, "save"))
+  else if (isEqual(command, "save"))
   {
     configController->saveConfig();
     Serial.println("SAVE OK");
@@ -55,7 +55,23 @@ bool SerialHandler::handleCommand(char *command)
 // Handles the input as a get request with the input being the key.
 void SerialHandler::handleGet(char *key)
 {
-  
+  if (isEqual(key, "get"))
+  {
+    Serial.println("GET rt=" + String(configController->config.keypad.rapidTrigger));
+    Serial.println("GET rts=" + String(configController->config.keypad.rapidTriggerSensitivity));
+    Serial.println("GET lh=" + String(configController->config.keypad.lowerHysteresis));
+    Serial.println("GET uh=" + String(configController->config.keypad.upperHysteresis));
+    Serial.println("GET key1=" + String(configController->config.keypad.key1));
+    Serial.println("GET key2=" + String(configController->config.keypad.key2));
+    Serial.println("GET k1rp=" + String(configController->config.calibration.key1RestPosition));
+    Serial.println("GET k2rp=" + String(configController->config.calibration.key2RestPosition));
+    Serial.println("GET k1dp=" + String(configController->config.calibration.key1DownPosition));
+    Serial.println("GET k2dp=" + String(configController->config.calibration.key2DownPosition));
+    Serial.println("GET hid1=" + String(configController->config.keypad.key1HIDEnabled));
+    Serial.println("GET hid2=" + String(configController->config.keypad.key2HIDEnabled));
+    Serial.println("GET name=" + String(configController->config.name));
+    Serial.println("GET END");
+  }
 }
 
 // Handles the input as a set request with the input being the key and the value.

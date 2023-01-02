@@ -7,12 +7,14 @@ public:
   SerialHandler(ConfigurationController *configController, char *firmwareVersion);
   virtual ~SerialHandler();
 
-  void handleSerialInput(char *input);
+  void handleSerialInput(String *inputStr);
 
 private:
   bool handleCommand(char *command);
   void handleGet(char *key);
   void handleSet(char *key, char *value);
+
+  bool isEqual(char *str1, char *str2);
 
   ConfigurationController *configController;
   char *firmwareVersion;

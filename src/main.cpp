@@ -24,10 +24,10 @@ char *firmwareVersion = (char *)"20221219.2";
 // structs that might get modified on a firmware update and have to be reset back to their default values then
 Configuration defaultConfig =
     {
-        .version = CONFIGURATION_VERSION,
+        .version = Configuration::getVersion(),
         .name = {'t', 'e', 's', 't'},
         .keypad = {
-            .version = KEYPAD_CONFIGURATION_VERSION,
+            .version = KeypadConfiguration::getVersion(),
             .rapidTrigger = true,
             .rapidTriggerSensitivity = 10,
             .lowerHysteresis = 300,
@@ -36,7 +36,7 @@ Configuration defaultConfig =
             .key2 = 'z',
             .key1HIDEnabled = true,
             .key2HIDEnabled = true},
-        .calibration = {.version = CALIBRATION_CONFIGURATION_VERSION, .key1RestPosition = 450, .key2RestPosition = 450, .key1DownPosition = 150, .key2DownPosition = 150}};
+        .calibration = {.version = CalibrationConfiguration::getVersion(), .key1RestPosition = 450, .key2RestPosition = 450, .key1DownPosition = 150, .key2DownPosition = 150}};
 
 ConfigurationController configController = ConfigurationController(&defaultConfig);
 
