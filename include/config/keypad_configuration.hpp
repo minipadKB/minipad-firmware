@@ -10,6 +10,9 @@ struct KeypadConfiguration
   // Bool whether rapid trigger is enabled or not
   bool rapidTrigger;
 
+  // Bool whether continuous rapid trigger is enabled or not
+  bool continuousRapidTrigger;
+
   // The sensitivity of the rapid trigger
   uint16_t rapidTriggerSensitivity;
 
@@ -30,6 +33,6 @@ struct KeypadConfiguration
   static uint32_t getVersion()
   {
     // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-    return 2301030040;
+    return 2301031733;
   }
 };
