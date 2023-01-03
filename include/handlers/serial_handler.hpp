@@ -14,7 +14,7 @@ private:
   void handleGet(char *key);
   void handleSet(char *key, char *value);
 
-  bool isEqual(char *str1, char *str2);
+  bool isEqual(char *str1, const char *str2);
 
   ConfigurationController *configController;
   char *firmwareVersion;

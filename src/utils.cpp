@@ -19,6 +19,12 @@ char *Utils::getArgumentAt(char *input, char delimiter, uint8_t index)
   return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
 }
 
+void Utils::toLower(char *input)
+{
+  for(int i = 0; i < strlen(input); i++)
+    input[i] = tolower(input[i]);
+}
+
 char *Utils::substring(char *input, int offset, int length)
 {
   char *res = new char[length + 1];

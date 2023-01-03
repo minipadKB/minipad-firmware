@@ -7,9 +7,10 @@ SerialHandler::~SerialHandler() {}
 
 void SerialHandler::handleSerialInput(String *inputStr)
 {
-  // Convert the string into a character array for further parsing
+  // Convert the string into a character array for further parsing and make it lowercase
   char input[(*inputStr).length() + 1];
   (*inputStr).toCharArray(input, (*inputStr).length() + 1);
+  Utils::toLower(input);
 
   // Get the first two arguments of the input
   char *arg0 = Utils::getArgumentAt(input, ' ', 0);
@@ -77,9 +78,33 @@ void SerialHandler::handleGet(char *key)
 // Handles the input as a set request with the input being the key and the value.
 void SerialHandler::handleSet(char *key, char *value)
 {
+  // Handle setting the keypad's name first as this is the only config setting that is not integer-related.
+  if(isEqual(key, "name"))
+  {
+    // TODO: do actual stuff
+    return;
+  }
+
+  // Get an integer version of the value
+  uint16_t valueInt = atoi(value);
+
+  // If the parsed integer is different from the value string, the parsing defaulted to 0
+  // TODO: Improve this comparison by comparing char* instead
+  if (String(valueInt) != String(value))
+  {
+    // In that case, check if the string length is 1 meaning it was possibly a character entered
+    // For simplicity of handling setting config values, the character is turned into an integer
+    if (strlen(value) == 1)
+      valueInt = (uint16_t)value[0];
+    // If the string could not be parsed into an integer and is not 1 character long, ignore the command
+    else
+      return;
+  }
+
+  // TODO: do actual stuff
 }
 
-bool SerialHandler::isEqual(char *str1, char *str2)
+bool SerialHandler::isEqual(char *str1, const char *str2)
 {
   return strcmp(str1, str2) == 0;
 }
