@@ -28,7 +28,8 @@ Configuration defaultConfig =
         .name = {'t', 'e', 's', 't'},
         .keypad = {
             .version = KeypadConfiguration::getVersion(),
-            .rapidTrigger = true,
+            .rapidTrigger = false,
+            .continuousRapidTrigger = false,
             .rapidTriggerSensitivity = 10,
             .lowerHysteresis = 300,
             .upperHysteresis = 330,
@@ -86,7 +87,7 @@ void loop()
   if (key2Pressed)
     key2State = 650;
 
-  //Serial.println("min_analog:0\tKey_1:" + String(value1) + "\tKey_2:" + String(value2) + "\tKey_1_State:" + String(key1State) + "\tKey_2_State:" + String(key2State) + "\tKey_1_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey1) + "\tKey_2_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey2) + "\tmax_analog:1024");
+  // Serial.println("min_analog:0\tKey_1:" + String(value1) + "\tKey_2:" + String(value2) + "\tKey_1_State:" + String(key1State) + "\tKey_2_State:" + String(key2State) + "\tKey_1_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey1) + "\tKey_2_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey2) + "\tmax_analog:1024");
 
   if (configController.config.keypad.rapidTrigger)
   {
