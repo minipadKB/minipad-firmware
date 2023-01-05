@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+// Configuration for the keypad itself, containing the rapid trigger, hysteresis and key settings.
 struct KeypadConfiguration
 {
   // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
@@ -30,6 +31,7 @@ struct KeypadConfiguration
   bool key1HIDEnabled;
   bool key2HIDEnabled;
 
+  // Returns the version constant of the latest KeypadConfiguration layout.
   static uint32_t getVersion()
   {
     // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)

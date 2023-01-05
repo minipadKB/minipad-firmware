@@ -37,7 +37,10 @@ Configuration defaultConfig =
             .key2 = 'z',
             .key1HIDEnabled = true,
             .key2HIDEnabled = true},
-        .calibration = {.version = CalibrationConfiguration::getVersion(), .key1RestPosition = 450, .key2RestPosition = 450, .key1DownPosition = 150, .key2DownPosition = 150}};
+        .calibration = {.version = CalibrationConfiguration::getVersion(), .key1RestPosition = 450, .key2RestPosition = 450, .key1DownPosition = 150, .key2DownPosition = 150},
+        .tolerances = {
+          .version = ToleranceConfiguration::getVersion()
+        }};
 
 ConfigurationController configController = ConfigurationController(&defaultConfig);
 
@@ -65,7 +68,7 @@ void setup()
   // Initialize the serial and HID interface
   Keyboard.begin();
 }
-                                                           
+
 void loop()
 {
   // Check for any serial commands received for configuration
