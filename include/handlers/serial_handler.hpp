@@ -10,8 +10,7 @@ public:
   void handleSerialInput(String *inputStr);
 
 private:
-  bool handleCommand(char *command);
-  void handleGet(char *key);
+  void handleCommand(char *command);
   void handleSet(char *key, char *value);
 
   bool isEqual(char *str1, const char *str2);

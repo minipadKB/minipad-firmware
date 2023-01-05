@@ -65,12 +65,12 @@ void setup()
   // Initialize the serial and HID interface
   Keyboard.begin();
 }
-
+                                                           
 void loop()
 {
   // Check for any serial commands received for configuration
-  if (Serial.available())
-    handleSerialInput();
+  while (Serial.available())
+    serialHandler.handleSerialInput(&Serial.readStringUntil('\n'));
 
   // Read the hall effect sensors
   int value1 = analogRead(HE_PIN_1);
@@ -79,15 +79,6 @@ void loop()
   // Map the values to the 0-400 range
   value1 = mapToRange400(value1, configController.config.calibration.key1DownPosition, configController.config.calibration.key1RestPosition);
   value2 = mapToRange400(value2, configController.config.calibration.key2DownPosition, configController.config.calibration.key2RestPosition);
-
-  int key1State = 750;
-  int key2State = 750;
-  if (key1Pressed)
-    key1State = 650;
-  if (key2Pressed)
-    key2State = 650;
-
-  // Serial.println("min_analog:0\tKey_1:" + String(value1) + "\tKey_2:" + String(value2) + "\tKey_1_State:" + String(key1State) + "\tKey_2_State:" + String(key2State) + "\tKey_1_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey1) + "\tKey_2_Rapid_Trigger_Value:" + String(lastRapidTriggerValueKey2) + "\tmax_analog:1024");
 
   if (configController.config.keypad.rapidTrigger)
   {
@@ -127,15 +118,6 @@ void loop()
       pressKey2();
     else if (value2 >= configController.config.keypad.upperHysteresis && key2Pressed)
       releaseKey2();
-  }
-}
-
-void handleSerialInput()
-{
-  while (Serial.available())
-  {
-    String str = Serial.readStringUntil('\n');
-    serialHandler.handleSerialInput(&str);
   }
 }
 
