@@ -88,8 +88,16 @@ void SerialHandler::handleSet(char *key, char *value)
     return;
   }
 
-  // Get an integer version of the value
-  int16_t valueInt = atoi(value);
+  // Convert the value into a signed integer.
+  int16_t valueIntSigned = atoi(value);
+
+  // Check if the signed integer is negative and if so, ignore the command.
+  // This check is done to prevent an integer overflow of an unsigned integer with negative values.
+  if(valueIntSigned < 0)
+    return;
+    
+  // Turn the signed integer into an unsigned one that is then used for further code.
+  uint16_t valueInt = valueIntSigned;
 
   // If the parsed integer is different from the value string, the parsing defaults to 0
   // TODO: Improve this comparison by comparing char* instead
