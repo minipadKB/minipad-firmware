@@ -54,7 +54,7 @@ void Utils::makeSafename(char *str)
       *str = *src;
 
       // Move the input character array pointer forward so it writes to the next position on the next iteration.
-      *str++;
+      str++;
     }
 
     // Move the separate pointer used to iterate over the input string forward.
