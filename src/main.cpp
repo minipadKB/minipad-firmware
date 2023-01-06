@@ -23,24 +23,42 @@ char *firmwareVersion = (char *)"20221219.2";
 // Default configuration file loaded into the EEPROM if no configuration was set yet. Also used later on to reset the keypad and calibration
 // structs that might get modified on a firmware update and have to be reset back to their default values then
 Configuration defaultConfig =
-    {
-        .version = Configuration::getVersion(),
-        .name = {'t', 'e', 's', 't'},
-        .keypad = {
-            .version = KeypadConfiguration::getVersion(),
-            .rapidTrigger = false,
-            .continuousRapidTrigger = false,
-            .rapidTriggerSensitivity = 10,
-            .lowerHysteresis = 300,
-            .upperHysteresis = 330,
-            .key1 = 'x',
-            .key2 = 'z',
-            .key1HIDEnabled = true,
-            .key2HIDEnabled = true},
-        .calibration = {.version = CalibrationConfiguration::getVersion(), .key1RestPosition = 450, .key2RestPosition = 450, .key1DownPosition = 150, .key2DownPosition = 150},
-        .tolerances = {
-          .version = ToleranceConfiguration::getVersion()
-        }};
+{
+  .version = Configuration::getVersion(),
+  .name = {'t', 'e', 's', 't'},
+  .keypad =
+  {
+    .version = KeypadConfiguration::getVersion(),
+    .rapidTrigger = false,
+    .continuousRapidTrigger = false,
+    .rapidTriggerSensitivity = 10,
+    .lowerHysteresis = 300,
+    .upperHysteresis = 330,
+    .key1 = 'x',
+    .key2 = 'z',
+    .key1HIDEnabled = true,
+    .key2HIDEnabled = true
+  },
+  .calibration =
+  {
+    .version = CalibrationConfiguration::getVersion(),
+    .key1RestPosition = 450, 
+    .key2RestPosition = 450, 
+    .key1DownPosition = 150, .key2DownPosition = 150
+  }
+};
+
+//
+//                                            WARNING                                            
+//
+//        DO NOT CHANGE UNLESS ADVICED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR
+//    THAT VIOLATES OSU'S RULES. WE ARE NOT RESPONSIBLE FOR ANY RESTRICTIONS CAUSED FROM MODIFICATION.
+//
+ToleranceConfiguration tolerances =
+{
+  .hysteresisTolerance = 10,
+  .rapidTriggerTolerance = 15
+};
 
 ConfigurationController configController = ConfigurationController(&defaultConfig);
 

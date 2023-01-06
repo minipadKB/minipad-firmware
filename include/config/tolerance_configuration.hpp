@@ -2,15 +2,16 @@
 
 #include <stdint.h>
 
+// Configuration for the tolerances of the analog values.
 struct ToleranceConfiguration
 {
-  // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
-  uint32_t version;
+  // The minimum difference between the lower and upper hysteresis, as well as
+  // the minimum distances for 0 to lower hysteresis and upper hysteresis to 400.
+  // This tolerance prevents the key from not registering a press or a release by
+  // making sure that in case the calibration is slightly off there is still a buffer.
+  uint16_t hysteresisTolerance;
 
-  // Returns the version constant of the latest ToleranceConfiguration layout.
-  static uint32_t getVersion()
-  {
-    // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:40am on the 3rd january 2023)
-    return 2301052305;
-  }
+  // The minimum value of the rapid trigger sensitivity.
+  // This prevents rapidly firing HID commands from an unstable/fluctuating analog value.
+  uint16_t rapidTriggerTolerance;
 };

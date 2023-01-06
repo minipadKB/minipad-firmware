@@ -19,9 +19,6 @@ struct Configuration
   // The calibration values of the keypad. (rest and down positions)
   CalibrationConfiguration calibration;
 
-  // The tolerances of the configuration values. (hysteresis, rapid trigger sensitivity)
-  ToleranceConfiguration tolerances;
-
   // Returns the version constant of the latest Configuration layout.
   static uint32_t getVersion()
   {
