@@ -144,9 +144,7 @@ void loop()
 
 int mapToRange400(int value, int min, int max)
 {
-  float multiplier = (value - min) * 1.0 / (max - min);
-
-  return min(max(round(multiplier * 400), 0), 400);
+  return min(max((value-min)*400/(max-min)), 0), 400);
 }
 
 void pressKey1()
