@@ -142,11 +142,17 @@ void loop()
   }
 }
 
-int mapToRange400(int value, int min, int max)
+uint16_t mapToRange400(int16_t value, int16_t min, int16_t max)
 {
-  uint16_t newValue = (value - min) * 400 / (max-min);
-    
-  return min(max(newValue), 400), 0);
+
+if (value >= min && value <= max) {}
+else if (value < min) {value = min;}
+else {value = max;};
+
+int16_t newValue = (long(value - min) * 400) / (max - min);
+
+return newValue;
+
 }
 
 void pressKey1()
