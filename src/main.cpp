@@ -144,9 +144,9 @@ void loop()
 
 int mapToRange400(int value, int min, int max)
 {
-  uint16_t new = (value - min) * 400 / (max-min);
+  uint16_t newValue = (value - min) * 400 / (max-min);
     
-  return min(max(new), 0), 400);
+  return min(max(newValue), 400), 0);
 }
 
 void pressKey1()
