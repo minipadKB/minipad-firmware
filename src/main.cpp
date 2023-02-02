@@ -142,18 +142,13 @@ void loop()
   }
 }
 
-uint16_t mapToRange400(int16_t value, int16_t min, int16_t max)
+
+uint16_t mapToRange400(uint16_t value, uint16_t min, uint16_t max)
 {
-
-if (value >= min && value <= max) {}
-else if (value < min) {value = min;}
-else {value = max;};
-
-int16_t newValue = (long(value - min) * 400) / (max - min);
-
-return newValue;
-
+  int16_t newValue = (long(value - min) * 400 / (max - min);
+  return constrain(newValue, 0, 400);
 }
+
 
 void pressKey1()
 {
