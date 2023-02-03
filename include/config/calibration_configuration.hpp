@@ -6,7 +6,7 @@
 struct CalibrationConfiguration
 {
   // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
-  uint32_t version;
+  int64_t version;
 
   // The value read when the keys are in rest position/all the way down.
   uint16_t key1RestPosition;

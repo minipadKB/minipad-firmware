@@ -7,7 +7,7 @@
 struct KeypadConfiguration
 {
   // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
-  uint32_t version;
+  int64_t version;
 
   // Bool whether rapid trigger is enabled or not
   bool rapidTrigger;
