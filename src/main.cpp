@@ -25,7 +25,7 @@ char *firmwareVersion = (char *)"20221219.2";
 Configuration defaultConfig =
 {
   .version = Configuration::getVersion(),
-  .name = {'t', 'e', 's', 't'},
+  .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
   .keypad =
   {
     .version = KeypadConfiguration::getVersion(),
@@ -42,17 +42,16 @@ Configuration defaultConfig =
   .calibration =
   {
     .version = CalibrationConfiguration::getVersion(),
-    .key1RestPosition = 450, 
-    .key2RestPosition = 450, 
+    .key1RestPosition = 450, .key2RestPosition = 450,
     .key1DownPosition = 150, .key2DownPosition = 150
   }
 };
 
 //
-//                                            WARNING                                            
+//                                             WARNING                                            
 //
-//        DO NOT CHANGE UNLESS ADVICED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR
-//    THAT VIOLATES OSU'S RULES. WE ARE NOT RESPONSIBLE FOR ANY RESTRICTIONS CAUSED FROM MODIFICATION.
+//         DO NOT CHANGE UNLESS ADVICED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR
+//    THAT VIOLATES OSU!'S RULES. WE ARE NOT RESPONSIBLE FOR ANY RESTRICTIONS CAUSED FROM MODIFICATION.
 //
 ToleranceConfiguration tolerances =
 {
@@ -69,8 +68,8 @@ SerialHandler serialHandler = SerialHandler(&configController, firmwareVersion);
 // than this value by the rapid trigger sensitivity, the button is released. The other way around,
 // if the button is not pressed down, it saves the highest value it got to. If the value read is lower
 // than this value by the rapid trigger sensitivity, the button is pressed.
-int lastRapidTriggerValueKey1 = 0;
-int lastRapidTriggerValueKey2 = 0;
+uint16_t lastRapidTriggerValueKey1 = 0;
+uint16_t lastRapidTriggerValueKey2 = 0;
 
 // Remember the state of both buttons to not send irrelevant HID commands
 bool key1Pressed = false;
@@ -89,13 +88,14 @@ void setup()
 
 void loop()
 {
+  uint16_t start = micros();
   // Check for any serial commands received for configuration
   while (Serial.available())
     serialHandler.handleSerialInput(&Serial.readStringUntil('\n'));
 
   // Read the hall effect sensors
-  int value1 = analogRead(HE_PIN_1);
-  int value2 = analogRead(HE_PIN_2);
+  uint16_t value1 = analogRead(HE_PIN_1);
+  uint16_t value2 = analogRead(HE_PIN_2);
 
   // Map the values to the 0-400 range
   value1 = mapToRange400(value1, configController.config.calibration.key1DownPosition, configController.config.calibration.key1RestPosition);
@@ -140,13 +140,14 @@ void loop()
     else if (value2 >= configController.config.keypad.upperHysteresis && key2Pressed)
       releaseKey2();
   }
+
+  uint16_t end = micros();
+  Serial.println(String(end - start));
 }
 
-int mapToRange400(int value, int min, int max)
+uint16_t mapToRange400(uint16_t value, uint16_t minimum, uint16_t maximum)
 {
-  uint16_t newValue = (value - min) * 400 / (max-min);
-
-  return min(max(newValue, 0), 400);
+  return constrain(map(value, minimum, maximum, 0, 400), 0, 400);
 }
 
 void pressKey1()

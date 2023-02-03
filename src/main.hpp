@@ -2,9 +2,8 @@
 #include <Arduino.h>
 
 void handleSerialInput();
-int mapToRange400(int value, int min, int max);
+uint16_t mapToRange400(uint16_t value, uint16_t min, uint16_t max);
 void pressKey1();
 void releaseKey1();
 void pressKey2();
 void releaseKey2();
-String getValue(String data, int index);
