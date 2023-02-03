@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "handlers/serial_handler.hpp"
 #include "utils.hpp"
+#include "definitions.hpp"
 
 SerialHandler::SerialHandler(ConfigurationController *configController, char *firmwareVersion) : configController(configController), firmwareVersion(firmwareVersion) {}
 SerialHandler::~SerialHandler() {}
@@ -52,12 +53,22 @@ void SerialHandler::handleCommand(char *command)
     Serial.println("GET uh=" + String(configController->config.keypad.upperHysteresis));
     Serial.println("GET key1=" + String(configController->config.keypad.key1));
     Serial.println("GET key2=" + String(configController->config.keypad.key2));
+#ifdef KEYS_3
+    Serial.println("GET key3=" + String(configController->config.keypad.key3));
+#endif
     Serial.println("GET k1rp=" + String(configController->config.calibration.key1RestPosition));
-    Serial.println("GET k2rp=" + String(configController->config.calibration.key2RestPosition));
     Serial.println("GET k1dp=" + String(configController->config.calibration.key1DownPosition));
+    Serial.println("GET k2rp=" + String(configController->config.calibration.key2RestPosition));
     Serial.println("GET k2dp=" + String(configController->config.calibration.key2DownPosition));
+#ifdef KEYS_3
+    Serial.println("GET k3rp=" + String(configController->config.calibration.key3RestPosition));
+    Serial.println("GET k3dp=" + String(configController->config.calibration.key3DownPosition));
+#endif
     Serial.println("GET hid1=" + String(configController->config.keypad.key1HIDEnabled));
     Serial.println("GET hid2=" + String(configController->config.keypad.key2HIDEnabled));
+#ifdef KEYS_3
+    Serial.println("GET hid3=" + String(configController->config.keypad.key3HIDEnabled));
+#endif
     Serial.println("GET name=" + String(configController->config.name));
     Serial.println("GET END");
   }
@@ -190,8 +201,12 @@ void SerialHandler::handleSet(char *key, char *value)
     Serial.println("'upperHysteresis' was set to '" + String(valueInt) + "'");
   }
 
-  // key 1 and key 2
+  // keys
+#ifdef KEYS_3
+  else if (isEqual(key, "key1") || isEqual(key, "key2") || isEqual(key, "key3"))
+#else
   else if (isEqual(key, "key1") || isEqual(key, "key2"))
+#endif
   {
     // Check if the value is in the valid character range. (97-122 meaning a-z)
     if (valueInt < 97 || valueInt > 122)
@@ -203,19 +218,31 @@ void SerialHandler::handleSet(char *key, char *value)
     // Set the key setting to the integer entered.
     if (isEqual(key, "key1"))
       configController->config.keypad.key1 = valueInt;
+#ifdef KEYS_3
+    else if(isEqual(key, "key3"))
+      configController->config.keypad.key3 = valueInt;
+#endif
     else
       configController->config.keypad.key2 = valueInt;
 
     Serial.println("'" + String(valueInt) + "' was set to '" + String(valueInt) + "'");
   }
 
-  // rest position for key 1 and key 2
+  // rest position for the keys
+#ifdef KEYS_3
+  else if (isEqual(key, "k1rp") || isEqual(key, "k2rp") || isEqual(key, "k3rp"))
+#else
   else if (isEqual(key, "k1rp") || isEqual(key, "k2rp"))
+#endif
   {
     // Get the corresponding down position of the target key to perform range comparisons
     uint16_t downPosition = configController->config.calibration.key1DownPosition;
     if (isEqual(key, "k2rp"))
       downPosition = configController->config.calibration.key2DownPosition;
+#ifdef KEYS_3
+    else if(isEqual(key, "k3rp"))
+      downPosition = configController->config.calibration.key3DownPosition;
+#endif
 
     // Check if the value is bigger than the down position and smaller or equal to 1023.
     if (valueInt <= downPosition || valueInt > 1023)
@@ -227,19 +254,31 @@ void SerialHandler::handleSet(char *key, char *value)
     // Set the key rest position setting to the integer entered.
     if (isEqual(key, "k1rp"))
       configController->config.calibration.key1RestPosition = valueInt;
+#ifdef KEYS_3
+    else if(isEqual(key, "k3rp"))
+      configController->config.calibration.key3RestPosition = valueInt;
+#endif
     else
       configController->config.calibration.key2RestPosition = valueInt;
 
     Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
   }
 
-  // down position for key 1 and key 2
+  // down position for the keys
+#ifdef KEYS_3
+  else if (isEqual(key, "k1dp") || isEqual(key, "k2dp") || isEqual(key, "k3dp"))
+#else
   else if (isEqual(key, "k1dp") || isEqual(key, "k2dp"))
+#endif
   {
     // Get the corresponding rest position of the target key to perform range comparisons
     uint16_t restPosition = configController->config.calibration.key1RestPosition;
     if (isEqual(key, "k2dp"))
       restPosition = configController->config.calibration.key2RestPosition;
+#ifdef KEYS_3
+    else if(isEqual(key, "k3dp"))
+      restPosition = configController->config.calibration.key3DownPosition;
+#endif
 
     // Check if the value is bigger or equal to 0 and smaller than the rest positon.
     if (valueInt < 0 || valueInt >= restPosition)
@@ -251,14 +290,22 @@ void SerialHandler::handleSet(char *key, char *value)
     // Set the key down position setting to the integer entered.
     if (isEqual(key, "k1dp"))
       configController->config.calibration.key1DownPosition = valueInt;
+#ifdef KEYS_3
+    else if(isEqual(key, "k3dp"))
+      configController->config.calibration.key3DownPosition = valueInt;
+#endif
     else
       configController->config.calibration.key2DownPosition = valueInt;
 
     Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
   }
 
-  // hid state for key 1 and key 2
+  // hid state for the keys
+#ifdef KEYS_3
+  else if (isEqual(key, "hid1") || isEqual(key, "hid2") || isEqual(key, "hid3"))
+#else
   else if (isEqual(key, "hid1") || isEqual(key, "hid2"))
+#endif
   {
     // Check if the value is 0 or 1 which is false or true.
     if (valueInt != 0 && valueInt != 1)
@@ -270,6 +317,10 @@ void SerialHandler::handleSet(char *key, char *value)
     // Set the hid state setting to true or false depending on the integer entered.
     if (isEqual(key, "hid1"))
       configController->config.keypad.key1HIDEnabled = valueInt == 1;
+#ifdef KEYS_3
+    else if(isEqual(key, "hid3"))
+      configController->config.keypad.key3HIDEnabled = valueInt == 1;
+#endif
     else
       configController->config.keypad.key2HIDEnabled = valueInt == 1;
 

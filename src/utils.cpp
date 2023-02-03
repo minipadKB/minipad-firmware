@@ -35,7 +35,7 @@ void Utils::replace(char *input, char target, char replacement)
 void Utils::makeSafename(char *str)
 {
   // Get a separate pointer for the char array that iterates over the whole character array.
-  // Our two pointer src and str will progress differently, src is used to iterate over
+  // Our two pointers src and str will progress differently, src is used to iterate over
   // the input char array while str points to the next character to be written for our output.
   const char *src = str;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "definitions.hpp"
 
 // Configuration for the keypad itself, containing the rapid trigger, hysteresis and key settings.
 struct KeypadConfiguration
@@ -26,15 +27,28 @@ struct KeypadConfiguration
   // The corresponding keys sent via HID interface
   char key1;
   char key2;
+#ifdef KEYS_3
+  char key3;
+#endif
 
   // Bools whether HID commands are sent on that key
   bool key1HIDEnabled;
   bool key2HIDEnabled;
+#ifdef KEYS_3
+  bool key3HIDEnabled;
+#endif
 
   // Returns the version constant of the latest KeypadConfiguration layout.
-  static uint32_t getVersion()
+  static int64_t getVersion()
   {
     // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-    return 2301031733;
+    int64_t version = 2302031806;
+
+    // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
+#ifdef KEYS_3
+    return -version;
+#else
+    return version;
+#endif
   }
 };

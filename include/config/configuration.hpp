@@ -17,7 +17,7 @@ struct Configuration
   KeypadConfiguration keypad;
 
   // The calibration values of the keypad. (rest and down positions)
-  CalibrationConfiguration calibration;
+  CalibrationConfiguration calibration;     
 
   // Returns the version constant of the latest Configuration layout.
   static uint32_t getVersion()

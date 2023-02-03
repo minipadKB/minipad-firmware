@@ -4,28 +4,21 @@
 #include "main.hpp"
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
-
-// Define the ports used for the HE sensors
-#define HE_PIN_1 A1
-#define HE_PIN_2 A2
-
-// Safemode boundary that is checked for upon firmware bootup. If both pins read a value <= this value,
-// a safemode is activated causing the config to temporarily switch to the default config
-#define SAFEMODE_BOUNDARY 20
-
-// Minimum sensitivity for rapid trigger, minimum amount the hysteresis have to be below the rest position and
-// the minimum difference between the lower and upper hysteresis. Used to ensure that fluctuation will not accidentally trigger the key
-#define TOLERANCE 10
+#include "definitions.hpp"
 
 // The version of this firmware in the YYYYMMDD.PATCH format (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
-char *firmwareVersion = (char *)"20221219.2";
+#ifdef KEYS_3
+char *firmwareVersion = (char *)"20221219.2-3k";
+#else
+char *firmwareVersion = (char *)"20221219.2-2k";
+#endif
 
 // Default configuration file loaded into the EEPROM if no configuration was set yet. Also used later on to reset the keypad and calibration
 // structs that might get modified on a firmware update and have to be reset back to their default values then
 Configuration defaultConfig =
 {
   .version = Configuration::getVersion(),
-  .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
+  .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd' },
   .keypad =
   {
     .version = KeypadConfiguration::getVersion(),
@@ -34,16 +27,28 @@ Configuration defaultConfig =
     .rapidTriggerSensitivity = 10,
     .lowerHysteresis = 300,
     .upperHysteresis = 330,
-    .key1 = 'x',
-    .key2 = 'z',
+#ifdef KEYS_3
+    .key1 = 'z',
+    .key2 = 'x',
+    .key3 = 'c',
+#else
+    .key1 = 'z',
+    .key2 = 'x',
+#endif
     .key1HIDEnabled = true,
-    .key2HIDEnabled = true
+    .key2HIDEnabled = true,
+#ifdef KEYS_3
+    .key3HIDEnabled = true
+#endif
   },
   .calibration =
   {
     .version = CalibrationConfiguration::getVersion(),
-    .key1RestPosition = 450, .key2RestPosition = 450,
-    .key1DownPosition = 150, .key2DownPosition = 150
+    .key1RestPosition = 450, .key1DownPosition = 150,
+    .key2RestPosition = 450, .key2DownPosition = 150,
+#ifdef KEYS_3
+    .key3RestPosition = 450, .key3DownPosition = 150
+#endif
   }
 };
 
@@ -70,10 +75,16 @@ SerialHandler serialHandler = SerialHandler(&configController, firmwareVersion);
 // than this value by the rapid trigger sensitivity, the button is pressed.
 uint16_t lastRapidTriggerValueKey1 = 0;
 uint16_t lastRapidTriggerValueKey2 = 0;
+#ifdef KEYS_3
+uint16_t lastRapidTriggerValueKey3 = 0;
+#endif
 
-// Remember the state of both buttons to not send irrelevant HID commands
+// Remember the state of all buttons to not send irrelevant HID commands
 bool key1Pressed = false;
 bool key2Pressed = false;
+#ifdef KEYS_3
+bool key3Pressed = false;
+#endif
 
 void setup()
 {
@@ -91,15 +102,24 @@ void loop()
   uint16_t start = micros();
   // Check for any serial commands received for configuration
   while (Serial.available())
-    serialHandler.handleSerialInput(&Serial.readStringUntil('\n'));
+  {
+    String str = Serial.readStringUntil('\n');
+    serialHandler.handleSerialInput(&str);
+  }
 
   // Read the hall effect sensors
   uint16_t value1 = analogRead(HE_PIN_1);
   uint16_t value2 = analogRead(HE_PIN_2);
+#ifdef KEYS_3
+  uint16_t value3 = analogRead(HE_PIN_3);
+#endif
 
   // Map the values to the 0-400 range
   value1 = mapToRange400(value1, configController.config.calibration.key1DownPosition, configController.config.calibration.key1RestPosition);
   value2 = mapToRange400(value2, configController.config.calibration.key2DownPosition, configController.config.calibration.key2RestPosition);
+#ifdef KEYS_3
+  value3 = mapToRange400(value3, configController.config.calibration.key3DownPosition, configController.config.calibration.key3RestPosition);
+#endif
 
   if (configController.config.keypad.rapidTrigger)
   {
@@ -125,6 +145,17 @@ void loop()
 
     if ((key2Pressed && value2 < lastRapidTriggerValueKey2) || (!key2Pressed && value2 > lastRapidTriggerValueKey2))
       lastRapidTriggerValueKey2 = value2;
+
+#ifdef KEYS_3
+    // Repeat the same for the third key
+    if (value3 <= lastRapidTriggerValueKey3 - configController.config.keypad.rapidTriggerSensitivity && !key3Pressed)
+      pressKey2();
+    else if (value2 >= lastRapidTriggerValueKey3 + configController.config.keypad.rapidTriggerSensitivity && key3Pressed)
+      releaseKey2();
+
+    if ((key3Pressed && value3 < lastRapidTriggerValueKey3) || (!key3Pressed && value3 > lastRapidTriggerValueKey3))
+      lastRapidTriggerValueKey3 = value3;
+#endif
   }
   else
   {
@@ -139,10 +170,18 @@ void loop()
       pressKey2();
     else if (value2 >= configController.config.keypad.upperHysteresis && key2Pressed)
       releaseKey2();
+      
+#ifdef KEYS_3
+    // Handle actuation for key 3 by checking whether the value passes the lower or upper hysteresis
+    if (value3 <= configController.config.keypad.lowerHysteresis && !key3Pressed)
+      pressKey3();
+    else if (value3 >= configController.config.keypad.upperHysteresis && key3Pressed)
+      releaseKey3();
+#endif
   }
 
   uint16_t end = micros();
-  Serial.println(String(end - start));
+  //Serial.println(String(end - start));
 }
 
 uint16_t mapToRange400(uint16_t value, uint16_t minimum, uint16_t maximum)
@@ -177,3 +216,19 @@ void releaseKey2()
     Keyboard.release(configController.config.keypad.key2);
   key2Pressed = false;
 }
+
+#ifdef KEYS_3
+void pressKey3()
+{
+  key3Pressed = true;
+  if (configController.config.keypad.key3HIDEnabled)
+    Keyboard.press(configController.config.keypad.key3);
+}
+
+void releaseKey3()
+{
+  if (configController.config.keypad.key3HIDEnabled)
+    Keyboard.release(configController.config.keypad.key3);
+  key3Pressed = false;
+}
+#endif
