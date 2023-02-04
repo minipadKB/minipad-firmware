@@ -277,7 +277,7 @@ void SerialHandler::handleSet(char *key, char *value)
       restPosition = configController->config.calibration.key2RestPosition;
 #ifdef KEYS_3
     else if(isEqual(key, "k3dp"))
-      restPosition = configController->config.calibration.key3DownPosition;
+      restPosition = configController->config.calibration.key3RestPosition;
 #endif
 
     // Check if the value is bigger or equal to 0 and smaller than the rest positon.

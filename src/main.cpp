@@ -24,7 +24,7 @@ Configuration defaultConfig =
     .version = KeypadConfiguration::getVersion(),
     .rapidTrigger = false,
     .continuousRapidTrigger = false,
-    .rapidTriggerSensitivity = 10,
+    .rapidTriggerSensitivity = 30,
     .lowerHysteresis = 300,
     .upperHysteresis = 330,
 #ifdef KEYS_3
@@ -114,6 +114,11 @@ void loop()
   uint16_t value3 = analogRead(HE_PIN_3);
 #endif
 
+  /*Serial.println(value1);
+  Serial.println(value2);
+  Serial.println(value3);
+  Serial.println("");*/
+
   // Map the values to the 0-400 range
   value1 = mapToRange400(value1, configController.config.calibration.key1DownPosition, configController.config.calibration.key1RestPosition);
   value2 = mapToRange400(value2, configController.config.calibration.key2DownPosition, configController.config.calibration.key2RestPosition);
@@ -149,9 +154,9 @@ void loop()
 #ifdef KEYS_3
     // Repeat the same for the third key
     if (value3 <= lastRapidTriggerValueKey3 - configController.config.keypad.rapidTriggerSensitivity && !key3Pressed)
-      pressKey2();
+      pressKey3();
     else if (value2 >= lastRapidTriggerValueKey3 + configController.config.keypad.rapidTriggerSensitivity && key3Pressed)
-      releaseKey2();
+      releaseKey3();
 
     if ((key3Pressed && value3 < lastRapidTriggerValueKey3) || (!key3Pressed && value3 > lastRapidTriggerValueKey3))
       lastRapidTriggerValueKey3 = value3;
