@@ -155,7 +155,7 @@ void loop()
     // Repeat the same for the third key
     if (value3 <= lastRapidTriggerValueKey3 - configController.config.keypad.rapidTriggerSensitivity && !key3Pressed)
       pressKey3();
-    else if (value2 >= lastRapidTriggerValueKey3 + configController.config.keypad.rapidTriggerSensitivity && key3Pressed)
+    else if (value3 >= lastRapidTriggerValueKey3 + configController.config.keypad.rapidTriggerSensitivity && key3Pressed)
       releaseKey3();
 
     if ((key3Pressed && value3 < lastRapidTriggerValueKey3) || (!key3Pressed && value3 > lastRapidTriggerValueKey3))
