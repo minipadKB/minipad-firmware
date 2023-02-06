@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "config/configuration_controller.hpp"
 
 class SerialHandler

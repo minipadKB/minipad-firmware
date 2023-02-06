@@ -21,12 +21,14 @@ char *Utils::getArgumentAt(char *input, char delimiter, uint8_t index)
 
 void Utils::toLower(char *input)
 {
+  // Go through all characters and replace them with their lowercase version.
   for (int i = 0; i < strlen(input); i++)
     input[i] = tolower(input[i]);
 }
 
 void Utils::replace(char *input, char target, char replacement)
 {
+  // Go through all characters and replace it if it matches the target character.
   for (int i = 0; i < strlen(input); i++)
     if (input[i] == target)
       input[i] = replacement;
