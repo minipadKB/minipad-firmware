@@ -48,7 +48,7 @@ void KeypadHandler::checkRapidTriggerMode(uint8_t keyIndex)
 void KeypadHandler::pressKey(uint8_t keyIndex)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if(pressedStates[keyIndex] || !configController->config.keypad.hidEnabled[keyIndex])
+    if (pressedStates[keyIndex] || !configController->config.keypad.hidEnabled[keyIndex])
         return;
 
     // Send the HID instruction to the computer.
@@ -59,7 +59,7 @@ void KeypadHandler::pressKey(uint8_t keyIndex)
 void KeypadHandler::releaseKey(uint8_t keyIndex)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if(!pressedStates[keyIndex])
+    if (!pressedStates[keyIndex])
         return;
 
     // Send the HID instruction to the computer.

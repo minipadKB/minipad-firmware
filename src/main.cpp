@@ -85,7 +85,7 @@ void loop()
         String str = Serial.readStringUntil('\n');
         serialHandler.handleSerialInput(&str);
     }
-    
+
     // Run the keypad handler checks to handle the actual keypad functionality.
     keypadHandler.check();
 }
