@@ -14,10 +14,10 @@ private:
     ConfigurationController *configController;
 
 #ifdef KEYS_3
-    bool pressedStates[3];
+    bool keyPressedStates[3];
     uint16_t currentRapidTriggerPeak[3];
 #else
-    bool pressedStates[2];
+    bool keyPressedStates[2];
     uint16_t lastRapidTriggerValues[2];
 #endif
 
