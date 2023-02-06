@@ -48,7 +48,7 @@ void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
     {
         // If the key is pressed, check whether the read value rises more than (up sensitivity) above the lowest recorded value.
         // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
-        if (value >= currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerUpSensitivity)
+        if (value >= (int16_t)currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerUpSensitivity)
             releaseKey(keyIndex);
 
         // If the key is at an all-time low, save the value.
@@ -59,7 +59,8 @@ void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
     {
         // If the key is not pressed, check whether the read value drops more than (down sensitivity) below the highest recorded value.
         // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
-        if (value <= currentRapidTriggerPeak[keyIndex] - configController->config.keypad.rapidTriggerDownSensitivity)
+        // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
+        if ((int16_t)value <= (int16_t)currentRapidTriggerPeak[keyIndex] - (int16_t)configController->config.keypad.rapidTriggerDownSensitivity)
             pressKey(keyIndex);
 
         // If the key is at an all-time high, save the value.
@@ -70,6 +71,7 @@ void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 
 void KeypadHandler::pressKey(uint8_t keyIndex)
 {
+    Serial.println("press");
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (pressedStates[keyIndex] || !configController->config.keypad.hidEnabled[keyIndex])
         return;
@@ -81,6 +83,7 @@ void KeypadHandler::pressKey(uint8_t keyIndex)
 
 void KeypadHandler::releaseKey(uint8_t keyIndex)
 {
+    Serial.println("release");
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressedStates[keyIndex])
         return;
@@ -97,7 +100,7 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
 
     // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
     int16_t mapped = map(value, configController->config.calibration.downPositions[keyIndex], configController->config.calibration.restPositions[keyIndex], 0, 400);
-    
+
     // Then constrain it to a value between 0 and 400.
     return constrain(mapped, 0, 400);
 }
