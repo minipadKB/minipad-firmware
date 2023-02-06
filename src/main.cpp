@@ -80,7 +80,7 @@ void setup()
 
 void loop()
 {
-    // Check for any serial commands received for configuration
+    // Check for any serial commands received.
     while (Serial.available())
     {
         String str = Serial.readStringUntil('\n');
