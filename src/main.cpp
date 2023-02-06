@@ -70,11 +70,14 @@ void setup()
     // Initialize the serial interface.
     Serial.begin(115200);
 
-    // Load the configuration
+    // Load the configuration from the EEPROM.
     configController.loadConfig();
 
-    // Initialize the serial and HID interface
+    // Initialize the serial and HID interface.
     Keyboard.begin();
+
+    // Set the reference voltage for the ADC to 2.4V for a better resolution on the analog readings.
+    analogReference(INTERNAL);
 }
 
 void loop()
