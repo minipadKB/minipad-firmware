@@ -7,7 +7,7 @@
 // Initialize the pins array once from the defined pins.
 static const uint8_t pins[] = HE_PINS;
 
-KeypadHandler::KeypadHandler(ConfigurationController *configController, ToleranceConfiguration *tolerances) : configController(configController), tolerances(tolerances) { }
+KeypadHandler::KeypadHandler(ConfigurationController *configController, ToleranceConfiguration *tolerances) : configController(configController), tolerances(tolerances) {}
 
 KeypadHandler::~KeypadHandler() {}
 
@@ -44,19 +44,28 @@ void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
 
 void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 {
-     // If the key is not pressed, check whether the read value drops more than (sensitivity) below the highest recorded value.
-     // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
-    if(!pressedStates[keyIndex] && value <= currentRapidTriggerPeak[keyIndex] - configController->config.keypad.rapidTriggerSensitivity)
-        pressKey(keyIndex);
+    if (pressedStates[keyIndex])
+    {
+        // If the key is pressed, check whether the read value rises more than (up sensitivity) above the lowest recorded value.
+        // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
+        if (value >= currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerUpSensitivity)
+            releaseKey(keyIndex);
 
-     // If the key is pressed, check whether the read value rises more than (sensitivity) above the lowest recorded value.
-     // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
-    if(pressedStates[keyIndex] && value >= currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerSensitivity)
-        releaseKey(keyIndex);
+        // If the key is at an all-time low, save the value.
+        if (value < currentRapidTriggerPeak[keyIndex])
+            currentRapidTriggerPeak[keyIndex] = value;
+    }
+    else
+    {
+        // If the key is not pressed, check whether the read value drops more than (down sensitivity) below the highest recorded value.
+        // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
+        if (value <= currentRapidTriggerPeak[keyIndex] - configController->config.keypad.rapidTriggerDownSensitivity)
+            pressKey(keyIndex);
 
-    // If the key is currently pressed and is at an all-time low or the key is not pressed and at an all-time high, save the value.
-    if((pressedStates[keyIndex] && value < currentRapidTriggerPeak[keyIndex]) || (!pressedStates[keyIndex] && value > currentRapidTriggerPeak[keyIndex]))
-        currentRapidTriggerPeak[keyIndex] = value;
+        // If the key is at an all-time high, save the value.
+        if (value > currentRapidTriggerPeak[keyIndex])
+            currentRapidTriggerPeak[keyIndex] = value;
+    }
 }
 
 void KeypadHandler::pressKey(uint8_t keyIndex)

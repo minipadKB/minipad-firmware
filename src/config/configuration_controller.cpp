@@ -17,7 +17,6 @@ void ConfigurationController::loadConfig()
     config = *defaultConfig;
     save = true;
   }
-
   if (config.keypad.version != defaultConfig->keypad.version)
   {
     config.keypad = defaultConfig->keypad;

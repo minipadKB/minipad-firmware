@@ -24,7 +24,8 @@ Configuration defaultConfig =
     .version = KeypadConfiguration::getVersion(),
     .rapidTrigger = false,
     .continuousRapidTrigger = false,
-    .rapidTriggerSensitivity = 30,
+    .rapidTriggerUpSensitivity = 50,
+    .rapidTriggerDownSensitivity = 50,
     .lowerHysteresis = 300,
     .upperHysteresis = 330,
 #ifdef KEYS_3
@@ -61,7 +62,6 @@ ToleranceConfiguration tolerances =
 };
 
 ConfigurationController configController = ConfigurationController(&defaultConfig);
-
 SerialHandler serialHandler = SerialHandler(&configController, firmwareVersion);
 KeypadHandler keypadHandler = KeypadHandler(&configController, &tolerances);
 

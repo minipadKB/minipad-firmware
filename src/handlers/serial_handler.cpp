@@ -55,7 +55,8 @@ void SerialHandler::handleCommand(char *command)
     {
         Serial.println("GET rt=" + String(configController->config.keypad.rapidTrigger));
         Serial.println("GET crt=" + String(configController->config.keypad.continuousRapidTrigger));
-        Serial.println("GET rts=" + String(configController->config.keypad.rapidTriggerSensitivity));
+        Serial.println("GET rtsu=" + String(configController->config.keypad.rapidTriggerUpSensitivity));
+        Serial.println("GET rtsd=" + String(configController->config.keypad.rapidTriggerDownSensitivity));
         Serial.println("GET lh=" + String(configController->config.keypad.lowerHysteresis));
         Serial.println("GET uh=" + String(configController->config.keypad.upperHysteresis));
         Serial.println("GET key1=" + String(configController->config.keypad.keyChars[0]));
@@ -157,21 +158,34 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'continuousRapidTrigger' was set to '" + String(valueInt == 1 ? "true" : "false") + "'");
     }
 
-    else if (isEqual(key, "rts"))
+    else if (isEqual(key, "rtsu"))
     {
         // Check if the value is between 0 and 400.
         if (valueInt < 0 || valueInt > 400)
         {
-            Serial.println("Invalid value for 'rapidTriggerSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'rapidTriggerUpSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
             return;
         }
 
-        // Set the rapid sensitivity setting to the integer entered.
-        configController->config.keypad.rapidTriggerSensitivity = valueInt;
-        Serial.println("'rapidTriggerSensitivity' was set to '" + String(valueInt) + "'");
+        // Set the rapid trigger up sensitivity setting to the integer entered.
+        configController->config.keypad.rapidTriggerUpSensitivity = valueInt;
+        Serial.println("'rapidTriggerUpSensitivity' was set to '" + String(valueInt) + "'");
     }
 
-    // lower hysteresis
+    else if (isEqual(key, "rtsd"))
+    {
+        // Check if the value is between 0 and 400.
+        if (valueInt < 0 || valueInt > 400)
+        {
+            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
+            return;
+        }
+
+        // Set the rapid trigger down sensitivity setting to the integer entered.
+        configController->config.keypad.rapidTriggerDownSensitivity = valueInt;
+        Serial.println("'rapidTriggerDownSensitivity' was set to '" + String(valueInt) + "'");
+    }
+
     else if (isEqual(key, "lh"))
     {
         // Check if the value is bigger or equal to 0 and smaller than the upper hysteresis.

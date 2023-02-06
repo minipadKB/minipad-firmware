@@ -16,13 +16,16 @@ struct KeypadConfiguration
     // This ignores the hysteresis once it has been passed until it is fully released.
     bool continuousRapidTrigger;
 
-    // The sensitivity of the rapid trigger algorithm.
-    uint16_t rapidTriggerSensitivity;
+    // The sensitivity of the rapid trigger algorithm when pressing up.
+    uint16_t rapidTriggerUpSensitivity;
 
-    // The value below which the button is pressed in traditional mode or rapid trigger is active.
+    // The sensitivity of the rapid trigger algorithm when pressing down.
+    uint16_t rapidTriggerDownSensitivity;
+
+    // The value below which the button is pressed in traditional mode or rapid trigger is active in rapid trigger mode.
     uint16_t lowerHysteresis;
 
-    // The value below which the button is pressed in traditional mode or rapid trigger is not active.
+    // The value below which the button is pressed in traditional mode or rapid trigger is not active in rapid trigger mode.
     uint16_t upperHysteresis;
 
     // The corresponding keys sent via HID interface
@@ -44,7 +47,7 @@ struct KeypadConfiguration
     static int64_t getVersion()
     {
         // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-        int64_t version = 2302060013;
+        int64_t version = 2302061505;
 
         // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
 #ifdef KEYS_3
