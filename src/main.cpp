@@ -6,7 +6,7 @@
 #include "handlers/keypad_handler.hpp"
 #include "definitions.hpp"
 
-// The version of this firmware in the YYYYMMDD.PATCH format (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
+// The version of this firmware in the YYYYMMDD.PATCH format .(e.g. 20221219.2 for the 2nd release on the 19th december 2022)
 #ifdef KEYS_3
 char *firmwareVersion = (char *)"20221219.2-3k";
 #else
