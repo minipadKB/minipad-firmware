@@ -76,7 +76,7 @@ void setup()
     // Initialize the serial and HID interface.
     Keyboard.begin();
 
-    // Set the reference voltage for the ADC to 2.4V for a better resolution on the analog readings.
+    // Set the reference voltage for the ADC to 2.56V for a better resolution on the analog readings.
     analogReference(INTERNAL);
 }
 
