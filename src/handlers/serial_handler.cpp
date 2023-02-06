@@ -29,21 +29,28 @@ void SerialHandler::handleSerialInput(String *inputStr)
     handleSet(arg0, (input + strlen(arg0) + 1));
 }
 
-// Handles the input as a command and returns a bool whether the input was handled or not
+// Handles the input as a command and returns a bool whether the input was handled or not.
 void SerialHandler::handleCommand(char *command)
 {
+    // The ping command returns the firmware version and the keypads' name.
     if (isEqual(command, "ping"))
         Serial.println("pong " + String(firmwareVersion) + " | " + configController->config.name);
+
+    // The reset command resets the keypad configuration back to the default without saving it.
     else if (isEqual(command, "reset"))
     {
         configController->config.keypad = configController->defaultConfig->keypad;
         Serial.println("RESET OK");
     }
+
+    // The save command writes the full configuration to the eeprom.
     else if (isEqual(command, "save"))
     {
         configController->saveConfig();
         Serial.println("SAVE OK");
     }
+
+    // The get command returns the values of all config values.
     else if (isEqual(command, "get"))
     {
         Serial.println("GET rt=" + String(configController->config.keypad.rapidTrigger));
@@ -110,20 +117,18 @@ void SerialHandler::handleSet(char *key, char *value)
     // Turn the signed integer into an unsigned one that is then used for further code.
     uint16_t valueInt = valueIntSigned;
 
-    // If the parsed integer is different from the value string, the parsing defaults to 0
-    // TODO: Improve this comparison by comparing char* instead
+    // If the parsed integer is different from the value string, the parsing defaults to 0.
     if (String(valueInt) != String(value))
     {
         // In that case, check if the string length is 1 meaning it was possibly a character entered
-        // For simplicity of handling setting config values, the character is turned into an integer
+        // For simplicity of handling setting config values, the character is turned into an integer.
         if (strlen(value) == 1)
-            valueInt = (int16_t)value[0];
-        // If the string could not be parsed into an integer and is not 1 character long, ignore the command
+            valueInt = (uint16_t)value[0];
+        // If the string could not be parsed into an integer and is not 1 character long, ignore the command.
         else
             return;
     }
 
-    // rapid trigger
     if (isEqual(key, "rt"))
     {
         // Check if the value is 0 or 1 which is false or true.
@@ -138,7 +143,6 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'rapidTrigger' was set to '" + String(valueInt == 1 ? "true" : "false") + "'");
     }
 
-    // continuous rapid trigger
     else if (isEqual(key, "crt"))
     {
         // Check if the value it 0 or 1 which is false or true.
@@ -153,11 +157,9 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'continuousRapidTrigger' was set to '" + String(valueInt == 1 ? "true" : "false") + "'");
     }
 
-    // rapid trigger sensitivity
     else if (isEqual(key, "rts"))
     {
         // Check if the value is between 0 and 400.
-        // TODO: implement tolerances
         if (valueInt < 0 || valueInt > 400)
         {
             Serial.println("Invalid value for 'rapidTriggerSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
@@ -173,7 +175,6 @@ void SerialHandler::handleSet(char *key, char *value)
     else if (isEqual(key, "lh"))
     {
         // Check if the value is bigger or equal to 0 and smaller than the upper hysteresis.
-        // TODO: implement tolerances
         if (valueInt < 0 || valueInt >= configController->config.keypad.upperHysteresis)
         {
             Serial.println("Invalid value for 'lowerHysteresis'. Expected: 0-" + String(configController->config.keypad.upperHysteresis - 1) + ", Actual: " + String(valueInt));
@@ -185,11 +186,9 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'lowerHysteresis' was set to '" + String(valueInt) + "'");
     }
 
-    // upper hysteresis
     else if (isEqual(key, "uh"))
     {
         // Check if the value is bigger than the lower hysteresis and smaller or equal to 400.
-        // TODO: implement tolerances
         if (valueInt <= configController->config.keypad.lowerHysteresis || valueInt > 400)
         {
             Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(configController->config.keypad.lowerHysteresis + 1) + "-400, Actual: " + String(valueInt));
@@ -201,7 +200,6 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'upperHysteresis' was set to '" + String(valueInt) + "'");
     }
 
-    // key chars
 #ifdef KEYS_3
     else if (isEqual(key, "key1") || isEqual(key, "key2") || isEqual(key, "key3"))
 #else
@@ -222,7 +220,6 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(valueInt) + "' was set to '" + String(valueInt) + "'");
     }
 
-    // rest position for the keys
 #ifdef KEYS_3
     else if (isEqual(key, "k1rp") || isEqual(key, "k2rp") || isEqual(key, "k3rp"))
 #else
@@ -246,7 +243,6 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
     }
 
-    // down position for the keys
 #ifdef KEYS_3
     else if (isEqual(key, "k1dp") || isEqual(key, "k2dp") || isEqual(key, "k3dp"))
 #else
@@ -270,7 +266,6 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
     }
 
-    // hid state for the keys
 #ifdef KEYS_3
     else if (isEqual(key, "hid1") || isEqual(key, "hid2") || isEqual(key, "hid3"))
 #else
@@ -294,5 +289,6 @@ void SerialHandler::handleSet(char *key, char *value)
 
 bool SerialHandler::isEqual(char *str1, const char *str2)
 {
+    // Compare the specified strings and return whether they are equal or not.
     return strcmp(str1, str2) == 0;
 }

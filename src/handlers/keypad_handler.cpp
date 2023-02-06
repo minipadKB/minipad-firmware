@@ -12,25 +12,26 @@ KeypadHandler::~KeypadHandler() {}
 
 void KeypadHandler::check()
 {
+    // Go through all keys and run the checks.
 #ifdef KEYS_3
     for (uint8_t keyIndex = 0; keyIndex < 3; keyIndex++)
 #else
     for (uint8_t keyIndex = 0; keyIndex < 2; keyIndex++)
 #endif
     {
+        // Read the processed value from the hall effect sensor.
+        uint16_t value = read(keyIndex);
+
         // Run either the rapid trigger or the traditional mode checks
         if (configController->config.keypad.rapidTrigger)
-            checkRapidTriggerMode(keyIndex);
+            checkRapidTrigger(keyIndex, value);
         else
-            checkTraditionalMode(keyIndex);
+            checkTraditional(keyIndex, value);
     }
 }
 
-void KeypadHandler::checkTraditionalMode(uint8_t keyIndex)
+void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
 {
-    // Read the processed value from the hall effect sensor.
-    uint16_t value = read(keyIndex);
-
     // Check whether the value passes the lower or upper hysteresis.
     // If the value drops <= the lower hysteresis, the key is pressed down.
     // IF the value rises >= the upper hysteresis, the key is released.
@@ -40,9 +41,21 @@ void KeypadHandler::checkTraditionalMode(uint8_t keyIndex)
         releaseKey(keyIndex);
 }
 
-void KeypadHandler::checkRapidTriggerMode(uint8_t keyIndex)
+void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 {
-    // TBI
+     // If the key is not pressed, check whether the read value drops more than (sensitivity) below the highest recorded value.
+     // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
+    if(!pressedStates[keyIndex] && value <= currentRapidTriggerPeak[keyIndex] - configController->config.keypad.rapidTriggerSensitivity)
+        pressKey(keyIndex);
+
+     // If the key is pressed, check whether the read value rises more than (sensitivity) above the lowest recorded value.
+     // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
+    if(pressedStates[keyIndex] && value >= currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerSensitivity)
+        releaseKey(keyIndex);
+
+    // If the key is currently pressed and is at an all-time low or the key is not pressed and at an all-time high, save the value.
+    if((pressedStates[keyIndex] && value < currentRapidTriggerPeak[keyIndex]) || (!pressedStates[keyIndex] && value > currentRapidTriggerPeak[keyIndex]))
+        currentRapidTriggerPeak[keyIndex] = value;
 }
 
 void KeypadHandler::pressKey(uint8_t keyIndex)
