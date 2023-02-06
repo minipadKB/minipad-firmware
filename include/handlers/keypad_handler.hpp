@@ -5,14 +5,13 @@
 class KeypadHandler
 {
 public:
-    KeypadHandler(ConfigurationController *configController, ToleranceConfiguration *tolerances);
+    KeypadHandler(ConfigurationController *configController);
     virtual ~KeypadHandler();
 
     void check();
 
 private:
     ConfigurationController *configController;
-    ToleranceConfiguration *tolerances;
 
 #ifdef KEYS_3
     bool pressedStates[3];

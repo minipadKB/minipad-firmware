@@ -77,6 +77,8 @@ void SerialHandler::handleCommand(char *command)
 #ifdef KEYS_3
         Serial.println("GET hid3=" + String(configController->config.keypad.hidEnabled[2]));
 #endif
+        Serial.println("GET tolh=" + String(configController->tolerances->hysteresis));
+        Serial.println("GET tolr=" + String(configController->tolerances->rapidTrigger));
         Serial.println("GET name=" + String(configController->config.name));
         Serial.println("GET END");
     }
@@ -160,10 +162,10 @@ void SerialHandler::handleSet(char *key, char *value)
 
     else if (isEqual(key, "rtsu"))
     {
-        // Check if the value is between 0 and 400.
-        if (valueInt < 0 || valueInt > 400)
+        // Check if the value is between the rapid trigger tolerance and 400.
+        if (valueInt < configController->tolerances->rapidTrigger || valueInt > 400)
         {
-            Serial.println("Invalid value for 'rapidTriggerUpSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'rapidTriggerUpSensitivity'. Expected: " + String(configController->tolerances->rapidTrigger) + "-400, Actual: " + String(valueInt));
             return;
         }
 
@@ -174,10 +176,10 @@ void SerialHandler::handleSet(char *key, char *value)
 
     else if (isEqual(key, "rtsd"))
     {
-        // Check if the value is between 0 and 400.
-        if (valueInt < 0 || valueInt > 400)
+        // Check if the value is between the rapid trigger tolerance and 400.
+        if (valueInt < configController->tolerances->rapidTrigger || valueInt > 400)
         {
-            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: 0-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: " + String(configController->tolerances->rapidTrigger) + "-400, Actual: " + String(valueInt));
             return;
         }
 
@@ -188,10 +190,10 @@ void SerialHandler::handleSet(char *key, char *value)
 
     else if (isEqual(key, "lh"))
     {
-        // Check if the value is bigger or equal to 0 and smaller than the upper hysteresis.
-        if (valueInt < 0 || valueInt >= configController->config.keypad.upperHysteresis)
+        // Check if the difference between the upper hysteresis and the new lower hysteresis is at least the hysteresis tolerance.
+        if (configController->config.keypad.upperHysteresis - valueInt < configController->tolerances->hysteresis)
         {
-            Serial.println("Invalid value for 'lowerHysteresis'. Expected: 0-" + String(configController->config.keypad.upperHysteresis - 1) + ", Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'lowerHysteresis'. Expected: 0-" + String(configController->config.keypad.upperHysteresis - configController->tolerances->hysteresis) + ", Actual: " + String(valueInt));
             return;
         }
 
@@ -202,10 +204,10 @@ void SerialHandler::handleSet(char *key, char *value)
 
     else if (isEqual(key, "uh"))
     {
-        // Check if the value is bigger than the lower hysteresis and smaller or equal to 400.
-        if (valueInt <= configController->config.keypad.lowerHysteresis || valueInt > 400)
+        // Check if the difference between the new upper hysteresis and the lower hysteresis is at least the hysteresis tolerance.
+        if (valueInt - configController->config.keypad.lowerHysteresis < configController->tolerances->hysteresis)
         {
-            Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(configController->config.keypad.lowerHysteresis + 1) + "-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(configController->config.keypad.lowerHysteresis + configController->tolerances->hysteresis) + "-400, Actual: " + String(valueInt));
             return;
         }
 

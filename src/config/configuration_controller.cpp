@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "config/configuration_controller.hpp"
 
-ConfigurationController::ConfigurationController(Configuration *defaultConfig) : defaultConfig(defaultConfig), config(*defaultConfig) {}
+ConfigurationController::ConfigurationController(Configuration *defaultConfig, ToleranceConfiguration *tolerances) : defaultConfig(defaultConfig), config(*defaultConfig), tolerances(tolerances) {}
 ConfigurationController::~ConfigurationController() {}
 
 void ConfigurationController::loadConfig()

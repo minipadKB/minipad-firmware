@@ -7,7 +7,7 @@
 // Initialize the pins array once from the defined pins.
 static const uint8_t pins[] = HE_PINS;
 
-KeypadHandler::KeypadHandler(ConfigurationController *configController, ToleranceConfiguration *tolerances) : configController(configController), tolerances(tolerances) {}
+KeypadHandler::KeypadHandler(ConfigurationController *configController) : configController(configController) {}
 
 KeypadHandler::~KeypadHandler() {}
 

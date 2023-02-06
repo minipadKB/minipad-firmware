@@ -9,9 +9,9 @@ struct ToleranceConfiguration
     // the minimum distances for 0 to lower hysteresis and upper hysteresis to 400.
     // This tolerance prevents the key from not registering a press or a release by
     // making sure that in case the calibration is slightly off there is still a buffer.
-    uint16_t hysteresisTolerance;
+    uint16_t hysteresis;
 
     // The minimum value of the rapid trigger sensitivity.
     // This prevents rapidly firing HID commands from an unstable/fluctuating analog value.
-    uint16_t rapidTriggerTolerance;
+    uint16_t rapidTrigger;
 };

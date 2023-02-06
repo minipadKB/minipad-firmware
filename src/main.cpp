@@ -57,13 +57,13 @@ Configuration defaultConfig =
 //
 ToleranceConfiguration tolerances =
 {
-    .hysteresisTolerance = 10,
-    .rapidTriggerTolerance = 15
+    .hysteresis = 10,
+    .rapidTrigger = 15
 };
 
-ConfigurationController configController = ConfigurationController(&defaultConfig);
+ConfigurationController configController = ConfigurationController(&defaultConfig, &tolerances);
 SerialHandler serialHandler = SerialHandler(&configController, firmwareVersion);
-KeypadHandler keypadHandler = KeypadHandler(&configController, &tolerances);
+KeypadHandler keypadHandler = KeypadHandler(&configController);
 
 void setup()
 {
