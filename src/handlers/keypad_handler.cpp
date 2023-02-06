@@ -95,8 +95,9 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(pins[keyIndex]);
 
-    // Map the specified value with the specified minimum and maximum to the new value.
-    // Then constrain it to a value between 0 and 400.
+    // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
     int16_t mapped = map(value, configController->config.calibration.downPositions[keyIndex], configController->config.calibration.restPositions[keyIndex], 0, 400);
+    
+    // Then constrain it to a value between 0 and 400.
     return constrain(mapped, 0, 400);
 }
