@@ -23,7 +23,7 @@ void KeypadHandler::check()
         // Read the processed value from the hall effect sensor.
         uint16_t value = read(keyIndex);
 
-        // Run either the rapid trigger or the traditional mode checks
+        // Run either the rapid trigger or the traditional mode checks.
         if (configController->config.keypad.rapidTrigger)
             checkRapidTrigger(keyIndex, value);
         else
