@@ -44,29 +44,37 @@ void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
 
 void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 {
-    if (keyPressedStates[keyIndex])
-    {
-        // If the key is pressed, check whether the read value rises more than (up sensitivity) above the lowest recorded value.
-        // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
-        if (value >= (int16_t)currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerUpSensitivity)
-            releaseKey(keyIndex);
+    // Check whether the key is pressed and should be released.
+    if (keyPressedStates[keyIndex] && checkRapidTriggerReleaseKey(keyIndex, value))
+        releaseKey(keyIndex);
+    // Check whether the key is not pressed but should be pressed.
+    else if (!keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
+        pressKey(keyIndex);
 
-        // If the key is at an all-time low, save the value.
-        if (value < currentRapidTriggerPeak[keyIndex])
-            currentRapidTriggerPeak[keyIndex] = value;
-    }
-    else
-    {
-        // If the key is not pressed, check whether the read value drops more than (down sensitivity) below the highest recorded value.
-        // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
-        // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
-        if ((int16_t)value <= (int16_t)currentRapidTriggerPeak[keyIndex] - (int16_t)configController->config.keypad.rapidTriggerDownSensitivity)
-            pressKey(keyIndex);
+    // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
+    if ((keyPressedStates[keyIndex] && value < currentRapidTriggerPeak[keyIndex]) || (!keyPressedStates[keyIndex] && value > currentRapidTriggerPeak[keyIndex]))
+        currentRapidTriggerPeak[keyIndex] = value;
+}
 
-        // If the key is at an all-time high, save the value.
-        if (value > currentRapidTriggerPeak[keyIndex])
-            currentRapidTriggerPeak[keyIndex] = value;
-    }
+bool KeypadHandler::checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value)
+{
+    // Check whether the read value drops more than (down sensitivity) below the highest recorded value.
+    // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
+    // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
+    if ((int16_t)value <= (int16_t)currentRapidTriggerPeak[keyIndex] - (int16_t)configController->config.keypad.rapidTriggerDownSensitivity)
+        return true;
+
+    return false;
+}
+
+bool KeypadHandler::checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value)
+{
+    // Check whether the read value rises more than (up sensitivity) above the lowest recorded value.
+    // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
+    if (value >= currentRapidTriggerPeak[keyIndex] + configController->config.keypad.rapidTriggerUpSensitivity)
+        return true;
+
+    return false;
 }
 
 void KeypadHandler::pressKey(uint8_t keyIndex)

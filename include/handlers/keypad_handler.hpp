@@ -24,6 +24,8 @@ private:
     uint16_t read(uint8_t keyIndex);
     void checkTraditional(uint8_t keyIndex, uint16_t value);
     void checkRapidTrigger(uint8_t keyIndex, uint16_t value);
+    bool checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value);
+    bool checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value);
     void pressKey(uint8_t keyIndex);
     void releaseKey(uint8_t keyIndex);
 };
