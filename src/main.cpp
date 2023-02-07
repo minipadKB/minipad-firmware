@@ -58,7 +58,7 @@ Configuration defaultConfig =
 ToleranceConfiguration tolerances =
 {
     .hysteresis = 10,
-    .rapidTrigger = 15
+    .rapidTrigger = 10
 };
 
 ConfigurationController configController = ConfigurationController(&defaultConfig, &tolerances);
