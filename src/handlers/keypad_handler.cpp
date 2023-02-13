@@ -15,7 +15,7 @@ void KeypadHandler::check()
 {
     // Go through all keys and run the checks.
 #ifdef KEYS_3
-    for (uint8_t keyIndex = 0; keyIndex < 1; keyIndex++)
+    for (uint8_t keyIndex = 0; keyIndex < 3; keyIndex++)
 #else
     for (uint8_t keyIndex = 0; keyIndex < 2; keyIndex++)
 #endif
