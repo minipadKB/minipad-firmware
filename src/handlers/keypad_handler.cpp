@@ -22,8 +22,6 @@ void KeypadHandler::check()
     {
         // Read the processed value from the hall effect sensor.
         uint16_t value = read(keyIndex);
-        Serial.print("Value: ");
-        Serial.println(value);
 
         // Run either the rapid trigger or the traditional mode checks.
         if (configController->config.keypad.rapidTrigger)
@@ -85,7 +83,6 @@ void KeypadHandler::pressKey(uint8_t keyIndex)
     if (keyPressedStates[keyIndex] || !configController->config.keypad.hidEnabled[keyIndex])
         return;
 
-    Serial.println("Press key");
     // Send the HID instruction to the computer.
     keyPressedStates[keyIndex] = true;
     Keyboard.press(configController->config.keypad.keyChars[keyIndex]);
@@ -97,7 +94,6 @@ void KeypadHandler::releaseKey(uint8_t keyIndex)
     if (!keyPressedStates[keyIndex])
         return;
 
-    Serial.println("Released key");
     // Send the HID instruction to the computer.
     Keyboard.release(configController->config.keypad.keyChars[keyIndex]);
     keyPressedStates[keyIndex] = false;
@@ -107,15 +103,11 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
 {
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(pins[keyIndex]);
-    Serial.print("Raw value: ");
-    Serial.println(value);
 
     // Calculate the total delta (difference between rest position and down position) and the delta of the read value from the down position.
     // The int16_t conversions are done to prevent an integer underflow on the substraction if the read value is smaller than the down position.
     uint16_t totalDelta = configController->config.calibration.restPositions[keyIndex] - configController->config.calibration.downPositions[keyIndex];
     uint16_t delta = constrain((int16_t)value - (int16_t)configController->config.calibration.downPositions[keyIndex], 0, totalDelta);
-    Serial.print("Delta: ");
-    Serial.println(delta);
 
     // Square the two deltas to map it accordingly afterwards. This turns out to be needed due to the behavior of magnetic field strength <-> distance.
     // The uint32_t conversions are done to prevent an overflow as the result of uint16 * uint16 is a uint16, but the maximum (1023 * 1023) exceeds it's limit.
