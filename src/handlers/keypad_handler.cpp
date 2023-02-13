@@ -61,7 +61,7 @@ bool KeypadHandler::checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value)
     // Check whether the read value drops more than (down sensitivity) below the highest recorded value.
     // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
     // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
-    if ((int16_t)value <= (int16_t)currentRapidTriggerPeak[keyIndex] - (int16_t)configController->config.keypad.rapidTriggerDownSensitivity)
+    if ((int16_t)value <= currentRapidTriggerPeak[keyIndex] - (int16_t)configController->config.keypad.rapidTriggerDownSensitivity)
         return true;
 
     return false;
@@ -104,9 +104,14 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(pins[keyIndex]);
 
-    // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
-    int16_t mapped = map(value, configController->config.calibration.downPositions[keyIndex], configController->config.calibration.restPositions[keyIndex], 0, 400);
+    // Calculate the total delta (difference between rest position and down position) and the delta of the read value from the down position.
+    uint16_t totalDelta = configController->config.calibration.restPositions[keyIndex] - configController->config.calibration.downPositions[keyIndex];
+    uint16_t delta = constrain(value - configController->config.calibration.downPositions[keyIndex], 0, totalDelta);
 
-    // Then constrain it to a value between 0 and 400.
-    return constrain(mapped, 0, 400);
+    // Square the two deltas to map it accordingly afterwards. This turns out to be needed due to the behavior of magnetic field strength <-> distance.
+    uint32_t totalDeltaSquared = totalDelta * (uint32_t)totalDelta;
+    uint32_t deltaSquared = delta * (uint32_t)delta;
+
+    // Map the squared delta from the range 0 to the total delta squared to 0-400 to get a linear scale and return it.
+    return map(deltaSquared, 0, totalDeltaSquared, 0, 400);
 }
