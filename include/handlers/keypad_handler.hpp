@@ -18,7 +18,7 @@ private:
     uint16_t currentRapidTriggerPeak[3];
 #else
     bool keyPressedStates[2];
-    uint16_t lastRapidTriggerValues[2];
+    uint16_t currentRapidTriggerPeak[2];
 #endif
 
     uint16_t read(uint8_t keyIndex);
