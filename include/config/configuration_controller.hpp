@@ -5,7 +5,7 @@
 class ConfigurationController
 {
 public:
-    ConfigurationController(Configuration *defaultConfig, ToleranceConfiguration *tolerances);
+    ConfigurationController(Configuration *defaultConfig);
     virtual ~ConfigurationController();
 
     void loadConfig();
@@ -13,5 +13,4 @@ public:
 
     Configuration *defaultConfig;
     Configuration config;
-    ToleranceConfiguration *tolerances;
 };

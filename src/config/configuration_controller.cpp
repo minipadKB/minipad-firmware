@@ -2,15 +2,15 @@
 #include <Arduino.h>
 #include "config/configuration_controller.hpp"
 
-ConfigurationController::ConfigurationController(Configuration *defaultConfig, ToleranceConfiguration *tolerances) : defaultConfig(defaultConfig), config(*defaultConfig), tolerances(tolerances) {}
+ConfigurationController::ConfigurationController(Configuration *defaultConfig) : defaultConfig(defaultConfig), config(*defaultConfig) {}
 ConfigurationController::~ConfigurationController() {}
 
 void ConfigurationController::loadConfig()
 {
-  // Load the configuration struct from the EEPROM
+  // Load the configuration struct from the EEPROM.
   EEPROM.get(0, config);
 
-  // Check if all versions match with the ones read; If not, replace the (part of the) config with it's default state
+  // Check if all versions match with the ones read; If not, replace the (part of the) config with it's default state.
   bool save = false;
   if (config.version != defaultConfig->version)
   {
@@ -28,13 +28,15 @@ void ConfigurationController::loadConfig()
     save = true;
   }
 
-  // If anything has been modified, save the config to the EEPROM
+  // If anything has been modified, save the config to the EEPROM.
   if (save)
     saveConfig();
 }
 
 void ConfigurationController::saveConfig()
 {
-  // Write the struct back into the EEPROM
+  // Write the struct back into the EEPROM and commit the change.
   EEPROM.put(0, config);
+  EEPROM.commit();
+
 }

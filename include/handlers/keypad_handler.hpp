@@ -1,5 +1,4 @@
 #include "config/configuration_controller.hpp"
-#include "config/tolerance_configuration.hpp"
 #include "definitions.hpp"
 
 class KeypadHandler

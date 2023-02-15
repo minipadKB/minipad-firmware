@@ -3,7 +3,7 @@
 class SerialHandler
 {
 public:
-    SerialHandler(ConfigurationController *configController, char *firmwareVersion);
+    SerialHandler(ConfigurationController *configController);
     virtual ~SerialHandler();
 
     void handleSerialInput(String *inputStr);
@@ -15,5 +15,4 @@ private:
     bool isEqual(char *str1, const char *str2);
 
     ConfigurationController *configController;
-    char *firmwareVersion;
 };

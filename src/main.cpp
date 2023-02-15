@@ -1,16 +1,10 @@
 // Import all needed libraries and headers
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
 #include "definitions.hpp"
-
-// The version of this firmware in the YYYYMMDD.PATCH format. (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
-#ifdef KEYS_3
-char *firmwareVersion = (char *)"20230215.1-3k";
-#else
-char *firmwareVersion = (char *)"20230215.1-2k";
-#endif
 
 // Default configuration file loaded into the EEPROM if no configuration was saved yet. Also used to reset the keypad and calibration
 // structs that might get modified on a firmware update and have to be reset back to their default values then later on.
@@ -48,25 +42,14 @@ Configuration defaultConfig =
   }
 };
 
-//
-//                                           WARNING
-//
-//       DO NOT CHANGE UNLESS ADVICED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR
-//    THAT VIOLATES OSU!'S RULES. CHANGING THIS MAY LEAD TO INCORRECT KEY PRESSES AND A RESTRICTION.
-//
-ToleranceConfiguration tolerances =
-{
-    .hysteresis = 10,
-    .rapidTrigger = 10
-};
-
-ConfigurationController configController = ConfigurationController(&defaultConfig, &tolerances);
-SerialHandler serialHandler = SerialHandler(&configController, firmwareVersion);
+ConfigurationController configController = ConfigurationController(&defaultConfig);
+SerialHandler serialHandler = SerialHandler(&configController);
 KeypadHandler keypadHandler = KeypadHandler(&configController);
 
 void setup()
 {
-    // Load the configuration from the EEPROM.
+    // Initialize the EEPROM and load the configuration from it.
+    EEPROM.begin(1024);
     configController.loadConfig();
 
     // Initialize the serial and HID interface.

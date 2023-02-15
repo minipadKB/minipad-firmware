@@ -2,7 +2,6 @@
 
 #include "keypad_configuration.hpp"
 #include "calibration_configuration.hpp"
-#include "tolerance_configuration.hpp"
 
 // Configuration for the whole firmware, containing the name of the keypad and it's configurations.
 struct Configuration
