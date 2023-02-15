@@ -3,7 +3,7 @@
 #include "utils.hpp"
 #include "definitions.hpp"
 
-SerialHandler::SerialHandler(ConfigurationController *configController, char *firmwareVersion) : configController(configController), firmwareVersion(firmwareVersion) {}
+SerialHandler::SerialHandler(ConfigurationController *configController) : configController(configController) {}
 SerialHandler::~SerialHandler() {}
 
 void SerialHandler::handleSerialInput(String *inputStr)
