@@ -34,7 +34,7 @@ void SerialHandler::handleCommand(char *command)
 {
     // The ping command returns the firmware version and the keypads' name.
     if (isEqual(command, "ping"))
-        Serial.println("pong " FIRMWARE_VERSION_FULL " | " + );
+        Serial.println("pong " FIRMWARE_VERSION_FULL " | " + String(configController->config.name));
 
     // The reset command resets the keypad configuration back to the default without saving it.
     else if (isEqual(command, "reset"))
