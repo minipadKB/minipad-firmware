@@ -71,7 +71,7 @@ void setup()
 
     // Initialize the serial and HID interface.
     Serial.begin(115200);
-    Keyboard.begin();
+    //Keyboard.begin();
 
     // Set the amount of bits for the ADC to 12 for a better resolution on the analog readings.
     analogReadResolution(12);
