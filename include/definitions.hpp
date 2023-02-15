@@ -5,7 +5,7 @@
 
 // Define the ports used for the HE sensors
 #ifdef KEYS_3
-#define HE_PINS { A1, A2, A3 }
+#define HE_PINS { A0, A1, A2 }
 #else
-#define HE_PINS { A1, A2 }
+#define HE_PINS { A0, A1 }
 #endif

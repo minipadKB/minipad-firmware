@@ -246,10 +246,10 @@ void SerialHandler::handleSet(char *key, char *value)
         uint8_t keyIndex = atoi(&key[1]) - 1;
         uint16_t downPosition = configController->config.calibration.downPositions[keyIndex];
 
-        // Check if the value is bigger than the down position and smaller or equal to 1023.
-        if (valueInt <= downPosition || valueInt > 1023)
+        // Check if the value is bigger than the down position and smaller or equal to 4095.
+        if (valueInt <= downPosition || valueInt > 4095)
         {
-            Serial.println("Invalid value for '" + String(key) + "'. Expected: " + String(downPosition + 1) + "-1023, Actual: " + String(valueInt));
+            Serial.println("Invalid value for '" + String(key) + "'. Expected: " + String(downPosition + 1) + "-4095, Actual: " + String(valueInt));
             return;
         }
 
@@ -269,8 +269,8 @@ void SerialHandler::handleSet(char *key, char *value)
         uint8_t keyIndex = atoi(&key[1]) - 1;
         uint16_t restPosition = configController->config.calibration.restPositions[keyIndex];
 
-        // Check if the value is bigger or equal to 0 and smaller than the rest positon.
-        if (valueInt < 0 || valueInt >= restPosition)
+        // Check if the value is smaller than the rest positon.
+        if (valueInt >= restPosition)
         {
             Serial.println("Invalid value for '" + String(key) + "'. Expected: 0-" + String(restPosition - 1) + ", Actual: " + String(valueInt));
             return;

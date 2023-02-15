@@ -1,6 +1,5 @@
 // Import all needed libraries and headers
 #include <Arduino.h>
-#include <Keyboard.h>
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
@@ -8,9 +7,9 @@
 
 // The version of this firmware in the YYYYMMDD.PATCH format. (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
 #ifdef KEYS_3
-char *firmwareVersion = (char *)"20221219.2-3k";
+char *firmwareVersion = (char *)"20230215.1-3k";
 #else
-char *firmwareVersion = (char *)"20221219.2-2k";
+char *firmwareVersion = (char *)"20230215.1-2k";
 #endif
 
 // Default configuration file loaded into the EEPROM if no configuration was saved yet. Also used to reset the keypad and calibration
@@ -40,11 +39,11 @@ Configuration defaultConfig =
   {
     .version = CalibrationConfiguration::getVersion(),
 #ifdef KEYS_3
-    .restPositions = { 450, 450, 450 },
-    .downPositions = { 150, 150, 150 }
+    .restPositions = { 2600, 2600, 2600 },
+    .downPositions = { 1100, 1100, 1100 }
 #else
-    .restPositions = { 450, 450 },
-    .downPositions = { 150, 150 }
+    .restPositions = { 2600, 2600 },
+    .downPositions = { 1100, 1100 }
 #endif
   }
 };
@@ -74,8 +73,8 @@ void setup()
     Serial.begin(115200);
     Keyboard.begin();
 
-    // Set the reference voltage for the ADC to 2.56V for a better resolution on the analog readings.
-    analogReference(INTERNAL);
+    // Set the amount of bits for the ADC to 12 for a better resolution on the analog readings.
+    analogReadResolution(12);
 }
 
 void loop()

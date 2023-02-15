@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Keyboard.h>
 #include "handlers/keypad_handler.hpp"
 #include "utils.hpp"
 #include "definitions.hpp"
@@ -85,7 +84,7 @@ void KeypadHandler::pressKey(uint8_t keyIndex)
 
     // Send the HID instruction to the computer.
     keyPressedStates[keyIndex] = true;
-    Keyboard.press(configController->config.keypad.keyChars[keyIndex]);
+    //Keyboard.press(configController->config.keypad.keyChars[keyIndex]);
 }
 
 void KeypadHandler::releaseKey(uint8_t keyIndex)
@@ -95,7 +94,7 @@ void KeypadHandler::releaseKey(uint8_t keyIndex)
         return;
 
     // Send the HID instruction to the computer.
-    Keyboard.release(configController->config.keypad.keyChars[keyIndex]);
+    //Keyboard.release(configController->config.keypad.keyChars[keyIndex]);
     keyPressedStates[keyIndex] = false;
 }
 
@@ -110,7 +109,7 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     uint16_t delta = constrain((int16_t)value - (int16_t)configController->config.calibration.downPositions[keyIndex], 0, totalDelta);
 
     // Square the two deltas to map it accordingly afterwards. This turns out to be needed due to the behavior of magnetic field strength <-> distance.
-    // The uint32_t conversions are done to prevent an overflow as the result of uint16 * uint16 is a uint16, but the maximum (1023 * 1023) exceeds it's limit.
+    // The uint32_t conversions are done to prevent an overflow as the result of uint16 * uint16 is a uint16, but the maximum (4095 * 4095) exceeds it's limit.
     uint32_t totalDeltaSquared = totalDelta * (uint32_t)totalDelta;
     uint32_t deltaSquared = delta * (uint32_t)delta;
 
