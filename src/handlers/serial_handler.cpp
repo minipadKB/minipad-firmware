@@ -34,7 +34,7 @@ void SerialHandler::handleCommand(char *command)
 {
     // The ping command returns the firmware version and the keypads' name.
     if (isEqual(command, "ping"))
-        Serial.println("pong " + String(firmwareVersion) + " | " + configController->config.name);
+        Serial.println("pong " FIRMWARE_VERSION_FULL " | " + );
 
     // The reset command resets the keypad configuration back to the default without saving it.
     else if (isEqual(command, "reset"))
@@ -77,8 +77,8 @@ void SerialHandler::handleCommand(char *command)
 #ifdef KEYS_3
         Serial.println("GET hid3=" + String(configController->config.keypad.hidEnabled[2]));
 #endif
-        Serial.println("GET tolh=" + String(configController->tolerances->hysteresis));
-        Serial.println("GET tolr=" + String(configController->tolerances->rapidTrigger));
+        Serial.println("GET tolh=" + String(HYSTERESIS_TOLERANCE));
+        Serial.println("GET tolr=" + String(RAPID_TRIGGER_TOLERANCE));
         Serial.println("GET name=" + String(configController->config.name));
         Serial.println("GET END");
     }
@@ -163,9 +163,9 @@ void SerialHandler::handleSet(char *key, char *value)
     else if (isEqual(key, "rtsu"))
     {
         // Check if the value is between the rapid trigger tolerance and 400.
-        if (valueInt < configController->tolerances->rapidTrigger || valueInt > 400)
+        if (valueInt < RAPID_TRIGGER_TOLERANCE || valueInt > 400)
         {
-            Serial.println("Invalid value for 'rapidTriggerUpSensitivity'. Expected: " + String(configController->tolerances->rapidTrigger) + "-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'rapidTriggerUpSensitivity'. Expected: " + String(RAPID_TRIGGER_TOLERANCE) + "-400, Actual: " + String(valueInt));
             return;
         }
 
@@ -177,9 +177,9 @@ void SerialHandler::handleSet(char *key, char *value)
     else if (isEqual(key, "rtsd"))
     {
         // Check if the value is between the rapid trigger tolerance and 400.
-        if (valueInt < configController->tolerances->rapidTrigger || valueInt > 400)
+        if (valueInt < RAPID_TRIGGER_TOLERANCE || valueInt > 400)
         {
-            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: " + String(configController->tolerances->rapidTrigger) + "-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: " + String(RAPID_TRIGGER_TOLERANCE) + "-400, Actual: " + String(valueInt));
             return;
         }
 
@@ -191,9 +191,9 @@ void SerialHandler::handleSet(char *key, char *value)
     else if (isEqual(key, "lh"))
     {
         // Check if the difference between the upper hysteresis and the new lower hysteresis is at least the hysteresis tolerance.
-        if (configController->config.keypad.upperHysteresis - valueInt < configController->tolerances->hysteresis)
+        if (configController->config.keypad.upperHysteresis - valueInt < HYSTERESIS_TOLERANCE)
         {
-            Serial.println("Invalid value for 'lowerHysteresis'. Expected: 0-" + String(configController->config.keypad.upperHysteresis - configController->tolerances->hysteresis) + ", Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'lowerHysteresis'. Expected: 0-" + String(configController->config.keypad.upperHysteresis - HYSTERESIS_TOLERANCE) + ", Actual: " + String(valueInt));
             return;
         }
 
@@ -205,9 +205,9 @@ void SerialHandler::handleSet(char *key, char *value)
     else if (isEqual(key, "uh"))
     {
         // Check if the difference between the new upper hysteresis and the lower hysteresis is at least the hysteresis tolerance.
-        if (valueInt - configController->config.keypad.lowerHysteresis < configController->tolerances->hysteresis)
+        if (valueInt - configController->config.keypad.lowerHysteresis < HYSTERESIS_TOLERANCE)
         {
-            Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(configController->config.keypad.lowerHysteresis + configController->tolerances->hysteresis) + "-400, Actual: " + String(valueInt));
+            Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(configController->config.keypad.lowerHysteresis + HYSTERESIS_TOLERANCE) + "-400, Actual: " + String(valueInt));
             return;
         }
 
