@@ -3,9 +3,11 @@ name: PlatformIO CI
 on: [workflow_dispatch]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+      
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -22,15 +24,13 @@ jobs:
 
       - name: Build PlatformIO Project
         run: pio run
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "*.uf2"
-        name: "test title"
-        tag: "test tag"
-        body: "test body"
+        
+        
+      - uses: actions/checkout@v2
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.uf2"
+          name: "test title"
+          tag: "test tag"
+          body: "test body"
+      - name: Create Release
