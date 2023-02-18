@@ -43,3 +43,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./.pio/firmware.uf2
           asset_name: CURRENT.UF2
+          asset_content_type: application/octet-stream
