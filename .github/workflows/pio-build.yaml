@@ -31,4 +31,6 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "*.uf2"
-        bodyFile: "body.md"
+        name: "test title"
+        tag: "test tag"
+        body: "test body"
