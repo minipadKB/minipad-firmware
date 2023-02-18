@@ -25,12 +25,14 @@ jobs:
       - name: Build PlatformIO Project
         run: pio run
         
-        
-      - uses: actions/checkout@v2
-      - uses: ncipollo/release-action@v1
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
         with:
-          artifacts: "*.uf2"
-          name: "test title"
-          tag: "test tag"
-          body: "test body"
-      - name: Create Release
+          draft: false
+          prerelease: false
+          release_name: test
+          tag_name: test tag
+          body: test body
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
