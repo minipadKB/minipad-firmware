@@ -3,7 +3,7 @@ name: PlatformIO CI
 on: [workflow_dispatch]
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     
     steps:
