@@ -5,9 +5,7 @@ on: [workflow_dispatch]
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
+    
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -25,7 +23,7 @@ jobs:
       - name: Build PlatformIO Project
         run: pio run
         
-      - name: release
+      - name: Create Release
         uses: actions/create-release@v1
         id: create_release
         with:
@@ -36,3 +34,12 @@ jobs:
           body: test body
         env:
           GITHUB_TOKEN: ${{ github.token }}
+        
+      - name: Upload Build Artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.pio/firmware.uf2
+          asset_name: CURRENT.UF2
