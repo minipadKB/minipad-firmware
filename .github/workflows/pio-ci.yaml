@@ -32,7 +32,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: test
-          tag_name: test tag
+          tag_name: test_tag
           body: test body
         env:
           GITHUB_TOKEN: ${{ github.token }}
