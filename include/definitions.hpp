@@ -1,9 +1,11 @@
 #pragma once
 
-// Define this if the firmware should be compiled with 3-key support
+// Define this if the firmware should be compiled with 3-key support.
+// This define is purely for development purposes, the CI/CD workflow defines
+// or undefines the it via a build flag, disregarding this line completely.
 // #define KEYS_3
 
-// Define the ports used for the HE sensors
+// Define the ports used for the HE sensors.
 #ifdef KEYS_3
 #define HE_PINS    \
     {              \
