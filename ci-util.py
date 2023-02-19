@@ -2,6 +2,7 @@ import os
 import os.path
 import sys
 import requests
+import itertools
 
 # Get the firmware version from the definitions.hpp file
 def get_firmware_version() -> str:
@@ -13,6 +14,13 @@ def get_firmware_version() -> str:
             return version
 
     return None
+
+def get_changelog(version: str) -> str:
+    lines = open("./CHANGELOG.md", "r").readlines()
+    start = itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), lines)
+    changelog = itertools.takewhile(lambda x: not x.startswith("# "), start)
+        
+    return "\n".join(changelog)
 
 def main():
     
@@ -42,6 +50,16 @@ def main():
            sys.exit(1)
            
         print("::notice::Firmware versions are different, continuing...")
+        
+    # Check if a changelog for the new version exists. If not, make the workflow ci fail. If it exists, return it
+    elif sys.argv[1] == "--changelog":
+        changelog = get_changelog(version)
+        
+        if changelog == "":
+            print("::error::Changelog not found")
+            sys.exit(1)
+            
+        print(changelog)
 
 if __name__ == "__main__":
     main()

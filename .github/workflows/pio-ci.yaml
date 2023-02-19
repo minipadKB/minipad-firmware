@@ -23,9 +23,6 @@ jobs:
       - name: Install CI-Util Dependencies
         run: pip install --upgrade requests
 
-      - name: Firmware Version Update Check
-        run: python ci-util.py --fail-on-no-version-increment
-
       - name: Get Firmware Version
         id: get_version
         run: |
@@ -36,6 +33,22 @@ jobs:
               echo $line
             else
               echo "firmware_version=$line" >> $GITHUB_OUTPUT
+            fi
+          done <<< "$output"
+
+      - name: Firmware Version Update Check
+        run: python ci-util.py --fail-on-no-version-increment
+
+      - name: Get Changelog
+        run: |
+          output=$(python ci-util.py --changelog)
+
+          touch CHANGELOG_CURRENT.md
+          while read -r line; do
+            if [[ $line == "::"* ]]; then
+              echo "$line"
+            else
+              echo "$line" >> CURRENT_CHANGELOG.md
             fi
           done <<< "$output"
 
@@ -58,8 +71,9 @@ jobs:
           prerelease: false
           release_name: test
           tag_name: ${{ steps.get_version.outputs.firmware_version }}
-          body: test body
-        
+          bodyFile: test body
+          body_path: CURRENT_CHANGELOG.md
+
       - name: Upload 2K Firmware Artifact
         uses: actions/upload-release-asset@v1
         env:
