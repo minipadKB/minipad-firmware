@@ -71,7 +71,6 @@ jobs:
           prerelease: false
           release_name: test
           tag_name: ${{ steps.get_version.outputs.firmware_version }}
-          bodyFile: test body
           body_path: CURRENT_CHANGELOG.md
 
       - name: Upload 2K Firmware Artifact
