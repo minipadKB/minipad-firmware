@@ -29,9 +29,8 @@ def main():
         sys.exit(1)
 
     # Return the version of the firmware
-    elif sys.argv[1] == "--set-version-env-var":
-        with open("$GITHUB_OUTPUT", "a+") as f:
-            f.write(f"firmware_version={version}\n")
+    elif sys.argv[1] == "--version":
+        print(version)
 
     # Get the newest version of the firmware from the releases on GitHub and compare the versions for changes
     # If no change was found, return an exit code > 0 in order to make the workflow ci fail
