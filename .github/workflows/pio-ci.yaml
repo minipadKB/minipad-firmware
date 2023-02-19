@@ -1,6 +1,9 @@
 name: PlatformIO CI
 
-on: [workflow_dispatch]
+on:
+  workflow-dispatch:
+    branches:
+      - master
 
 jobs:
   ci:
