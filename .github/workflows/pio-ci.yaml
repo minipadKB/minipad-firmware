@@ -27,8 +27,16 @@ jobs:
         run: python ci-util.py --fail-on-no-version-increment
 
       - name: Get Firmware Version
-        run: python ci-util.py --set-version-env-var
         id: get_version
+        run: |
+          output=$(python ci-util.py --version)
+
+          while read -r line; do
+            if [[ $line == "::"* ]]; then
+              echo $line
+            else
+              echo "firmware_version=$line" >> $GITHUB_OUTPUT
+            fi
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
