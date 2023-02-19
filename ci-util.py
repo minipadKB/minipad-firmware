@@ -21,10 +21,9 @@ def get_changelog(version: str) -> list[str]:
     # Skip the lines while it does not start with # <version>, then skip the header line and take until there's another header (or end of file)
     start = list(itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), lines))
     changelog = list(itertools.takewhile(lambda x: not x.startswith("# "), start[1:]))
-    print(changelog)
+    
     # Remove all blank lines at the start of the changelog
     changelog = list(itertools.dropwhile(lambda x: x == "\n", changelog))
-    print(changelog)
         
     return changelog
 
