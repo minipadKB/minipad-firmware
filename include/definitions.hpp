@@ -13,9 +13,8 @@
     }
 #endif
 
-// The version of this firmware in the YYYYMMDD.PATCH format. (e.g. 20221219.2-2k for the 2nd release on the 19th december 2022 and the 2-key version)
+// The version of this firmware in the YYYYMMDD.PATCH format. (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
 #define FIRMWARE_VERSION "20230215.1"
-#define FIRMWARE_VERSION_FULL FIRMWARE_VERSION "-" KEYS "k"
 
 //
 //                                           WARNING
