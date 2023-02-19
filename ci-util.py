@@ -8,26 +8,28 @@ def get_firmware_version() -> str:
     lines = open("./include/definitions.hpp", "r").readlines()
     for line in lines:
         if line.startswith("#define FIRMWARE_VERSION"):
-            return line.split('"')[1]
+            version = line.split('"')[1]
+            print(f"::notice::Parsed firmware version '{version}'")
+            return version
 
     return None
-
 
 def main():
     
     # Check if exactly one argument was specified
     if len(sys.argv) != 2:
         print("::error::Invalid argument count")
+        sys.exit(1)
+        
+    # Get firmware version
+    version = get_firmware_version()
+    
+    if not version:
+        print("::error::Cannot find FIRMWARE_VERSION definition in definitions.hpp")
+        sys.exit(1)
 
     # Return the version of the firmware
     elif sys.argv[1] == "--set-version-env-var":
-        version = get_firmware_version()
-        
-        if not version:
-            print("::error::Cannot find FIRMWARE_VERSION definition in definitions.hpp")
-            return
-        
-        print(f"::notice::Parsed firmware version '{version}'")
         with open("$GITHUB_OUTPUT", "a+") as f:
             f.write(f"firmware_version={version}\n")
 
@@ -35,8 +37,10 @@ def main():
     # If no change was found, return an exit code > 0 in order to make the workflow ci fail
     elif sys.argv[1] == "--fail-on-no-version-increment":
        json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware-reloaded/releases").json()
-       if len(json) > 0 and json[-1]["tag_name"] != get_firmware_version():
+       
+       if len(json) > 0 and json[-1]["tag_name"] == version:
            print("::error::Firmware version of this build and the latest release match")
+           sys.exit(1)
 
 if __name__ == "__main__":
     main()
