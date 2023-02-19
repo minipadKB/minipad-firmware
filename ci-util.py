@@ -52,13 +52,15 @@ def main():
     elif sys.argv[1] == "--fail-on-no-version-increment":
         
         json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware-reloaded/releases").json()
-       
+        
         # Check whether there is a release and the versions match
         if len(json) > 0 and json[0]["tag_name"] == version:
            print(f"::error::Firmware version of this build and the latest release are identical ('{version}')")
            sys.exit(1)
-           
-        print(f"::notice::Firmware versions are different (this: '{json[0]['tag_name']}', release: '{version}')")
+        elif len(json) == 0:
+            print(f"::notice::No previous release found")
+        else:
+            print(f"::notice::Firmware versions are different (this: '{json[0]['tag_name']}', release: '{version}')")
         
     # Check if a changelog for the new version exists. If not, make the workflow ci fail. If it exists, return it
     elif sys.argv[1] == "--generate-changelog":
