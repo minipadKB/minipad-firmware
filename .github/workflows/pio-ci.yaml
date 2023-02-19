@@ -37,6 +37,7 @@ jobs:
             else
               echo "firmware_version=$line" >> $GITHUB_OUTPUT
             fi
+          done <<< "$output"
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
