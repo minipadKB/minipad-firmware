@@ -47,7 +47,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./.pio/build/minipad-2k/firmware.uf2
-          asset_name: minipad_firmware_2k.UF2
+          asset_name: minipad_firmware_2k.uf2
           asset_content_type: application/octet-stream
         
       - name: Upload 3K Firmware Artifact
@@ -57,5 +57,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./.pio/build/minipad-3k/firmware.uf2
-          asset_name: minipad_firmware_3k.UF2
+          asset_name: minipad_firmware_3k.uf2
           asset_content_type: application/octet-stream
