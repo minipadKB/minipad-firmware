@@ -23,14 +23,14 @@ jobs:
       - name: Install CI-Util Dependencies
         run: pip install --upgrade requests
 
-      - name: Get Firmware Version
+      - name: Set Firmware Version
         id: get_version
         run: python ci-util.py --set-version
 
       - name: Firmware Version Update Check
         run: python ci-util.py --fail-on-no-version-increment
 
-      - name: Get Changelog
+      - name: Generate Changelog
         run: python ci-util.py --generate-changelog
 
       - name: Install PlatformIO Core

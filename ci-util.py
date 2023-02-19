@@ -45,6 +45,7 @@ def main():
 
     # Set the version of the firmware in the workflow environment variable $GITHUB_OUTPUT
     elif sys.argv[1] == "--set-version":
+        print(f"::notice::set firmware_version variable in $GITHUB_OUTPUT to '{version}'")
         os.system(f'echo "firmware_version={version}" >> $GITHUB_OUTPUT')
 
     # Get the newest version of the firmware from the releases on GitHub and compare the versions for changes
