@@ -36,9 +36,9 @@ def main():
     # Get the newest version of the firmware from the releases on GitHub and compare the versions for changes
     # If no change was found, return an exit code > 0 in order to make the workflow ci fail
     elif sys.argv[1] == "--fail-on-no-version-increment":
-       json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware-reloaded/releases").json()
+        json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware-reloaded/releases").json()
        
-       if len(json) > 0 and json[-1]["tag_name"] == version:
+        if len(json) > 0 and json[-1]["tag_name"] == version:
            print("::error::Firmware version of this build and the latest release match")
            sys.exit(1)
            
