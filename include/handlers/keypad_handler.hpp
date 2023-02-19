@@ -12,13 +12,8 @@ public:
 private:
     ConfigurationController *configController;
 
-#ifdef KEYS_3
-    bool keyPressedStates[3];
-    uint16_t currentRapidTriggerPeak[3];
-#else
-    bool keyPressedStates[2];
-    uint16_t currentRapidTriggerPeak[2];
-#endif
+    bool keyPressedStates[KEYS];
+    uint16_t currentRapidTriggerPeak[KEYS];
 
     uint16_t read(uint8_t keyIndex);
     void checkTraditional(uint8_t keyIndex, uint16_t value);

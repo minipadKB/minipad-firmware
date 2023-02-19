@@ -61,20 +61,20 @@ void SerialHandler::handleCommand(char *command)
         Serial.println("GET uh=" + String(configController->config.keypad.upperHysteresis));
         Serial.println("GET key1=" + String(configController->config.keypad.keyChars[0]));
         Serial.println("GET key2=" + String(configController->config.keypad.keyChars[1]));
-#ifdef KEYS_3
+#if KEYS == 3
         Serial.println("GET key3=" + String(configController->config.keypad.keyChars[2]));
 #endif
         Serial.println("GET k1rp=" + String(configController->config.calibration.restPositions[0]));
         Serial.println("GET k1dp=" + String(configController->config.calibration.downPositions[0]));
         Serial.println("GET k2rp=" + String(configController->config.calibration.restPositions[1]));
         Serial.println("GET k2dp=" + String(configController->config.calibration.downPositions[1]));
-#ifdef KEYS_3
+#if KEYS == 3
         Serial.println("GET k3rp=" + String(configController->config.calibration.restPositions[2]));
         Serial.println("GET k3dp=" + String(configController->config.calibration.downPositions[2]));
 #endif
         Serial.println("GET hid1=" + String(configController->config.keypad.hidEnabled[0]));
         Serial.println("GET hid2=" + String(configController->config.keypad.hidEnabled[1]));
-#ifdef KEYS_3
+#if KEYS == 3
         Serial.println("GET hid3=" + String(configController->config.keypad.hidEnabled[2]));
 #endif
         Serial.println("GET tolh=" + String(HYSTERESIS_TOLERANCE));
@@ -216,7 +216,7 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'upperHysteresis' was set to '" + String(valueInt) + "'");
     }
 
-#ifdef KEYS_3
+#if KEYS == 3
     else if (isEqual(key, "key1") || isEqual(key, "key2") || isEqual(key, "key3"))
 #else
     else if (isEqual(key, "key1") || isEqual(key, "key2"))
@@ -236,7 +236,7 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(valueInt) + "' was set to '" + String(valueInt) + "'");
     }
 
-#ifdef KEYS_3
+#if KEYS == 3
     else if (isEqual(key, "k1rp") || isEqual(key, "k2rp") || isEqual(key, "k3rp"))
 #else
     else if (isEqual(key, "k1rp") || isEqual(key, "k2rp"))
@@ -259,7 +259,7 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
     }
 
-#ifdef KEYS_3
+#if KEYS == 3
     else if (isEqual(key, "k1dp") || isEqual(key, "k2dp") || isEqual(key, "k3dp"))
 #else
     else if (isEqual(key, "k1dp") || isEqual(key, "k2dp"))
@@ -282,7 +282,7 @@ void SerialHandler::handleSet(char *key, char *value)
         Serial.println("'" + String(key) + "' was set to '" + String(valueInt) + "'");
     }
 
-#ifdef KEYS_3
+#if KEYS == 3
     else if (isEqual(key, "hid1") || isEqual(key, "hid2") || isEqual(key, "hid3"))
 #else
     else if (isEqual(key, "hid1") || isEqual(key, "hid2"))

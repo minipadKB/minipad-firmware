@@ -30,18 +30,10 @@ struct KeypadConfiguration
 
     // The corresponding keys sent via HID interface
     // Bools whether HID commands are sent on the keys.
-#ifdef KEYS_3
-    char keyChars[3];
-#else
-    char keyChars[2];
-#endif
+    char keyChars[KEYS];
 
     // Bools whether HID commands are sent on the keys.
-#ifdef KEYS_3
-    bool hidEnabled[3];
-#else
-    bool hidEnabled[2];
-#endif
+    bool hidEnabled[KEYS];
 
     // Returns the version constant of the latest KeypadConfiguration layout.
     static int64_t getVersion()
@@ -50,7 +42,7 @@ struct KeypadConfiguration
         int64_t version = 2302061505;
 
         // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
-#ifdef KEYS_3
+#if KEYS_3 == 3
         return -version;
 #else
         return version;

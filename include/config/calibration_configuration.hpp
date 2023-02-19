@@ -9,13 +9,8 @@ struct CalibrationConfiguration
     int64_t version;
 
     // The value read when the keys are in rest position/all the way down.
-#ifdef KEYS_3
-    uint16_t restPositions[3];
-    uint16_t downPositions[3];
-#else
-    uint16_t restPositions[2];
-    uint16_t downPositions[2];
-#endif
+    uint16_t restPositions[KEYS];
+    uint16_t downPositions[KEYS];
 
     // Returns the version constant of the latest CalibrationConfiguration layout.
     static uint32_t getVersion()
@@ -24,7 +19,7 @@ struct CalibrationConfiguration
         int64_t version = 2302060002;
 
         // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
-#ifdef KEYS_3
+#if KEYS == 3
         return -version;
 #else
         return version;

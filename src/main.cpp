@@ -22,7 +22,7 @@ Configuration defaultConfig =
     .rapidTriggerDownSensitivity = 50,
     .lowerHysteresis = 300,
     .upperHysteresis = 330,
-#ifdef KEYS_3
+#if KEYS == 3
     .keyChars = { 'z', 'x', 'c' },
     .hidEnabled = { true, true, true }
 #else
@@ -33,11 +33,11 @@ Configuration defaultConfig =
   .calibration =
   {
     .version = CalibrationConfiguration::getVersion(),
-#ifdef KEYS_3
-    .restPositions = { 2600, 2600, 2600 },
+#if KEYS == 3
+    .restPositions = { 1800, 1800, 1800 },
     .downPositions = { 1100, 1100, 1100 }
 #else
-    .restPositions = { 2600, 2600 },
+    .restPositions = { 1800, 1800 },
     .downPositions = { 1100, 1100 }
 #endif
   }
