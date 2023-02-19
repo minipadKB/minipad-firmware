@@ -41,6 +41,8 @@ def main():
        if len(json) > 0 and json[-1]["tag_name"] == version:
            print("::error::Firmware version of this build and the latest release match")
            sys.exit(1)
+           
+        print("::notice::Firmware versions are different, continuing...")
 
 if __name__ == "__main__":
     main()
