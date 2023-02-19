@@ -25,32 +25,13 @@ jobs:
 
       - name: Get Firmware Version
         id: get_version
-        run: |
-          output=$(python ci-util.py --version)
-
-          while read -r line; do
-            if [[ $line == "::"* ]]; then
-              echo $line
-            else
-              echo "firmware_version=$line" >> $GITHUB_OUTPUT
-            fi
-          done <<< "$output"
+        run: python ci-util.py --set-version
 
       - name: Firmware Version Update Check
         run: python ci-util.py --fail-on-no-version-increment
 
       - name: Get Changelog
-        run: |
-          output=$(python ci-util.py --changelog)
-
-          touch CHANGELOG_CURRENT.md
-          while read -r line; do
-            if [[ $line == "::"* ]]; then
-              echo "$line"
-            else
-              echo "$line" >> CURRENT_CHANGELOG.md
-            fi
-          done <<< "$output"
+        run: python ci-util.py --generate-changelog
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
