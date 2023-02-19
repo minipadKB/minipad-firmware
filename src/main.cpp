@@ -1,7 +1,7 @@
 // Import all needed libraries and headers
 #include <Arduino.h>
 #include <EEPROM.h>
-//#include <Keyboard.h>
+#include <Keyboard.h>
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
@@ -55,7 +55,7 @@ void setup()
 
     // Initialize the serial and HID interface.
     Serial.begin(115200);
-    //Keyboard.begin();
+    Keyboard.begin();
 
     // Set the amount of bits for the ADC to 12 for a better resolution on the analog readings.
     analogReadResolution(12);

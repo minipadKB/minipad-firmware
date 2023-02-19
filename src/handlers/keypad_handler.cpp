@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Keyboard.h>
 #include "handlers/keypad_handler.hpp"
 #include "utils.hpp"
 #include "definitions.hpp"
@@ -80,7 +81,7 @@ void KeypadHandler::pressKey(uint8_t keyIndex)
 
     // Send the HID instruction to the computer.
     keyPressedStates[keyIndex] = true;
-    //Keyboard.press(configController->config.keypad.keyChars[keyIndex]);
+    Keyboard.press(configController->config.keypad.keyChars[keyIndex]);
 }
 
 void KeypadHandler::releaseKey(uint8_t keyIndex)
@@ -90,7 +91,7 @@ void KeypadHandler::releaseKey(uint8_t keyIndex)
         return;
 
     // Send the HID instruction to the computer.
-    //Keyboard.release(configController->config.keypad.keyChars[keyIndex]);
+    Keyboard.release(configController->config.keypad.keyChars[keyIndex]);
     keyPressedStates[keyIndex] = false;
 }
 
