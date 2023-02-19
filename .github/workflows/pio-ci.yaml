@@ -19,6 +19,17 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+
+      - name: Install CI-Util Dependencies
+        run: pip install --upgrade requests
+
+      - name: Firmware Version Update Check
+        run: python ci-util.py --fail-on-no-version-increment
+
+      - name: Get Firmware Version
+        run: python ci-util.py --set-version-env-var
+        id: get_version
+
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
@@ -37,7 +48,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: test
-          tag_name: test_tag
+          tag_name: ${{ steps.get_version.outputs.firmware_version }}
           body: test body
         
       - name: Upload 2K Firmware Artifact
