@@ -20,9 +20,6 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: test output
-        run: ls -al ~/.platformio/.cache
-
       - name: Install CI-Util Dependencies
         run: pip install --upgrade requests
 
