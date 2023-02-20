@@ -15,13 +15,13 @@ def get_firmware_version() -> str:
     return None
 
 # Get the changelog from the CHANGELOG.md file via # headers
-def get_changelog(version: str) -> list[str]:
+def get_changelog(version: str) -> tuple[str, list[str]]:
     with open("./CHANGELOG.md", "r") as f:
         # Skip the lines while it does not start with # <version>
         from_version_start = list(itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), f))
         
-        # Write the version title (after the '# ') to $GITHUB_OUTPUT and remove the line afterwards
-        os.system(f'echo "changelog_title={from_version_start[0][2:-1]}" >> $GITHUB_OUTPUT')
+        # Remember the version title and remove the line afterwards
+        version_title = from_version_start[0][2:-1]
         without_version_header = itertools.islice(from_version_start, 1, None)
         
         # Get the body of the version section until another version header or the end of the file was reached
@@ -30,7 +30,7 @@ def get_changelog(version: str) -> list[str]:
         # Remove all blank lines at the start of the changelog
         changelog = itertools.dropwhile(lambda x: x == "\n", changelog)
         
-        return list(changelog)
+        return (version_title, list(changelog))
 
 def main():
     
@@ -70,12 +70,15 @@ def main():
     # Check if a changelog for the new version exists. If not, make the workflow ci fail. If it exists, return it
     elif sys.argv[1] == "--generate-changelog":
         
-        changelog = get_changelog(version)
+        changelog_title, changelog = get_changelog(version)
         
         # Check whether getting the changelog was successful
         if len(changelog) == 0:
             print(f"::error::Changelog for version '{version}' not found")
             sys.exit(1)
+            
+        # Write the version title (after the '# ') to $GITHUB_OUTPUT
+        os.system(f'echo "changelog_title={changelog_title}" >> $GITHUB_OUTPUT')
             
         # Write the changelog to the file
         with open("CURRENT_CHANGELOG.md", "w") as f:
