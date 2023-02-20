@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: test output
+        run: ls -al ~/.platformio/.cache
+
       - name: Install CI-Util Dependencies
         run: pip install --upgrade requests
 
@@ -31,6 +34,7 @@ jobs:
         run: python ci-util.py --fail-on-no-version-increment
 
       - name: Generate Changelog
+        id: generate_changelog
         run: python ci-util.py --generate-changelog
 
       - name: Install PlatformIO Core
@@ -50,7 +54,7 @@ jobs:
         with:
           draft: false
           prerelease: false
-          release_name: test
+          release_name: ${{ steps.generate_changelog.outputs.changelog_title }}
           tag_name: ${{ steps.get_version.outputs.firmware_version }}
           body_path: CURRENT_CHANGELOG.md
 
