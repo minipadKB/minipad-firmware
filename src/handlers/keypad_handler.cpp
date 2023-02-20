@@ -100,16 +100,9 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(pins[keyIndex]);
 
-    // Calculate the total delta (difference between rest position and down position) and the delta of the read value from the down position.
-    // The int16_t conversions are done to prevent an integer underflow on the substraction if the read value is smaller than the down position.
-    uint16_t totalDelta = configController->config.calibration.restPositions[keyIndex] - configController->config.calibration.downPositions[keyIndex];
-    uint16_t delta = constrain((int16_t)value - (int16_t)configController->config.calibration.downPositions[keyIndex], 0, totalDelta);
+    // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
+    int16_t mapped = map(value, configController->config.calibration.downPositions[keyIndex], configController->config.calibration.restPositions[keyIndex], 0, 400);
 
-    // Square the two deltas to map it accordingly afterwards. This turns out to be needed due to the behavior of magnetic field strength <-> distance.
-    // The uint32_t conversions are done to prevent an overflow as the result of uint16 * uint16 is a uint16, but the maximum (4095 * 4095) exceeds it's limit.
-    uint32_t totalDeltaSquared = totalDelta * (uint32_t)totalDelta;
-    uint32_t deltaSquared = delta * (uint32_t)delta;
-
-    // Map the squared delta from the range 0 to the total delta squared to 0-400 to get a linear scale and return it.
-    return map(deltaSquared, 0, totalDeltaSquared, 0, 400);
+    // Then constrain it to a value between 0 and 400.
+    return constrain(mapped, 0, 400);
 }

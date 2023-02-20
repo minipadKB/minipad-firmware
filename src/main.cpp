@@ -20,8 +20,8 @@ Configuration defaultConfig =
     .continuousRapidTrigger = false,
     .rapidTriggerUpSensitivity = 50,
     .rapidTriggerDownSensitivity = 50,
-    .lowerHysteresis = 300,
-    .upperHysteresis = 330,
+    .lowerHysteresis = 250,
+    .upperHysteresis = 300,
 #if KEYS == 3
     .keyChars = { 'z', 'x', 'c' },
     .hidEnabled = { true, true, true }
