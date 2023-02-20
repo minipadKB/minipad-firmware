@@ -16,16 +16,21 @@ def get_firmware_version() -> str:
 
 # Get the changelog from the CHANGELOG.md file via # headers
 def get_changelog(version: str) -> list[str]:
-    lines = open("./CHANGELOG.md", "r").readlines()
-    
-    # Skip the lines while it does not start with # <version>, then skip the header line and take until there's another header (or end of file)
-    start = list(itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), lines))
-    changelog = list(itertools.takewhile(lambda x: not x.startswith("# "), start[1:]))
-    
-    # Remove all blank lines at the start of the changelog
-    changelog = list(itertools.dropwhile(lambda x: x == "\n", changelog))
+    with open("./CHANGELOG.md", "r") as f:
+        # Skip the lines while it does not start with # <version>
+        from_version_start = list(itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), f))
         
-    return changelog
+        # Write the version title (after the '# ') to $GITHUB_OUTPUT and remove the line afterwards
+        os.system(f'echo "changelog_title={from_version_start[0][2:-1]}" >> $GITHUB_OUTPUT')
+        without_version_header = itertools.islice(from_version_start, 1, None)
+        
+        # Get the body of the version section until another version header or the end of the file was reached
+        changelog = itertools.takewhile(lambda x: not x.startswith("# "), without_version_header)
+    
+        # Remove all blank lines at the start of the changelog
+        changelog = itertools.dropwhile(lambda x: x == "\n", changelog)
+        
+        return list(changelog)
 
 def main():
     
