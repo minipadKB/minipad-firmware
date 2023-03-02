@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "handlers/serial_handler.hpp"
+#include "handlers/keypad_handler.hpp"
 #include "utils.hpp"
 #include "definitions.hpp"
 
@@ -27,6 +28,15 @@ void SerialHandler::handleSerialInput(String *inputStr)
     {
         ConfigController.saveConfig();
         Serial.println("Config saved.");
+    }
+
+    // The cal command enables/disables the calibration mode that writes
+    // the processed sensor values to the serial interface for calibration.
+    else if (isEqual(command, "cal"))
+    {
+        KeypadHandler.calibrationMode = !KeypadHandler.calibrationMode;
+        Serial.print("Calibration mode was ");
+        Serial.println(KeypadHandler.calibrationMode ? "enabled." : "disabled.");
     }
 
     // The get command returns the values of all config values.

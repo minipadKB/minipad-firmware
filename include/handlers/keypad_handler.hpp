@@ -7,10 +7,11 @@ inline class KeypadHandler
 {
 public:
     void check();
+    bool calibrationMode;
 
 private:
-    bool keyPressedStates[KEYS];
-    uint16_t currentRapidTriggerPeak[KEYS];
+    bool _keyPressedStates[KEYS];
+    uint16_t _currentRapidTriggerPeak[KEYS];
 
     uint16_t read(uint8_t keyIndex);
     void checkTraditional(uint8_t keyIndex, uint16_t value);
