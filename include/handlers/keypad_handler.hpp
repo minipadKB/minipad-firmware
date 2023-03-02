@@ -1,17 +1,14 @@
+#pragma once
+
 #include "config/configuration_controller.hpp"
 #include "definitions.hpp"
 
-class KeypadHandler
+inline class KeypadHandler
 {
 public:
-    KeypadHandler(ConfigurationController *configController);
-    virtual ~KeypadHandler();
-
     void check();
 
 private:
-    ConfigurationController *configController;
-
     bool keyPressedStates[KEYS];
     uint16_t currentRapidTriggerPeak[KEYS];
 
@@ -22,4 +19,4 @@ private:
     bool checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value);
     void pressKey(uint8_t keyIndex);
     void releaseKey(uint8_t keyIndex);
-};
+} KeypadHandler;

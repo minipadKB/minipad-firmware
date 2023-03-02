@@ -2,8 +2,7 @@
 #include <Arduino.h>
 #include "config/configuration_controller.hpp"
 
-ConfigurationController::ConfigurationController(Configuration *defaultConfig) : defaultConfig(defaultConfig), config(*defaultConfig) {}
-ConfigurationController::~ConfigurationController() {}
+ConfigurationController::ConfigurationController(Configuration *defaultConfig) : config(*defaultConfig) {}
 
 void ConfigurationController::loadConfig()
 {
@@ -12,19 +11,19 @@ void ConfigurationController::loadConfig()
 
   // Check if all versions match with the ones read; If not, replace the (part of the) config with it's default state.
   bool save = false;
-  if (config.version != defaultConfig->version)
+  if (config.version != defaultConfig.version)
   {
-    config = *defaultConfig;
+    config = defaultConfig;
     save = true;
   }
-  if (config.keypad.version != defaultConfig->keypad.version)
+  if (config.keypad.version != defaultConfig.keypad.version)
   {
-    config.keypad = defaultConfig->keypad;
+    config.keypad = defaultConfig.keypad;
     save = true;
   }
-  if (config.calibration.version != defaultConfig->calibration.version)
+  if (config.calibration.version != defaultConfig.calibration.version)
   {
-    config.calibration = defaultConfig->calibration;
+    config.calibration = defaultConfig.calibration;
     save = true;
   }
 
@@ -38,5 +37,4 @@ void ConfigurationController::saveConfig()
   // Write the struct back into the EEPROM and commit the change.
   EEPROM.put(0, config);
   EEPROM.commit();
-
 }
