@@ -25,6 +25,9 @@ void KeypadHandler::check()
         else
             checkTraditional(keyIndex, value);
     }
+
+    // Send the key report via the HID interface after updating the report.
+    Keyboard.sendReport();
 }
 
 void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
