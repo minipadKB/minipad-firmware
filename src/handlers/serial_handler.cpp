@@ -294,7 +294,7 @@ void SerialHandler::handleKeySetting(uint8_t keyIndex, char *setting, char *valu
         Serial.print(keyIndex + 1);
         Serial.print(".rest' was set to '");
         Serial.print(valueInt);
-        Serial.print("'");
+        Serial.println("'");
     }
 
     else if (isEqual(setting, "down"))
