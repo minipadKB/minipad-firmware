@@ -11,6 +11,7 @@ public:
 
 private:
     bool _keyPressedStates[KEYS];
+    bool _rapidTriggerEnabled[KEYS];
     uint16_t _currentRapidTriggerPeak[KEYS];
 
     uint16_t read(uint8_t keyIndex);

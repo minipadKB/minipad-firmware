@@ -51,12 +51,25 @@ void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
 
 void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 {
-    // Check whether the key is pressed and should be released.
-    if (_keyPressedStates[keyIndex] && checkRapidTriggerReleaseKey(keyIndex, value))
-        releaseKey(keyIndex);
+    // If the value is below the lower hysteresis the value is inside the actuation range meaning
+    // the rapid trigger state for the key has to be set to true in order to be processed by further checks.
+    if(value <= ConfigController.config.keypad.lowerHysteresis)
+        _rapidTriggerEnabled[keyIndex] = true;
+    // If the value is above the upper hysteresis the value is not (anymore) inside the actuation range
+    // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
+    // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
+    else if(value >= ConfigController.config.keypad.upperHysteresis && !ConfigController.config.keypad.continuousRapidTrigger)
+        _rapidTriggerEnabled[keyIndex] = false;
+    // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm aka 390+).
+    else if(value >= 390 && ConfigController.config.keypad.continuousRapidTrigger)
+        _rapidTriggerEnabled[keyIndex] = false;
+
     // Check whether the key is not pressed but should be pressed.
-    else if (!_keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
+    if (!_keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
         pressKey(keyIndex);
+    // Check whether the key is pressed and should be released.
+    else if (_keyPressedStates[keyIndex] && checkRapidTriggerReleaseKey(keyIndex, value))
+        releaseKey(keyIndex);
 
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
     if ((_keyPressedStates[keyIndex] && value < _currentRapidTriggerPeak[keyIndex]) || (!_keyPressedStates[keyIndex] && value > _currentRapidTriggerPeak[keyIndex]))
@@ -65,8 +78,12 @@ void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 
 bool KeypadHandler::checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value)
 {
+    // Do not press the key if rapid trigger is not enabled. (aka. the value is not inside the actuation range)
+    if(!_rapidTriggerEnabled[keyIndex])
+        return false;
+
     // Check whether the read value drops more than (down sensitivity) below the highest recorded value.
-    // This represents the dynamic actuation point my moving the lower hysteresis while the button moves up.
+    // If it is, press the key since the required down movement was done.
     // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
     if ((int16_t)value <= (int16_t)_currentRapidTriggerPeak[keyIndex] - (int16_t)ConfigController.config.keypad.rapidTriggerDownSensitivity)
         return true;
@@ -76,8 +93,13 @@ bool KeypadHandler::checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value)
 
 bool KeypadHandler::checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value)
 {
-    // Check whether the read value rises more than (up sensitivity) above the lowest recorded value.
-    // This represents the dynamic actuation point my moving the upper hysteresis while the button moves down.
+    // Always release the key if the rapid trigger state on the key is false meaning
+    // the value is outside the actuation range. (or <0.1mm on continuous rapid trigger)
+    if(!_rapidTriggerEnabled[keyIndex])
+        return true;
+
+    // Check whether the read value is (up sensitivity) above the lowest recorded value.
+    // If it is, press the key since the required down movement was done.
     if (value >= _currentRapidTriggerPeak[keyIndex] + ConfigController.config.keypad.rapidTriggerUpSensitivity)
         return true;
 
