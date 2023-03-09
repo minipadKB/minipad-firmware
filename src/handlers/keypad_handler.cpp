@@ -140,7 +140,6 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Move the index by 1 and reset it back to 0 if it reached the end of the buffer.
     _nextLastValuesIndex[keyIndex] = (_nextLastValuesIndex[keyIndex] + 1) % 32;
 
-    Serial.println(value);
     // Get the sum of all values in the buffer.
     uint32_t sum = 0;
     for (int i = 0; i < 32; i++)
