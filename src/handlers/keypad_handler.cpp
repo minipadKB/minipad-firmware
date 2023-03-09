@@ -131,7 +131,7 @@ void KeypadHandler::releaseKey(uint8_t keyIndex)
 uint16_t KeypadHandler::read(uint8_t keyIndex)
 {
     // Read the value from the port of the specified key.
-    int16_t value = analogRead(pins[keyIndex]);
+    uint16_t value = analogRead(pins[keyIndex]);
 
     // Average it out with the last 31 values in order to get a more stable value.
     // First, set the next value in the circular buffer to the read value.
@@ -140,17 +140,18 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Move the index by 1 and reset it back to 0 if it reached the end of the buffer.
     _nextLastValuesIndex[keyIndex] = (_nextLastValuesIndex[keyIndex] + 1) % 32;
 
+    Serial.println(value);
     // Get the sum of all values in the buffer.
-    value = 0;
+    uint32_t sum = 0;
     for (int i = 0; i < 32; i++)
-        value += _lastValues[keyIndex][i];
+        sum += _lastValues[keyIndex][i];
 
     // Divide the number by 32 using bit operations as it is significantly faster than division.
-    value = value >> 5;
+    value = sum >> 5;
 
     // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
-    value = map(value, ConfigController.config.calibration.downPositions[keyIndex], ConfigController.config.calibration.restPositions[keyIndex], 0, 400);
+    int16_t mapped = map(value, ConfigController.config.calibration.downPositions[keyIndex], ConfigController.config.calibration.restPositions[keyIndex], 0, 400);
 
     // Then constrain it to a value between 0 and 400.
-    return constrain(value, 0, 400);
+    return constrain(mapped, 0, 400);
 }
