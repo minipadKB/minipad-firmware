@@ -131,7 +131,7 @@ void KeypadHandler::releaseKey(uint8_t keyIndex)
 uint16_t KeypadHandler::read(uint8_t keyIndex)
 {
     // Read the value from the port of the specified key.
-    uint16_t value = analogRead(pins[keyIndex]);
+    int16_t value = analogRead(pins[keyIndex]);
 
     // Average it out with the last 31 values in order to get a more stable value.
     // First, set the next value in the circular buffer to the read value.
