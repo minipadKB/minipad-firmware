@@ -18,6 +18,9 @@ void setup()
 
     // Set the amount of bits for the ADC to 12 for a better resolution on the analog readings.
     analogReadResolution(12);
+
+    // Allows to boot into UF2 bootloader mode by pressing the reset button twice.
+    rp2040.enableDoubleResetBootloader();
 }
 
 void loop()
