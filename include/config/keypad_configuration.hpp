@@ -42,7 +42,7 @@ struct KeypadConfiguration
         int64_t version = 2302061505;
 
         // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
-#if KEYS_3 == 3
+#if KEYS == 3
         return -version;
 #else
         return version;
