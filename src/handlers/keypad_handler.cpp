@@ -12,8 +12,10 @@ void KeypadHandler::check()
     // Go through all keys and run the checks.
     for (uint8_t keyIndex = 0; keyIndex < KEYS; keyIndex++)
     {
-        // Read the mapped value from the hall effect sensor.
-        uint16_t value = read(keyIndex);
+        // Read the value from the hall effect sensor and map it to the 400 range.
+        uint16_t rawValue = read(keyIndex);
+        uint16_t mappedValue = mapTo400Range(keyIndex, rawValue);
+        //Serial.println("min:1000\tmax:2000\tkey" + String(keyIndex) + ":" + String(rawValue));
 
         // Send a serial message with the sensor value if in calibration mode.
         if (calibrationMode)
@@ -21,17 +23,17 @@ void KeypadHandler::check()
             Serial.print("CAL key");
             Serial.print(keyIndex + 1);
             Serial.print("=");
-            Serial.println(analogRead(pins[keyIndex]));
+            Serial.println(rawValue);
             Serial.print("CAL key");
             Serial.print(keyIndex + 1);
             Serial.print("mapped=");
-            Serial.println(value);
+            Serial.println(mappedValue);
         }
         // Run either the rapid trigger or the traditional mode checks.
         else if (ConfigController.config.keypad.rapidTrigger)
-            checkRapidTrigger(keyIndex, value);
+            checkRapidTrigger(keyIndex, mappedValue);
         else
-            checkTraditional(keyIndex, value);
+            checkTraditional(keyIndex, mappedValue);
     }
 
     // Send the key report via the HID interface after updating the report.
@@ -66,10 +68,14 @@ void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 
     // Check whether the key is not pressed but should be pressed.
     if (!_keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
+    {
         pressKey(keyIndex);
+    }
     // Check whether the key is pressed and should be released.
     else if (_keyPressedStates[keyIndex] && checkRapidTriggerReleaseKey(keyIndex, value))
+    {
         releaseKey(keyIndex);
+    }
 
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
     if ((_keyPressedStates[keyIndex] && value < _currentRapidTriggerPeak[keyIndex]) || (!_keyPressedStates[keyIndex] && value > _currentRapidTriggerPeak[keyIndex]))
@@ -133,22 +139,27 @@ uint16_t KeypadHandler::read(uint8_t keyIndex)
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(pins[keyIndex]);
 
-    // Average it out with the last 31 values in order to get a more stable value.
+    // Average it out with the last 15 values in order to get a more stable value.
     // First, set the next value in the circular buffer to the read value.
     _lastValues[keyIndex][_nextLastValuesIndex[keyIndex]] = value;
 
     // Move the index by 1 and reset it back to 0 if it reached the end of the buffer.
-    _nextLastValuesIndex[keyIndex] = (_nextLastValuesIndex[keyIndex] + 1) % 32;
+    _nextLastValuesIndex[keyIndex] = (_nextLastValuesIndex[keyIndex] + 1) % 16;
 
     // Get the sum of all values in the buffer.
     uint32_t sum = 0;
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 16; i++)
         sum += _lastValues[keyIndex][i];
 
-    // Divide the number by 32 using bit operations as it is significantly faster than division.
-    value = sum >> 5;
+    // Divide the number by 16 using bit operations as it is significantly faster than division.
+    value = sum >> 4;
 
-    // Map the read value with the calibrated down and rest position values to a range between 0 and 400.
+    return value;
+}
+
+uint16_t KeypadHandler::mapTo400Range(uint8_t keyIndex, uint16_t value)
+{
+    // Map the value with the calibrated down and rest position values to a range between 0 and 400.
     int16_t mapped = map(value, ConfigController.config.calibration.downPositions[keyIndex], ConfigController.config.calibration.restPositions[keyIndex], 0, 400);
 
     // Then constrain it to a value between 0 and 400.
