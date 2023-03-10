@@ -22,8 +22,6 @@ void setup()
 
 void loop()
 {
-    //int start = micros();
-
     // Check for any serial commands received.
     while (Serial.available())
     {
@@ -33,8 +31,4 @@ void loop()
 
     // Run the keypad handler checks to handle the actual keypad functionality.
     KeypadHandler.check();
-
-    //int end = micros();
-
-    //Serial.println(end - start);
 }
