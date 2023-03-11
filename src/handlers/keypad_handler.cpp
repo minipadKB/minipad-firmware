@@ -15,7 +15,6 @@ void KeypadHandler::check()
         // Read the value from the hall effect sensor and map it to the 400 range.
         uint16_t rawValue = read(keyIndex);
         uint16_t mappedValue = mapTo400Range(keyIndex, rawValue);
-        //Serial.println("min:1000\tmax:2000\tkey" + String(keyIndex) + ":" + String(rawValue));
 
         // Send a serial message with the sensor value if in calibration mode.
         if (calibrationMode)
@@ -29,8 +28,9 @@ void KeypadHandler::check()
             Serial.print("mapped=");
             Serial.println(mappedValue);
         }
+
         // Run either the rapid trigger or the traditional mode checks.
-        else if (ConfigController.config.keypad.rapidTrigger)
+        if (ConfigController.config.keypad.rapidTrigger)
             checkRapidTrigger(keyIndex, mappedValue);
         else
             checkTraditional(keyIndex, mappedValue);
