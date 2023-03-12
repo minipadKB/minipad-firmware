@@ -53,21 +53,25 @@ void KeypadHandler::checkTraditional(uint8_t keyIndex, uint16_t value)
 
 void KeypadHandler::checkRapidTrigger(uint8_t keyIndex, uint16_t value)
 {
-    // If the value is below the lower hysteresis the value is inside the actuation range meaning
-    // the rapid trigger state for the key has to be set to true in order to be processed by further checks.
-    if (value <= ConfigController.config.keypad.lowerHysteresis)
-        _rapidTriggerEnabled[keyIndex] = true;
-    // If the value is above the upper hysteresis the value is not (anymore) inside the actuation range
+    // If the value is above the upper hysteresis the value is not (anymore) inside the rapid trigger zone
     // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
     // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
-    else if (value >= ConfigController.config.keypad.upperHysteresis && !ConfigController.config.keypad.continuousRapidTrigger)
+    if (value >= ConfigController.config.keypad.upperHysteresis && !ConfigController.config.keypad.continuousRapidTrigger)
         _rapidTriggerEnabled[keyIndex] = false;
     // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm aka 390+).
     else if (value >= 390 && ConfigController.config.keypad.continuousRapidTrigger)
         _rapidTriggerEnabled[keyIndex] = false;
 
+    // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
+    // the rapid trigger zone is already counted as a trigger. From there on, the actuation point moves dynamically in that zone.
+    // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
+    if (value <= ConfigController.config.keypad.lowerHysteresis && !_rapidTriggerEnabled[keyIndex])
+    {
+        pressKey(keyIndex);
+        _rapidTriggerEnabled[keyIndex] = true;
+    }
     // Check whether the key is not pressed but should be pressed.
-    if (!_keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
+    else if (!_keyPressedStates[keyIndex] && checkRapidTriggerPressKey(keyIndex, value))
     {
         pressKey(keyIndex);
     }
