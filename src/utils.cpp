@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "utils.hpp"
 
 char *Utils::getArgumentAt(char *input, char delimiter, uint8_t index)
