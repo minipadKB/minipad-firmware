@@ -1,10 +1,10 @@
 name: PlatformIO CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - release-ci
-  workflow-dispatch:
 
 jobs:
   ci:
