@@ -68,7 +68,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 void SerialHandler::ping()
 {
     // Print out the pong message including the firmware version and the name of the keypad.
-    print("pong %s-%dk | %s\n", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
+    print("pong %s-%dk | %s", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
 }
 
 void SerialHandler::save()
