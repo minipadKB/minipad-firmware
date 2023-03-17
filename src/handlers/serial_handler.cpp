@@ -30,18 +30,6 @@ void SerialHandler::handleSerialInput(String *inputStr)
         name(parameters);
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
-    else if (isEqual(command, "rt"))
-        rt(isTrue(arg0));
-    else if (isEqual(command, "crt"))
-        crt(isTrue(arg0));
-    else if (isEqual(command, "rtus"))
-        rtus(atoi(arg0));
-    else if (isEqual(command, "rtds"))
-        rtds(atoi(arg0));
-    else if (isEqual(command, "lh"))
-        lh(atoi(arg0));
-    else if (isEqual(command, "uh"))
-        uh(atoi(arg0));
 
     // Handle key specific commands.
     if (strstr(command, "key") == command)
@@ -51,17 +39,32 @@ void SerialHandler::handleSerialInput(String *inputStr)
         if (keyIndex >= KEYS)
             return;
 
+        // Get the key object from the config by the index.
+        Key key = ConfigController.config.keys[keyIndex];
+
         char *setting = StringHelper::getArgumentAt(command, '.', 1);
 
         // Handle the settings.
-        if (isEqual(setting, "key"))
-            key(keyIndex, atoi(arg0));
-        if (isEqual(setting, "rest"))
-            rest(keyIndex, atoi(arg0));
-        if (isEqual(setting, "down"))
-            down(keyIndex, atoi(arg0));
-        if (isEqual(setting, "hid"))
-            hid(keyIndex, isTrue(arg0));
+        if (isEqual(command, "rt"))
+            rt(key, isTrue(arg0));
+        else if (isEqual(command, "crt"))
+            crt(key, isTrue(arg0));
+        else if (isEqual(command, "rtus"))
+            rtus(key, atoi(arg0));
+        else if (isEqual(command, "rtds"))
+            rtds(key, atoi(arg0));
+        else if (isEqual(command, "lh"))
+            lh(key, atoi(arg0));
+        else if (isEqual(command, "uh"))
+            uh(key, atoi(arg0));
+        else if (isEqual(setting, "key"))
+            keyChar(key, atoi(arg0));
+        else if (isEqual(setting, "rest"))
+            rest(key, atoi(arg0));
+        else if (isEqual(setting, "down"))
+            down(key, atoi(arg0));
+        else if (isEqual(setting, "hid"))
+            hid(key, isTrue(arg0));
     }
 }
 
@@ -79,24 +82,25 @@ void SerialHandler::save()
 
 void SerialHandler::get()
 {
-    // Output all global settings.
-    print("GET rt=%d", ConfigController.config.keypad.rapidTrigger);
-    print("GET crt=%d", ConfigController.config.keypad.continuousRapidTrigger);
-    print("GET rtus=%d", ConfigController.config.keypad.rapidTriggerUpSensitivity);
-    print("GET rtds=%d", ConfigController.config.keypad.rapidTriggerDownSensitivity);
-    print("GET lh=%d", ConfigController.config.keypad.lowerHysteresis);
-    print("GET uh=%d", ConfigController.config.keypad.upperHysteresis);
-
+    // Output all glboal settings.
+    print("GET name=%s", ConfigController.config.name);
+    
     // Output all key-specific settings.
-    for (uint8_t keyIndex = 0; keyIndex < KEYS; keyIndex++)
+    for (Key key : ConfigController.config.keys)
     {
         // Format the base for all lines being written.
         char base[10];
-        sprintf(base, "GET key%d", keyIndex + 1);
-        print("%s.key=%d", base, ConfigController.config.keypad.keyChars[keyIndex]);
-        print("%s.rest=%d", base, ConfigController.config.calibration.restPositions[keyIndex]);
-        print("%s.down=%d", base, ConfigController.config.calibration.downPositions[keyIndex]);
-        print("%s.hid=%d", base, ConfigController.config.keypad.hidEnabled[keyIndex]);
+        sprintf(base, "GET key%d", key.index + 1);
+        print("%s.rt=%d", key.rapidTrigger);
+        print("%s.crt=%d", key.continuousRapidTrigger);
+        print("%s.rtus=%d", key.rapidTriggerUpSensitivity);
+        print("%s.rtds=%d", key.rapidTriggerDownSensitivity);
+        print("%s.lh=%d", key.lowerHysteresis);
+        print("%s.uh=%d", key.upperHysteresis);
+        print("%s.key=%d", base, key.keyChar);
+        print("%s.rest=%d", base, key.restPosition);
+        print("%s.down=%d", base, key.downPosition);
+        print("%s.hid=%d", base, key.hidEnabled);
     }
 }
 
@@ -114,79 +118,79 @@ void SerialHandler::out(bool state)
     KeypadHandler.calibrationMode = state;
 }
 
-void SerialHandler::rt(bool state)
+void SerialHandler::rt(Key key, bool state)
 {
     // Set the rapid trigger config value to the specified state.
-    ConfigController.config.keypad.rapidTrigger = state;
+    key.rapidTrigger = state;
 }
 
-void SerialHandler::crt(bool state)
+void SerialHandler::crt(Key key, bool state)
 {
     // Set the continuous rapid trigger config value to the specified state.
-    ConfigController.config.keypad.continuousRapidTrigger = state;
+    key.continuousRapidTrigger = state;
 }
 
-void SerialHandler::rtus(uint16_t value)
+void SerialHandler::rtus(Key key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-400 boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
         // Set the rapid trigger up sensitivity config value to the specified state.
-        ConfigController.config.keypad.rapidTriggerUpSensitivity = value;
+        key.rapidTriggerUpSensitivity = value;
 }
 
-void SerialHandler::rtds(uint16_t value)
+void SerialHandler::rtds(Key key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-400 boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
         // Set the rapid trigger down sensitivity config value to the specified state.
-        ConfigController.config.keypad.rapidTriggerDownSensitivity = value;
+        key.rapidTriggerDownSensitivity = value;
 }
 
-void SerialHandler::lh(uint16_t value)
+void SerialHandler::lh(Key key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the upper hysteresis.
-    if (ConfigController.config.keypad.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
+    if (key.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
         // Set the lower hysteresis config value to the specified state.
-        ConfigController.config.keypad.lowerHysteresis = value;
+        key.lowerHysteresis = value;
 }
 
-void SerialHandler::uh(uint16_t value)
+void SerialHandler::uh(Key key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
     // Also make sure the upper hysteresis is at least said tolerance away from 400 to make sure it can be reached.
-    if (value - ConfigController.config.keypad.lowerHysteresis >= HYSTERESIS_TOLERANCE && 400 - value >= HYSTERESIS_TOLERANCE)
+    if (value - key.lowerHysteresis >= HYSTERESIS_TOLERANCE && 400 - value >= HYSTERESIS_TOLERANCE)
         // Set the upper hysteresis config value to the specified state.
-        ConfigController.config.keypad.upperHysteresis = value;
+        key.upperHysteresis = value;
 }
 
-void SerialHandler::key(uint8_t keyIndex, uint8_t key)
+void SerialHandler::keyChar(Key key, uint8_t keyChar)
 {
     // Check if the specified key is a letter with a byte value between 97 and 122.
-    if (key >= 97 && key <= 122)
+    if (keyChar >= 97 && keyChar <= 122)
         // Set the key config value of the specified key to the specified state.
-        ConfigController.config.keypad.keyChars[keyIndex] = key;
+        key.keyChar = keyChar;
 }
 
-void SerialHandler::rest(uint8_t keyIndex, uint16_t value)
+void SerialHandler::rest(Key key, uint16_t value)
 {
     // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
-    if (value > ConfigController.config.calibration.downPositions[keyIndex] && value <= pow(2, ANALOG_RESOLUTION) - 1)
+    if (value > key.downPosition && value <= pow(2, ANALOG_RESOLUTION) - 1)
         // Set the rest position config value of the specified key to the specified state.
-        ConfigController.config.calibration.restPositions[keyIndex] = value;
+        key.restPosition = value;
 }
 
-void SerialHandler::down(uint8_t keyIndex, uint16_t value)
+void SerialHandler::down(Key key, uint16_t value)
 {
     // Check whether the specified value is smaller than the rest position.
-    if (value < ConfigController.config.calibration.restPositions[keyIndex])
+    if (value < key.restPosition)
         // Set the down position config value of the specified key to the specified state.
-        ConfigController.config.calibration.downPositions[keyIndex] = value;
+        key.downPosition = value;
 }
 
-void SerialHandler::hid(uint8_t keyIndex, bool state)
+void SerialHandler::hid(Key key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
-    ConfigController.config.keypad.hidEnabled[keyIndex] = state;
+    key.hidEnabled = state;
 }
 
 bool SerialHandler::isTrue(char *str)

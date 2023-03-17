@@ -16,12 +16,12 @@ private:
     uint16_t _lastValues[KEYS][16];
     uint8_t _nextLastValuesIndex[KEYS];
 
-    uint16_t read(uint8_t keyIndex);
-    uint16_t mapTo400Range(uint8_t keyIndex, uint16_t value);
-    void checkTraditional(uint8_t keyIndex, uint16_t value);
-    void checkRapidTrigger(uint8_t keyIndex, uint16_t value);
-    bool checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value);
-    bool checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value);
-    void pressKey(uint8_t keyIndex);
-    void releaseKey(uint8_t keyIndex);
+    uint16_t read(Key key);
+    uint16_t mapTo400Range(Key key, uint16_t value);
+    void checkTraditional(Key key, uint16_t value);
+    void checkRapidTrigger(Key key, uint16_t value);
+    bool checkRapidTriggerPressKey(Key key, uint16_t value);
+    bool checkRapidTriggerReleaseKey(Key key, uint16_t value);
+    void pressKey(Key key);
+    void releaseKey(Key key);
 } KeypadHandler;

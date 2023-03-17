@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "memory": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "cmath": "cpp"
     }
 }
