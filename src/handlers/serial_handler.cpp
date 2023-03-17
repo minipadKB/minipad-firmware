@@ -4,6 +4,9 @@
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
+// Define a handy macro for printing with a newline character at the end.
+#define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
+
 void SerialHandler::handleSerialInput(String *inputStr)
 {
     // Convert the string into a character array for further parsing and make it lowercase.
@@ -65,7 +68,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 void SerialHandler::ping()
 {
     // Print out the pong message including the firmware version and the name of the keypad.
-    Serial.printf("pong %s-%sk | %s\n", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
+    print("pong %s-%dk | %s\n", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
 }
 
 void SerialHandler::save()
@@ -77,12 +80,12 @@ void SerialHandler::save()
 void SerialHandler::get()
 {
     // Output all global settings.
-    Serial.printf("GET rt=%d\n", ConfigController.config.keypad.rapidTrigger);
-    Serial.printf("GET crt=%d\n", ConfigController.config.keypad.continuousRapidTrigger);
-    Serial.printf("GET rtus=%d\n", ConfigController.config.keypad.rapidTriggerUpSensitivity);
-    Serial.printf("GET rtds=%d\n", ConfigController.config.keypad.rapidTriggerDownSensitivity);
-    Serial.printf("GET lh=%d\n", ConfigController.config.keypad.lowerHysteresis);
-    Serial.printf("GET uh=%d\n", ConfigController.config.keypad.upperHysteresis);
+    print("GET rt=%d", ConfigController.config.keypad.rapidTrigger);
+    print("GET crt=%d", ConfigController.config.keypad.continuousRapidTrigger);
+    print("GET rtus=%d", ConfigController.config.keypad.rapidTriggerUpSensitivity);
+    print("GET rtds=%d", ConfigController.config.keypad.rapidTriggerDownSensitivity);
+    print("GET lh=%d", ConfigController.config.keypad.lowerHysteresis);
+    print("GET uh=%d", ConfigController.config.keypad.upperHysteresis);
 
     // Output all key-specific settings.
     for (uint8_t keyIndex = 0; keyIndex < KEYS; keyIndex++)
@@ -90,10 +93,10 @@ void SerialHandler::get()
         // Format the base for all lines being written.
         char base[10];
         sprintf(base, "GET key%d", keyIndex + 1);
-        Serial.printf("%s.key=%d\n", base, ConfigController.config.keypad.keyChars[keyIndex]);
-        Serial.printf("%s.rest=%d\n", base, ConfigController.config.calibration.restPositions[keyIndex]);
-        Serial.printf("%s.down=%d\n", base, ConfigController.config.calibration.downPositions[keyIndex]);
-        Serial.printf("%s.hid=%d\n", base, ConfigController.config.keypad.hidEnabled[keyIndex]);
+        print("%s.key=%d", base, ConfigController.config.keypad.keyChars[keyIndex]);
+        print("%s.rest=%d", base, ConfigController.config.calibration.restPositions[keyIndex]);
+        print("%s.down=%d", base, ConfigController.config.calibration.downPositions[keyIndex]);
+        print("%s.hid=%d", base, ConfigController.config.keypad.hidEnabled[keyIndex]);
     }
 }
 
