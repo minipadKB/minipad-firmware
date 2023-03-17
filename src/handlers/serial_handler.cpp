@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
-#include "utils.hpp"
+#include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
 void SerialHandler::handleSerialInput(String *inputStr)
@@ -9,342 +9,186 @@ void SerialHandler::handleSerialInput(String *inputStr)
     // Convert the string into a character array for further parsing and make it lowercase.
     char input[(*inputStr).length() + 1];
     (*inputStr).toCharArray(input, (*inputStr).length() + 1);
-    Utils::toLower(input);
+    StringHelper::toLower(input);
 
     // Get the first argument of the input, separated by whitespaces.
-    char *command = Utils::getArgumentAt(input, ' ', 0);
+    char *command = StringHelper::getArgumentAt(input, ' ', 0);
+    char *parameters = input + strlen(command) + 1;
+    char *arg0 = StringHelper::getArgumentAt(parameters, ' ', 0);
 
-    // The ping command returns the firmware version and the keypads' name.
+    // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
-    {
-        Serial.print("pong " FIRMWARE_VERSION "-");
-        Serial.print(KEYS);
-        Serial.print("k | ");
-        Serial.println(ConfigController.config.name);
-    }
-
-    // The save command writes the full configuration to the eeprom.
+        ping();
     else if (isEqual(command, "save"))
-    {
-        ConfigController.saveConfig();
-        Serial.println("Config saved.");
-    }
-
-    // The cal command enables/disables the calibration mode that writes
-    // the processed sensor values to the serial interface for calibration.
-    else if (isEqual(command, "cal"))
-    {
-        KeypadHandler.calibrationMode = !KeypadHandler.calibrationMode;
-        Serial.print("Calibration mode was ");
-        Serial.println(KeypadHandler.calibrationMode ? "enabled." : "disabled.");
-    }
-
-    // The get command returns the values of all config values.
+        save();
     else if (isEqual(command, "get"))
-    {
-        Serial.print("GET rt=");
-        Serial.println(ConfigController.config.keypad.rapidTrigger == 1 ? "true" : "false");
-        Serial.print("GET crt=");
-        Serial.println(ConfigController.config.keypad.continuousRapidTrigger == 1 ? "true" : "false");
-        Serial.print("GET rtus=");
-        Serial.println(ConfigController.config.keypad.rapidTriggerUpSensitivity);
-        Serial.print("GET rtds=");
-        Serial.println(ConfigController.config.keypad.rapidTriggerDownSensitivity);
-        Serial.print("GET lh=");
-        Serial.println(ConfigController.config.keypad.lowerHysteresis);
-        Serial.print("GET uh=");
-        Serial.println(ConfigController.config.keypad.upperHysteresis);
+        get();
+    else if (isEqual(command, "name"))
+        name(parameters);
+    else if (isEqual(command, "out"))
+        out(isTrue(arg0));
+    else if (isEqual(command, "rt"))
+        rt(isTrue(arg0));
+    else if (isEqual(command, "crt"))
+        crt(isTrue(arg0));
+    else if (isEqual(command, "rtus"))
+        rtus(atoi(arg0));
+    else if (isEqual(command, "rtds"))
+        rtds(atoi(arg0));
+    else if (isEqual(command, "lh"))
+        lh(atoi(arg0));
+    else if (isEqual(command, "uh"))
+        uh(atoi(arg0));
 
-        // Output all key-specific config values.
-        for (uint8_t keyIndex = 0; keyIndex < KEYS; keyIndex++)
-        {
-            Serial.print("GET key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".key=");
-            Serial.println(ConfigController.config.keypad.keyChars[keyIndex]);
-
-            Serial.print("GET key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".rest=");
-            Serial.println(ConfigController.config.calibration.restPositions[keyIndex]);
-
-            Serial.print("GET key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".down=");
-            Serial.println(ConfigController.config.calibration.downPositions[keyIndex]);
-
-            Serial.print("GET key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".hid=");
-            Serial.println(ConfigController.config.keypad.hidEnabled[keyIndex] == 1 ? "true" : "false");
-        }
-
-        Serial.print("GET tolh=");
-        Serial.println(HYSTERESIS_TOLERANCE);
-        Serial.print("GET tolr=");
-        Serial.println(RAPID_TRIGGER_TOLERANCE);
-        Serial.print("GET name=");
-        Serial.println(ConfigController.config.name);
-        Serial.println("GET END");
-    }
-
-    // Check if the command starts with "key", e.g. "key1", "key2", ...
-    else if (strstr(command, "key") == command)
+    // Handle key specific commands.
+    if (strstr(command, "key") == command)
     {
         // Get the index and check if it's in the valid range.
         uint8_t keyIndex = atoi(command + 3) - 1;
         if (keyIndex >= KEYS)
-
             return;
 
-        // If the command is a valid key command (e.g. key1, key2, ...), it's an input to change a config setting.
-        // It's parsed by offsetting the input pointer by the length of the key command + a whitespace
-        // + setting name + whitespace as the setting value is the whole string that goes after the second argument.
-        char *setting = Utils::getArgumentAt(input, ' ', 1);
-        handleKeySetting(keyIndex, setting, (input + strlen(command) + 1 + strlen(setting) + 1));
-    }
+        char *setting = StringHelper::getArgumentAt(command, '.', 1);
 
-    // Otherwise handle it as a global setting by passing the command and value which is
-    // parsed by offsetting the input pointer by the length of the command + a whitespace.
-    else
-        handleGlobalSetting(command, input + strlen(command) + 1);
-}
-
-void SerialHandler::handleGlobalSetting(char *setting, char *value)
-{
-    // Handle setting the keypad's name first as this is the only config setting that is not integer-related.
-    if (isEqual(setting, "name"))
-    {
-        // Make the name safe by trimming whitespaces off the name and replacing consecutive whitespaces with a single one.
-        Utils::makeSafename(value);
-
-        // Check if the name has a valid length.
-        if (strlen(value) < 1 || strlen(value) > 128)
-        {
-            Serial.print("Invalid string length for 'name'. Expected: 1-128, Actual: ");
-            Serial.println(strlen(value));
-            return;
-        }
-
-        // Copy the value into the name stored in the config.
-        strcpy(ConfigController.config.name, value);
-        Serial.print("'name' was set to '");
-        Serial.print(value);
-        Serial.println("'");
-    }
-
-    // Convert the value into an integer for all settings from here on.
-    uint16_t valueInt = atoi(value);
-
-    if (isEqual(setting, "rt"))
-    {
-        // Check if the value is 0 or 1 which is false or true.
-        if (valueInt != 0 && valueInt != 1)
-        {
-            Serial.print("Invalid value for 'rapidTrigger'. Expected: 0 or 1, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the rapid trigger setting to true or false depending on the integer entered.
-        ConfigController.config.keypad.rapidTrigger = valueInt == 1;
-        Serial.print("'rapidTrigger' was set to '");
-        Serial.print(valueInt == 1 ? "true" : "false");
-        Serial.println("'");
-    }
-
-    else if (isEqual(setting, "crt"))
-    {
-        // Check if the value it 0 or 1 which is false or true.
-        if (valueInt != 0 && valueInt != 1)
-        {
-            Serial.print("Invalid value for 'continuousRapidTrigger'. Expected: 0 or 1, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the continuous rapid trigger setting to true or false depending on the integer entered.
-        ConfigController.config.keypad.continuousRapidTrigger = valueInt == 1;
-        Serial.print("'continuousRapidTrigger' was set to '");
-        Serial.print(valueInt == 1 ? "true" : "false");
-        Serial.println("'");
-    }
-
-    else if (isEqual(setting, "rtus"))
-    {
-        // Check if the value is between the rapid trigger tolerance and 400.
-        if (valueInt < RAPID_TRIGGER_TOLERANCE || valueInt > 400)
-        {
-            Serial.print("Invalid value for 'rapidTriggerUpSensitivity'. Expected: ");
-            Serial.print(RAPID_TRIGGER_TOLERANCE);
-            Serial.print("-400, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the rapid trigger up sensitivity setting to the integer entered.
-        ConfigController.config.keypad.rapidTriggerUpSensitivity = valueInt;
-        Serial.print("'rapidTriggerUpSensitivity' was set to '");
-        Serial.print(valueInt);
-        Serial.println("'");
-    }
-
-    else if (isEqual(setting, "rtds"))
-    {
-        // Check if the value is between the rapid trigger tolerance and 400.
-        if (valueInt < RAPID_TRIGGER_TOLERANCE || valueInt > 400)
-        {
-            Serial.println("Invalid value for 'rapidTriggerDownSensitivity'. Expected: ");
-            Serial.print(RAPID_TRIGGER_TOLERANCE);
-            Serial.print("-400, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the rapid trigger down sensitivity setting to the integer entered.
-        ConfigController.config.keypad.rapidTriggerDownSensitivity = valueInt;
-        Serial.print("'rapidTriggerDownSensitivity' was set to '");
-        Serial.print(valueInt);
-        Serial.println("'");
-    }
-
-    else if (isEqual(setting, "lh"))
-    {
-        // Check if the difference between the upper hysteresis and the new lower hysteresis is at least the hysteresis tolerance.
-        if (ConfigController.config.keypad.upperHysteresis - valueInt < HYSTERESIS_TOLERANCE)
-        {
-            Serial.print("Invalid value for 'lowerHysteresis'. Expected: 0-");
-            Serial.print(ConfigController.config.keypad.upperHysteresis - HYSTERESIS_TOLERANCE);
-            Serial.print(", Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the lower hysteresis setting to the integer entered.
-        ConfigController.config.keypad.lowerHysteresis = valueInt;
-        Serial.println("'lowerHysteresis' was set to '" + String(valueInt) + "'");
-    }
-
-    else if (isEqual(setting, "uh"))
-    {
-        // Check if the difference between the new upper hysteresis and the lower hysteresis is at least the hysteresis tolerance.
-        if (valueInt - ConfigController.config.keypad.lowerHysteresis < HYSTERESIS_TOLERANCE)
-        {
-            Serial.println("Invalid value for 'upperHysteresis'. Expected: " + String(ConfigController.config.keypad.lowerHysteresis + HYSTERESIS_TOLERANCE) + "-400, Actual: " + String(valueInt));
-            return;
-        }
-
-        // Set the upper hysteresis setting to the integer entered.
-        ConfigController.config.keypad.upperHysteresis = valueInt;
-        Serial.println("'upperHysteresis' was set to '" + String(valueInt) + "'");
+        // Handle the settings.
+        if (isEqual(setting, "key"))
+            key(keyIndex, atoi(arg0));
+        if (isEqual(setting, "rest"))
+            rest(keyIndex, atoi(arg0));
+        if (isEqual(setting, "down"))
+            down(keyIndex, atoi(arg0));
+        if (isEqual(setting, "hid"))
+            hid(keyIndex, isTrue(arg0));
     }
 }
 
-// Handles the input as a set command with the input being the keyIndex, setting and the value.
-void SerialHandler::handleKeySetting(uint8_t keyIndex, char *setting, char *value)
+void SerialHandler::ping()
 {
-    // Convert the value into an integer for all settings from here on.
-    uint16_t valueInt = atoi(value);
+    // Print out the pong message including the firmware version and the name of the keypad.
+    Serial.printf("pong %s-%sk | %s\n", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
+}
 
-    if (isEqual(setting, "key"))
+void SerialHandler::save()
+{
+    // Save the configuration managed by the config controller.
+    ConfigController.saveConfig();
+}
+
+void SerialHandler::get()
+{
+    // Output all global settings.
+    Serial.printf("GET rt=%d\n", ConfigController.config.keypad.rapidTrigger);
+    Serial.printf("GET crt=%d\n", ConfigController.config.keypad.continuousRapidTrigger);
+    Serial.printf("GET rtus=%d\n", ConfigController.config.keypad.rapidTriggerUpSensitivity);
+    Serial.printf("GET rtds=%d\n", ConfigController.config.keypad.rapidTriggerDownSensitivity);
+    Serial.printf("GET lh=%d\n", ConfigController.config.keypad.lowerHysteresis);
+    Serial.printf("GET uh=%d\n", ConfigController.config.keypad.upperHysteresis);
+
+    // Output all key-specific settings.
+    for (uint8_t keyIndex = 0; keyIndex < KEYS; keyIndex++)
     {
-        // Check if the value is in the valid character range. (97-122 meaning a-z)
-        if (valueInt < 97 || valueInt > 122)
-        {
-            Serial.print("Invalid value for 'key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".");
-            Serial.print(setting);
-            Serial.print("'. Expected: 97-122, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
-
-        // Set the key setting to the integer entered.
-        ConfigController.config.keypad.keyChars[keyIndex] = valueInt;
-
-        Serial.print("'key");
-        Serial.print(keyIndex + 1);
-        Serial.print(".key' was set to '");
-        Serial.print(valueInt);
-        Serial.println("'");
+        // Format the base for all lines being written.
+        char base[10];
+        sprintf(base, "GET key%d", keyIndex + 1);
+        Serial.printf("%s.key=%d\n", base, ConfigController.config.keypad.keyChars[keyIndex]);
+        Serial.printf("%s.rest=%d\n", base, ConfigController.config.calibration.restPositions[keyIndex]);
+        Serial.printf("%s.down=%d\n", base, ConfigController.config.calibration.downPositions[keyIndex]);
+        Serial.printf("%s.hid=%d\n", base, ConfigController.config.keypad.hidEnabled[keyIndex]);
     }
+}
 
-    else if (isEqual(setting, "rest"))
-    {
-        // Get the corresponding down position of the target key to perform range comparisons.
-        uint16_t downPosition = ConfigController.config.calibration.downPositions[keyIndex];
+void SerialHandler::name(char *name)
+{
+    // Get the length of the name and check if it's within the 1-128 characters boundary.
+    size_t length = strlen(name);
+    if (length >= 1 && length <= 128)
+        strcpy(ConfigController.config.name, name);
+}
 
-        // Check if the value is bigger than the down position and smaller or equal to 4095.
-        if (valueInt <= downPosition || valueInt > 4095)
-        {
-            Serial.print("Invalid value for 'key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".rest'. Expected: ");
-            Serial.print(downPosition + 1);
-            Serial.print("-4095, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
+void SerialHandler::out(bool state)
+{
+    // Set the calibration mode field of the keypad handler to the specified state.
+    KeypadHandler.calibrationMode = state;
+}
 
-        // Set the key rest position setting to the integer entered.
-        ConfigController.config.calibration.restPositions[keyIndex] = valueInt;
+void SerialHandler::rt(bool state)
+{
+    // Set the rapid trigger config value to the specified state.
+    ConfigController.config.keypad.rapidTrigger = state;
+}
 
-        Serial.print("'key");
-        Serial.print(keyIndex + 1);
-        Serial.print(".rest' was set to '");
-        Serial.print(valueInt);
-        Serial.println("'");
-    }
+void SerialHandler::crt(bool state)
+{
+    // Set the continuous rapid trigger config value to the specified state.
+    ConfigController.config.keypad.continuousRapidTrigger = state;
+}
 
-    else if (isEqual(setting, "down"))
-    {
-        // Get the corresponding rest position of the target key to perform range comparisons.
-        uint16_t restPosition = ConfigController.config.calibration.restPositions[keyIndex];
+void SerialHandler::rtus(uint16_t value)
+{
+    // Check if the specified value is within the tolerance-400 boundary.
+    if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
+        // Set the rapid trigger up sensitivity config value to the specified state.
+        ConfigController.config.keypad.rapidTriggerUpSensitivity = value;
+}
 
-        // Check if the value is smaller than the rest positon.
-        if (valueInt >= restPosition)
-        {
-            Serial.print("Invalid value for 'key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".down'. Expected: 0-");
-            Serial.print(restPosition - 1);
-            Serial.print(", Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
+void SerialHandler::rtds(uint16_t value)
+{
+    // Check if the specified value is within the tolerance-400 boundary.
+    if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
+        // Set the rapid trigger down sensitivity config value to the specified state.
+        ConfigController.config.keypad.rapidTriggerDownSensitivity = value;
+}
 
-        // Set the key down position setting to the integer entered.
-        ConfigController.config.calibration.downPositions[keyIndex] = valueInt;
+void SerialHandler::lh(uint16_t value)
+{
+    // Check if the specified value is at least the hysteresis tolerance away from the upper hysteresis.
+    if (ConfigController.config.keypad.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
+        // Set the lower hysteresis config value to the specified state.
+        ConfigController.config.keypad.lowerHysteresis = value;
+}
 
-        Serial.print("'key");
-        Serial.print(keyIndex + 1);
-        Serial.print(".down' was set to '");
-        Serial.print(valueInt);
-        Serial.println("'");
-    }
+void SerialHandler::uh(uint16_t value)
+{
+    // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
+    // Also make sure the upper hysteresis is at least said tolerance away from 400 to make sure it can be reached.
+    if (value - ConfigController.config.keypad.lowerHysteresis >= HYSTERESIS_TOLERANCE && 400 - value >= HYSTERESIS_TOLERANCE)
+        // Set the upper hysteresis config value to the specified state.
+        ConfigController.config.keypad.upperHysteresis = value;
+}
 
-    else if (isEqual(setting, "hid"))
-    {
-        // Check if the value is 0 or 1 which is false or true.
-        if (valueInt != 0 && valueInt != 1)
-        {
-            Serial.print("Invalid value for 'key");
-            Serial.print(keyIndex + 1);
-            Serial.print(".hid'. Expected: 0 or 1, Actual: ");
-            Serial.println(valueInt);
-            return;
-        }
+void SerialHandler::key(uint8_t keyIndex, uint8_t key)
+{
+    // Check if the specified key is a letter with a byte value between 97 and 122.
+    if (key >= 97 && key <= 122)
+        // Set the key config value of the specified key to the specified state.
+        ConfigController.config.keypad.keyChars[keyIndex] = key;
+}
 
-        // Set the hid state setting to true or false depending on the integer entered.
-        ConfigController.config.keypad.hidEnabled[keyIndex] = valueInt == 1;
+void SerialHandler::rest(uint8_t keyIndex, uint16_t value)
+{
+    // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
+    if (value > ConfigController.config.calibration.downPositions[keyIndex] && value <= pow(2, ANALOG_RESOLUTION) - 1)
+        // Set the rest position config value of the specified key to the specified state.
+        ConfigController.config.calibration.restPositions[keyIndex] = value;
+}
 
-        Serial.print("'key");
-        Serial.print(keyIndex + 1);
-        Serial.print(".hid' was set to '");
-        Serial.print(valueInt == 1 ? "true" : "false");
-        Serial.println("'");
-    }
+void SerialHandler::down(uint8_t keyIndex, uint16_t value)
+{
+    // Check whether the specified value is smaller than the rest position.
+    if (value < ConfigController.config.calibration.restPositions[keyIndex])
+        // Set the down position config value of the specified key to the specified state.
+        ConfigController.config.calibration.downPositions[keyIndex] = value;
+}
+
+void SerialHandler::hid(uint8_t keyIndex, bool state)
+{
+    // Set the hid config value of the specified key to the specified state.
+    ConfigController.config.keypad.hidEnabled[keyIndex] = state;
+}
+
+bool SerialHandler::isTrue(char *str)
+{
+    return isEqual(str, "1") || isEqual(str, "true");
 }
 
 bool SerialHandler::isEqual(char *str1, const char *str2)

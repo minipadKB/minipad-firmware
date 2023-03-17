@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Keyboard.h>
 #include "handlers/keypad_handler.hpp"
-#include "utils.hpp"
+#include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
 // Initialize the pins array once from the defined pins.

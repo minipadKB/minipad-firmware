@@ -16,8 +16,8 @@ void setup()
     Keyboard.begin();
     Keyboard.setAutoReport(false);
 
-    // Set the amount of bits for the ADC to 12 for a better resolution on the analog readings.
-    analogReadResolution(12);
+    // Set the amount of bits for the ADC to the defined one for a better resolution on the analog readings.
+    analogReadResolution(ANALOG_RESOLUTION);
 
     // Allows to boot into UF2 bootloader mode by pressing the reset button twice.
     rp2040.enableDoubleResetBootloader();

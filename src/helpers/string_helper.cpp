@@ -1,7 +1,8 @@
 #include <Arduino.h>
-#include "utils.hpp"
+#include "helpers/string_helper.hpp"
+#include "memory"
 
-char *Utils::getArgumentAt(char *input, char delimiter, uint8_t index)
+char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
 {
     int found = 0;
     int strIndex[] = {0, -1};
@@ -20,14 +21,14 @@ char *Utils::getArgumentAt(char *input, char delimiter, uint8_t index)
     return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
 }
 
-void Utils::toLower(char *input)
+void StringHelper::toLower(char *input)
 {
     // Go through all characters and replace them with their lowercase version.
     for (int i = 0; i < strlen(input); i++)
         input[i] = tolower(input[i]);
 }
 
-void Utils::replace(char *input, char target, char replacement)
+void StringHelper::replace(char *input, char target, char replacement)
 {
     // Go through all characters and replace it if it matches the target character.
     for (int i = 0; i < strlen(input); i++)
@@ -35,7 +36,7 @@ void Utils::replace(char *input, char target, char replacement)
             input[i] = replacement;
 }
 
-void Utils::makeSafename(char *str)
+void StringHelper::makeSafename(char *str)
 {
     // Get a separate pointer for the char array that iterates over the whole character array.
     // Our two pointers src and str will progress differently, src is used to iterate over
@@ -74,7 +75,7 @@ void Utils::makeSafename(char *str)
     *str = '\0';
 }
 
-char *Utils::substring(char *input, int offset, int length)
+char *StringHelper::substring(char *input, int offset, int length)
 {
     // Allocate a new character array with an extra character for the zero terminator.
     char *res = new char[length + 1];
@@ -87,19 +88,4 @@ char *Utils::substring(char *input, int offset, int length)
     res[length] = 0;
 
     return res;
-}
-
-void Utils::writeline(const char *format, ...)
-{
-    // Get the values for the format using the variadic parameter.
-    va_list args;
-    va_start(args, format);
-
-    // Allocate the buffer and write the result of the formatting into it.
-    char buffer[100];
-    vsnprintf(buffer, sizeof(buffer), format, args);
-    va_end(args);
-
-    // Print the buffer into the serial interface.
-    Serial.println(buffer);
 }
