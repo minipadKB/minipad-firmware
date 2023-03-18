@@ -102,6 +102,9 @@ void SerialHandler::get()
         print("%s.down=%d", base, key.downPosition);
         print("%s.hid=%d", base, key.hidEnabled);
     }
+
+    // Print this line to signalize the end of printing the settings to the listener.
+    Serial.println("GET END");
 }
 
 void SerialHandler::name(char *name)
