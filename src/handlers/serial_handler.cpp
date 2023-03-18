@@ -84,19 +84,19 @@ void SerialHandler::get()
 {
     // Output all glboal settings.
     print("GET name=%s", ConfigController.config.name);
-    
+
     // Output all key-specific settings.
     for (Key key : ConfigController.config.keys)
     {
         // Format the base for all lines being written.
         char base[10];
         sprintf(base, "GET key%d", key.index + 1);
-        print("%s.rt=%d", key.rapidTrigger);
-        print("%s.crt=%d", key.continuousRapidTrigger);
-        print("%s.rtus=%d", key.rapidTriggerUpSensitivity);
-        print("%s.rtds=%d", key.rapidTriggerDownSensitivity);
-        print("%s.lh=%d", key.lowerHysteresis);
-        print("%s.uh=%d", key.upperHysteresis);
+        print("%s.rt=%d", base, key.rapidTrigger);
+        print("%s.crt=%d", base, key.continuousRapidTrigger);
+        print("%s.rtus=%d", base, key.rapidTriggerUpSensitivity);
+        print("%s.rtds=%d", base, key.rapidTriggerDownSensitivity);
+        print("%s.lh=%d", base, key.lowerHysteresis);
+        print("%s.uh=%d", base, key.upperHysteresis);
         print("%s.key=%d", base, key.keyChar);
         print("%s.rest=%d", base, key.restPosition);
         print("%s.down=%d", base, key.downPosition);
