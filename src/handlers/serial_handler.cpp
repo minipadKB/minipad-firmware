@@ -19,10 +19,6 @@ void SerialHandler::handleSerialInput(String *inputStr)
     char *parameters = input + strlen(command) + 1;
     char *arg0 = StringHelper::getArgumentAt(parameters, ' ', 0);
 
-    Serial.println(command);
-    Serial.println(parameters);
-    Serial.println(arg0);
-
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
         ping();
@@ -42,13 +38,11 @@ void SerialHandler::handleSerialInput(String *inputStr)
         uint8_t keyIndex = atoi(command + 3) - 1;
         if (keyIndex >= KEYS)
             return;
-        Serial.println(String(keyIndex));
 
         // Get the key object from the config by the index.
         Key &key = ConfigController.config.keys[keyIndex];
 
         char *setting = StringHelper::getArgumentAt(command, '.', 1);
-        Serial.println(setting);
 
         // Handle the settings.
         if (isEqual(setting, "rt"))
