@@ -19,6 +19,10 @@ void SerialHandler::handleSerialInput(String *inputStr)
     char *parameters = input + strlen(command) + 1;
     char *arg0 = StringHelper::getArgumentAt(parameters, ' ', 0);
 
+    Serial.println(command);
+    Serial.println(parameters);
+    Serial.println(arg0);
+
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
         ping();
@@ -38,24 +42,26 @@ void SerialHandler::handleSerialInput(String *inputStr)
         uint8_t keyIndex = atoi(command + 3) - 1;
         if (keyIndex >= KEYS)
             return;
+        Serial.println(String(keyIndex));
 
         // Get the key object from the config by the index.
-        Key key = ConfigController.config.keys[keyIndex];
+        Key &key = ConfigController.config.keys[keyIndex];
 
         char *setting = StringHelper::getArgumentAt(command, '.', 1);
+        Serial.println(setting);
 
         // Handle the settings.
-        if (isEqual(command, "rt"))
+        if (isEqual(setting, "rt"))
             rt(key, isTrue(arg0));
-        else if (isEqual(command, "crt"))
+        else if (isEqual(setting, "crt"))
             crt(key, isTrue(arg0));
-        else if (isEqual(command, "rtus"))
+        else if (isEqual(setting, "rtus"))
             rtus(key, atoi(arg0));
-        else if (isEqual(command, "rtds"))
+        else if (isEqual(setting, "rtds"))
             rtds(key, atoi(arg0));
-        else if (isEqual(command, "lh"))
+        else if (isEqual(setting, "lh"))
             lh(key, atoi(arg0));
-        else if (isEqual(command, "uh"))
+        else if (isEqual(setting, "uh"))
             uh(key, atoi(arg0));
         else if (isEqual(setting, "key"))
             keyChar(key, atoi(arg0));
@@ -121,19 +127,22 @@ void SerialHandler::out(bool state)
     KeypadHandler.calibrationMode = state;
 }
 
-void SerialHandler::rt(Key key, bool state)
+void SerialHandler::rt(Key &key, bool state)
 {
+    print("Before: %d", key.rapidTrigger);
     // Set the rapid trigger config value to the specified state.
     key.rapidTrigger = state;
+    
+    print("After: %d", key.rapidTrigger);
 }
 
-void SerialHandler::crt(Key key, bool state)
+void SerialHandler::crt(Key &key, bool state)
 {
     // Set the continuous rapid trigger config value to the specified state.
     key.continuousRapidTrigger = state;
 }
 
-void SerialHandler::rtus(Key key, uint16_t value)
+void SerialHandler::rtus(Key &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-400 boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
@@ -141,7 +150,7 @@ void SerialHandler::rtus(Key key, uint16_t value)
         key.rapidTriggerUpSensitivity = value;
 }
 
-void SerialHandler::rtds(Key key, uint16_t value)
+void SerialHandler::rtds(Key &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-400 boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
@@ -149,7 +158,7 @@ void SerialHandler::rtds(Key key, uint16_t value)
         key.rapidTriggerDownSensitivity = value;
 }
 
-void SerialHandler::lh(Key key, uint16_t value)
+void SerialHandler::lh(Key &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the upper hysteresis.
     if (key.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
@@ -157,7 +166,7 @@ void SerialHandler::lh(Key key, uint16_t value)
         key.lowerHysteresis = value;
 }
 
-void SerialHandler::uh(Key key, uint16_t value)
+void SerialHandler::uh(Key &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
     // Also make sure the upper hysteresis is at least said tolerance away from 400 to make sure it can be reached.
@@ -166,7 +175,7 @@ void SerialHandler::uh(Key key, uint16_t value)
         key.upperHysteresis = value;
 }
 
-void SerialHandler::keyChar(Key key, uint8_t keyChar)
+void SerialHandler::keyChar(Key &key, uint8_t keyChar)
 {
     // Check if the specified key is a letter with a byte value between 97 and 122.
     if (keyChar >= 97 && keyChar <= 122)
@@ -174,7 +183,7 @@ void SerialHandler::keyChar(Key key, uint8_t keyChar)
         key.keyChar = keyChar;
 }
 
-void SerialHandler::rest(Key key, uint16_t value)
+void SerialHandler::rest(Key &key, uint16_t value)
 {
     // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
     if (value > key.downPosition && value <= pow(2, ANALOG_RESOLUTION) - 1)
@@ -182,7 +191,7 @@ void SerialHandler::rest(Key key, uint16_t value)
         key.restPosition = value;
 }
 
-void SerialHandler::down(Key key, uint16_t value)
+void SerialHandler::down(Key &key, uint16_t value)
 {
     // Check whether the specified value is smaller than the rest position.
     if (value < key.restPosition)
@@ -190,7 +199,7 @@ void SerialHandler::down(Key key, uint16_t value)
         key.downPosition = value;
 }
 
-void SerialHandler::hid(Key key, bool state)
+void SerialHandler::hid(Key &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
