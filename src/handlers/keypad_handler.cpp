@@ -4,9 +4,6 @@
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
-// Initialize the pins array once from the defined pins.
-static const uint8_t pins[] = HE_PINS;
-
 void KeypadHandler::handle()
 {
     // Go through all keys and run the checks.
@@ -124,6 +121,9 @@ void KeypadHandler::releaseKey(Key key)
     Keyboard.release(key.keyChar);
     _keyStates[key.index].pressed = false;
 }
+
+// Initialize the pins array once from the defined pins.
+static const uint8_t pins[] = HE_PINS;
 
 uint16_t KeypadHandler::read(Key key)
 {
