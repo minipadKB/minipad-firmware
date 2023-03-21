@@ -1,20 +1,25 @@
 #pragma once
 
 #include "config/configuration_controller.hpp"
+#include "helpers/sma_filter.hpp"
+#include "handlers/key_state.hpp"
 #include "definitions.hpp"
 
 inline class KeypadHandler
 {
 public:
-    void check();
+    KeypadHandler()
+    {
+        // Initialize the SMA filters.
+        for (uint8_t i = 0; i < KEYS; i++)
+            _keyStates[i] = KeyState();
+    }
+
+    void handle();
     bool calibrationMode;
 
 private:
-    bool _keyPressedStates[KEYS];
-    bool _rapidTriggerEnabled[KEYS];
-    uint16_t _currentRapidTriggerPeak[KEYS];
-    uint16_t _lastValues[KEYS][16];
-    uint8_t _nextLastValuesIndex[KEYS];
+    KeyState _keyStates[KEYS];
 
     uint16_t read(Key key);
     uint16_t mapTo400Range(Key key, uint16_t value);

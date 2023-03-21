@@ -7,5 +7,4 @@ namespace Utils
     void replace(char *input, char target, char replacement);
     void makeSafename(char *str);
     char *substring(char *input, int offset, int length);
-    void writeline(const char *format, ...);
 };

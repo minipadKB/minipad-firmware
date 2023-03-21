@@ -2,8 +2,6 @@
 #include <Arduino.h>
 #include "config/configuration_controller.hpp"
 
-ConfigurationController::ConfigurationController(Configuration *defaultConfig) : config(*defaultConfig) {}
-
 void ConfigurationController::loadConfig()
 {
     // Load the configuration struct from the EEPROM.

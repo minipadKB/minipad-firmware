@@ -56,7 +56,7 @@ inline Configuration defaultConfig =
 inline class ConfigurationController
 {
 public:
-    ConfigurationController(Configuration *defaultConfig);
+    ConfigurationController(Configuration *defaultConfig) : config(*defaultConfig) {};
 
     void loadConfig();
     void saveConfig();

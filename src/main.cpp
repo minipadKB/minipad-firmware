@@ -33,5 +33,5 @@ void loop()
     }
 
     // Run the keypad handler checks to handle the actual keypad functionality.
-    KeypadHandler.check();
+    KeypadHandler.handle();
 }
