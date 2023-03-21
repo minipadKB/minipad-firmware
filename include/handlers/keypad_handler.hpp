@@ -16,7 +16,7 @@ public:
     }
 
     void handle();
-    bool calibrationMode;
+    bool outputMode;
 
 private:
     KeyState _keyStates[KEYS];

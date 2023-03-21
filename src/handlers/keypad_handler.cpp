@@ -16,6 +16,10 @@ void KeypadHandler::handle()
         uint16_t rawValue = read(key);
         uint16_t mappedValue = mapTo400Range(key, rawValue);
 
+        // If the output mode is enabled, output the raw and mapped values.
+        if(outputMode)
+            Serial.printf("key%d=%d %d\n", key.index + 1, rawValue, mappedValue);
+
         // Run either the rapid trigger or the traditional mode checks.
         if (key.rapidTrigger)
             checkRapidTrigger(key, mappedValue);

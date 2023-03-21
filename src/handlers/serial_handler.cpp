@@ -34,37 +34,53 @@ void SerialHandler::handleSerialInput(String *inputStr)
     // Handle key specific commands.
     if (strstr(command, "key") == command)
     {
-        // Get the index and check if it's in the valid range.
-        uint8_t keyIndex = atoi(command + 3) - 1;
-        if (keyIndex >= KEYS)
-            return;
-
-        // Get the key object from the config by the index.
-        Key &key = ConfigController.config.keys[keyIndex];
-
+        // Split the command into the key string and the setting name.
+        char *keyStr = StringHelper::getArgumentAt(command, '.', 0);
         char *setting = StringHelper::getArgumentAt(command, '.', 1);
 
-        // Handle the settings.
-        if (isEqual(setting, "rt"))
-            rt(key, isTrue(arg0));
-        else if (isEqual(setting, "crt"))
-            crt(key, isTrue(arg0));
-        else if (isEqual(setting, "rtus"))
-            rtus(key, atoi(arg0));
-        else if (isEqual(setting, "rtds"))
-            rtds(key, atoi(arg0));
-        else if (isEqual(setting, "lh"))
-            lh(key, atoi(arg0));
-        else if (isEqual(setting, "uh"))
-            uh(key, atoi(arg0));
-        else if (isEqual(setting, "key"))
-            keyChar(key, atoi(arg0));
-        else if (isEqual(setting, "rest"))
-            rest(key, atoi(arg0));
-        else if (isEqual(setting, "down"))
-            down(key, atoi(arg0));
-        else if (isEqual(setting, "hid"))
-            hid(key, isTrue(arg0));
+        // By default, apply this command to all keys.
+        Key *keys = ConfigController.config.keys;
+
+        // If an index is specified ("keyX"), replace that keys array with just that key.
+        if (strlen(keyStr) > 3)
+        {
+            // Get the index and check if it's in the valid range.
+            uint8_t keyIndex = atoi(keyStr + 3) - 1;
+            if (keyIndex >= KEYS)
+                return;
+
+            // Replace the array with that single key.
+            keys = &ConfigController.config.keys[keyIndex];
+        }
+
+        // Apply the command to all targetted keys.
+        for (uint8_t i = 0; i < (strlen(keyStr) > 3 ? 1 : KEYS); i++)
+        {
+            // Get the key from the pointer array.
+            Key &key = keys[i];
+
+            // Handle the settings.
+            if (isEqual(setting, "rt"))
+                rt(key, isTrue(arg0));
+            else if (isEqual(setting, "crt"))
+                crt(key, isTrue(arg0));
+            else if (isEqual(setting, "rtus"))
+                rtus(key, atoi(arg0));
+            else if (isEqual(setting, "rtds"))
+                rtds(key, atoi(arg0));
+            else if (isEqual(setting, "lh"))
+                lh(key, atoi(arg0));
+            else if (isEqual(setting, "uh"))
+                uh(key, atoi(arg0));
+            else if (isEqual(setting, "key"))
+                keyChar(key, atoi(arg0));
+            else if (isEqual(setting, "rest"))
+                rest(key, atoi(arg0));
+            else if (isEqual(setting, "down"))
+                down(key, atoi(arg0));
+            else if (isEqual(setting, "hid"))
+                hid(key, isTrue(arg0));
+        }
     }
 }
 
@@ -118,7 +134,7 @@ void SerialHandler::name(char *name)
 void SerialHandler::out(bool state)
 {
     // Set the calibration mode field of the keypad handler to the specified state.
-    KeypadHandler.calibrationMode = state;
+    KeypadHandler.outputMode = state;
 }
 
 void SerialHandler::rt(Key &key, bool state)
