@@ -129,11 +129,8 @@ void SerialHandler::out(bool state)
 
 void SerialHandler::rt(Key &key, bool state)
 {
-    print("Before: %d", key.rapidTrigger);
     // Set the rapid trigger config value to the specified state.
     key.rapidTrigger = state;
-    
-    print("After: %d", key.rapidTrigger);
 }
 
 void SerialHandler::crt(Key &key, bool state)
