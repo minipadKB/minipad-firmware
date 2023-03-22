@@ -56,7 +56,7 @@ def main():
     # If no change was found, return an exit code > 0 in order to make the workflow ci fail
     elif sys.argv[1] == "--fail-on-no-version-increment":
         
-        json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware-reloaded/releases").json()
+        json = requests.get("https://api.github.com/repos/minipadkb/minipad-firmware/releases").json()
         
         # Check whether there is a release and the versions match
         if len(json) > 0 and json[0]["tag_name"] == version:
