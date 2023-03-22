@@ -3,6 +3,9 @@
 #include "handlers/keypad_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
+extern "C" {
+    #include "pico/bootrom.h"
+}
 
 // Define a handy macro for printing with a newline character at the end.
 #define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
@@ -22,6 +25,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
         ping();
+    else if (isEqual(command, "boot"))
+        boot();
     else if (isEqual(command, "save"))
         save();
     else if (isEqual(command, "get"))
@@ -90,6 +95,12 @@ void SerialHandler::ping()
     print("pong %s-%dk | %s", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
 }
 
+void SerialHandler::boot()
+{
+    // Set the RP2040 into bootloader mode.
+    reset_usb_boot(0, 0);
+}
+
 void SerialHandler::save()
 {
     // Save the configuration managed by the config controller.
@@ -151,16 +162,16 @@ void SerialHandler::crt(Key &key, bool state)
 
 void SerialHandler::rtus(Key &key, uint16_t value)
 {
-    // Check if the specified value is within the tolerance-400 boundary.
-    if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
+    // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
+    if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
         // Set the rapid trigger up sensitivity config value to the specified state.
         key.rapidTriggerUpSensitivity = value;
 }
 
 void SerialHandler::rtds(Key &key, uint16_t value)
 {
-    // Check if the specified value is within the tolerance-400 boundary.
-    if (value >= RAPID_TRIGGER_TOLERANCE && value <= 400)
+    // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
+    if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
         // Set the rapid trigger down sensitivity config value to the specified state.
         key.rapidTriggerDownSensitivity = value;
 }
@@ -176,8 +187,9 @@ void SerialHandler::lh(Key &key, uint16_t value)
 void SerialHandler::uh(Key &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
-    // Also make sure the upper hysteresis is at least said tolerance away from 400 to make sure it can be reached.
-    if (value - key.lowerHysteresis >= HYSTERESIS_TOLERANCE && 400 - value >= HYSTERESIS_TOLERANCE)
+    // Also make sure the upper hysteresis is at least said tolerance away from TRAVEL_DISTANCE_IN_0_01MM
+    // to make sure the value can be reached and the key does not get stuck in an eternal pressed state.
+    if (value - key.lowerHysteresis >= HYSTERESIS_TOLERANCE && TRAVEL_DISTANCE_IN_0_01MM - value >= HYSTERESIS_TOLERANCE)
         // Set the upper hysteresis config value to the specified state.
         key.upperHysteresis = value;
 }

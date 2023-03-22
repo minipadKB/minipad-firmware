@@ -9,6 +9,7 @@ public:
 
 private:
     void ping();
+    void boot();
     void save();
     void get();
     void name(char *name);

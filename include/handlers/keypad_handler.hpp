@@ -22,7 +22,7 @@ private:
     KeyState _keyStates[KEYS];
 
     uint16_t read(Key key);
-    uint16_t mapTo400Range(Key key, uint16_t value);
+    uint16_t mapToTravelDistance(Key key, uint16_t value);
     void checkTraditional(Key key, uint16_t value);
     void checkRapidTrigger(Key key, uint16_t value);
     bool checkRapidTriggerPressKey(Key key, uint16_t value);
