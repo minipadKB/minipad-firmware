@@ -111,6 +111,9 @@ void SerialHandler::get()
 {
     // Output all glboal settings.
     print("GET name=%s", ConfigController.config.name);
+    print("GET htol=%d", HYSTERESIS_TOLERANCE);
+    print("GET rtol=%d", RAPID_TRIGGER_TOLERANCE);
+    print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
 
     // Output all key-specific settings.
     for (Key key : ConfigController.config.keys)
