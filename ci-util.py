@@ -32,7 +32,7 @@ def get_changelog(version: str) -> tuple[str, list[str]]:
         
         return (version_title, list(changelog))
 
-def main():
+def main() -> None:
     
     # Check if exactly one argument was specified
     if len(sys.argv) != 2:
