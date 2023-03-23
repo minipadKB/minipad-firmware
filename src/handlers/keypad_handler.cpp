@@ -15,7 +15,7 @@ void KeypadHandler::handle()
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
-            Serial.printf("key%d=%d %d\n", key.index + 1, rawValue, mappedValue);
+            Serial.printf("OUT key%d=%d %d\n", key.index + 1, rawValue, mappedValue);
 
         // Run either the rapid trigger or the traditional mode checks.
         if (key.rapidTrigger)
