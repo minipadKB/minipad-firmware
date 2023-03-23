@@ -4,8 +4,10 @@ import sys
 import requests
 import itertools
 
+from typing import Optional
+
 # Get the firmware version from the definitions.hpp file
-def get_firmware_version() -> str:
+def get_firmware_version() -> Optional[str]:
     lines = open("./include/definitions.hpp", "r").readlines()
     for line in lines:
         if line.startswith("#define FIRMWARE_VERSION"):
