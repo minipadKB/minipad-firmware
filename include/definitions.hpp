@@ -7,7 +7,7 @@
 // │                                                                                                   │
 // │                                           !!!WARNING!!!                                           │
 // │                                                                                                   │
-// │      DO NOT CHANGE UNLESS ADVICED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR      │
+// │      DO NOT CHANGE UNLESS ADVISED. MODIFIED VALUES MAY CAUSE AN INCONSISTENT KEYPAD BEHAVIOR      │
 // │   THAT VIOLATES OSU'S RULES. CHANGING THIS MAY LEAD TO INCORRECT KEY PRESSES AND A RESTRICTION.   │
 // │                                                                                                   │
 // └───────────────────────────────────────────────────────────────────────────────────────────────────┘
