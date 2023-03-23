@@ -46,8 +46,8 @@ void KeypadHandler::checkRapidTrigger(Key key, uint16_t value)
     // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
     if (value >= key.upperHysteresis && !key.continuousRapidTrigger)
         _keyStates[key.index].rapidTriggerEnabled = false;
-    // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm aka 390+).
-    else if (value >= 390 && key.continuousRapidTrigger)
+    // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm).
+    else if (value >= TRAVEL_DISTANCE_IN_0_01MM - 10 && key.continuousRapidTrigger)
         _keyStates[key.index].rapidTriggerEnabled = false;
 
     // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
