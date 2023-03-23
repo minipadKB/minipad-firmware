@@ -4,8 +4,10 @@ import sys
 import requests
 import itertools
 
+from typing import Optional
+
 # Get the firmware version from the definitions.hpp file
-def get_firmware_version() -> str:
+def get_firmware_version() -> Optional[str]:
     lines = open("./include/definitions.hpp", "r").readlines()
     for line in lines:
         if line.startswith("#define FIRMWARE_VERSION"):
@@ -32,7 +34,7 @@ def get_changelog(version: str) -> tuple[str, list[str]]:
         
         return (version_title, list(changelog))
 
-def main():
+def main() -> None:
     
     # Check if exactly one argument was specified
     if len(sys.argv) != 2:
