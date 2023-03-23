@@ -8,11 +8,11 @@ from typing import Optional
 
 # Get the firmware version from the definitions.hpp file
 def get_firmware_version() -> Optional[str]:
-    lines = open("./include/definitions.hpp", "r").readlines()
-    for line in lines:
-        if line.startswith("#define FIRMWARE_VERSION"):
-            version = line.split('"')[1]
-            return version
+    with open("./include/definitions.hpp") as f:
+        for line in f.readlines():
+            if line.startswith("#define FIRMWARE_VERSION"):
+                version = line.split('"')[1]
+                return version
 
     return None
 
