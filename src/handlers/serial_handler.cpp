@@ -35,6 +35,12 @@ void SerialHandler::handleSerialInput(String *inputStr)
         name(parameters);
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
+#if DEBUG
+    else if(isEqual(command, "echo"))
+    {
+        echo(parameters);
+    }
+#endif
 
     // Handle key specific commands.
     if (strstr(command, "key") == command)
@@ -91,8 +97,13 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
 void SerialHandler::ping()
 {
+    // Set the suffix depending on the state of the firmware.
+    char *suffix = "";
+#ifdef DEBUG
+    suffix = "-dev";
+#endif
     // Print out the pong message including the firmware version and the name of the keypad.
-    print("pong %s-%dk | %s", FIRMWARE_VERSION, KEYS, ConfigController.config.name);
+    print("pong %s-%dk%s | %s", FIRMWARE_VERSION, KEYS, suffix, ConfigController.config.name);
 }
 
 void SerialHandler::boot()
@@ -149,6 +160,12 @@ void SerialHandler::out(bool state)
 {
     // Set the calibration mode field of the keypad handler to the specified state.
     KeypadHandler.outputMode = state;
+}
+
+void SerialHandler::echo(char *input)
+{
+    // Output the same input. This command is used for debugging purposes and only available in said environemnts.
+    Serial.println(input);
 }
 
 void SerialHandler::rt(Key &key, bool state)

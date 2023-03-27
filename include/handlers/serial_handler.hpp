@@ -14,6 +14,7 @@ private:
     void get();
     void name(char *name);
     void out(bool state);
+    void echo(char *input);
     void rt(Key &key, bool state);
     void crt(Key &key, bool state);
     void rtus(Key &key, uint16_t value);
