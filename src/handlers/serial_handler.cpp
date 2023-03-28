@@ -97,13 +97,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
 void SerialHandler::ping()
 {
-    // Set the suffix depending on the state of the firmware.
-    char *suffix = "";
-#ifdef DEBUG
-    suffix = "-dev";
-#endif
     // Print out the pong message including the firmware version and the name of the keypad.
-    print("pong %s-%dk%s | %s", FIRMWARE_VERSION, KEYS, suffix, ConfigController.config.name);
+    print("pong %s-%dk%s | %s", FIRMWARE_VERSION, KEYS, DEBUG ? "-dev" : "", ConfigController.config.name);
 }
 
 void SerialHandler::boot()
