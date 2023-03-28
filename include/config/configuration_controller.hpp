@@ -18,7 +18,7 @@ inline Configuration defaultConfig =
         .lowerHysteresis = 250,
         .upperHysteresis = 300,
         .keyChar = 'z',
-        .hidEnabled = true,
+        .hidEnabled = false,
         .restPosition = 1800,
         .downPosition = 1100
     },
@@ -31,7 +31,7 @@ inline Configuration defaultConfig =
         .lowerHysteresis = 250,
         .upperHysteresis = 300,
         .keyChar = 'x',
-        .hidEnabled = true,
+        .hidEnabled = false,
         .restPosition = 1800,
         .downPosition = 1100
     },
@@ -45,7 +45,7 @@ inline Configuration defaultConfig =
         .lowerHysteresis = 250,
         .upperHysteresis = 300,
         .keyChar = 'c',
-        .hidEnabled = true,
+        .hidEnabled = false,
         .restPosition = 1800,
         .downPosition = 1100
     }
