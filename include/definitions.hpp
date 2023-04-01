@@ -22,6 +22,10 @@
 // continuously actuate if you do very very slight movements or if the fluctuation is simply too high.
 #define RAPID_TRIGGER_TOLERANCE 10
 
+// The threshold when a key is considered fully released. 10 would mean if the key is <0.1mm pressed.
+// This value is important to reset the rapid trigger state properly with continuous rapid trigger.
+#define CONTINUOUS_RAPID_TRIGGER_THRESHOLD 10
+
 // The resolution for the ADCs on the RP2040. The maximum compatible value on it is 12 bit.
 #define ANALOG_RESOLUTION 12
 
