@@ -17,4 +17,4 @@ After that is done, clone the repository with `git clone https://github.com/mini
 At the bottom of Visual Studio Code, you can find three important buttons, you can see them below. The checkmark compiles the project on the currently selected environment (seen on the right, in this case "env:minipad-3k").</br>
 The arrow to the right uploads the firmware to your RP2040-based device (e.g. our PCB), given that it is in bootloader mode. At the right, you can select the environment. You can choose between the 2k firmware, 3k firmware and it's development versions. The development versions enable certain features that helps while development. If you want to find out more, search for the `DEBUG` definition across the source code.
 
-![https://raw.githubusercontent.com/minipadKB/minipad-firmware/master/.github/images/platformio_buttons.png](PlatformIO buttons)
+![PlatformIO Buttons](https://raw.githubusercontent.com/minipadKB/minipad-firmware/master/.github/images/platformio_buttons.png)
