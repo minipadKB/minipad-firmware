@@ -78,8 +78,7 @@ bool KeypadHandler::checkRapidTriggerPressKey(Key key, uint16_t value)
 
     // Check whether the read value drops more than (down sensitivity) below the highest recorded value.
     // If it is, press the key since the required down movement was done.
-    // The int16_t conversions are done to prevent an integer underflow on the substraction if the rapid trigger peak is 0.
-    if ((int16_t)value <= (int16_t)_keyStates[key.index].rapidTriggerPeak - (int16_t)key.rapidTriggerDownSensitivity)
+    if (value + key.rapidTriggerDownSensitivity <= _keyStates[key.index].rapidTriggerPeak)
         return true;
 
     return false;
