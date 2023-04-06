@@ -122,7 +122,7 @@ void KeypadHandler::releaseKey(const Key &key)
 }
 
 // Initialize the pins array once from the defined pins.
-static const uint8_t pins[] = HE_PINS;
+static constexpr uint8_t pins[] = HE_PINS;
 
 uint16_t KeypadHandler::read(const Key &key)
 {
@@ -130,7 +130,7 @@ uint16_t KeypadHandler::read(const Key &key)
     return _keyStates[key.index].filter(analogRead(pins[key.index]));
 }
 
-uint16_t KeypadHandler::mapToTravelDistance(const Key &key, uint16_t value)
+uint16_t KeypadHandler::mapToTravelDistance(const Key &key, uint16_t value) const
 {
     // Map the value with the calibrated down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
