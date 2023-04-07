@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include "helpers/string_helper.hpp"
-#include "memory"
 
-char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
+void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, char *output)
 {
     // Remember the amount of found elements, string index of the current one and the total length.
     int found = 0;
@@ -22,9 +21,18 @@ char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
         }
     }
 
-    // Return either the found element or an empty string.
-    // Important: Result has to be free'd due to substring's heap allocation.
-    return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
+    // If not enough elements for the desired index were found, set the output buffer to an empty string.
+    if (found <= index)
+        output[0] = '\0';
+    // Otherwise, fill the specified output buffer with the argument as the substring of the input.
+    else
+    {
+        for (int i = strIndex[0]; i < strIndex[1]; i++)
+            output[i - strIndex[0]] = input[i];
+        
+        // Finish the string with a zero terminator.
+        output[strIndex[1] - strIndex[0]] = '\0';
+    }
 }
 
 void StringHelper::toLower(char *input)
@@ -79,19 +87,4 @@ void StringHelper::makeSafename(char *str)
     // character array on the fly and not doing this would cause the char array to have old letters from the input at the end.
     // e.g. "  hello  world  " turns "hello worldrld  " so we place a zero terminator after the "world" word.
     *str = '\0';
-}
-
-char *StringHelper::substring(char *input, int offset, int length)
-{
-    // Allocate a new character array with an extra character for the zero terminator.
-    char *res = new char[length + 1];
-
-    // Go from 0 to the length of the substring and add the character at that index + the offset to the new character array.
-    for (int i = 0; i < length; i++)
-        res[i] = *(input + offset + i);
-
-    // Put the zero terminator at the end of the character array.
-    res[length] = 0;
-
-    return res;
 }

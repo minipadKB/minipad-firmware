@@ -18,10 +18,14 @@ void SerialHandler::handleSerialInput(String *inputStr)
     (*inputStr).toCharArray(input, (*inputStr).length() + 1);
     StringHelper::toLower(input);
 
-    // Get the first argument of the input, separated by whitespaces.
-    char *command = StringHelper::getArgumentAt(input, ' ', 0);
+    // Parse the command as the first argument, separated by whitespaces.
+    char command[1024];
+    StringHelper::getArgumentAt(input, ' ', 0, command);
+
+    // Get a pointer pointing to the start of all parameters for the command and parse them.
     char *parameters = input + strlen(command) + 1;
-    char *arg0 = StringHelper::getArgumentAt(parameters, ' ', 0);
+    char arg0[1024];
+    StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
@@ -47,8 +51,10 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "key") == command)
     {
         // Split the command into the key string and the setting name.
-        char *keyStr = StringHelper::getArgumentAt(command, '.', 0);
-        char *setting = StringHelper::getArgumentAt(command, '.', 1);
+        char keyStr[1024];
+        char setting[1024];
+        StringHelper::getArgumentAt(command, '.', 0, keyStr);
+        StringHelper::getArgumentAt(command, '.', 1, setting);
 
         // By default, apply this command to all keys.
         Key *keys = ConfigController.config.keys;
@@ -93,15 +99,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
             else if (isEqual(setting, "hid"))
                 hid(key, isTrue(arg0));
         }
-
-        // Free the key and value allocated on the heap through getArgumentAt()
-        free(keyStr);
-        free(setting);
     }
-
-    // Free the arguments allocated on the heap through getArgumentAt()
-    free(command);
-    free(arg0);
 }
 
 void SerialHandler::ping()
