@@ -132,18 +132,16 @@ void SerialHandler::get()
     for (Key key : ConfigController.config.keys)
     {
         // Format the base for all lines being written.
-        char base[10];
-        sprintf(base, "GET key%d", key.index + 1);
-        print("%s.rt=%d", base, key.rapidTrigger);
-        print("%s.crt=%d", base, key.continuousRapidTrigger);
-        print("%s.rtus=%d", base, key.rapidTriggerUpSensitivity);
-        print("%s.rtds=%d", base, key.rapidTriggerDownSensitivity);
-        print("%s.lh=%d", base, key.lowerHysteresis);
-        print("%s.uh=%d", base, key.upperHysteresis);
-        print("%s.key=%d", base, key.keyChar);
-        print("%s.rest=%d", base, key.restPosition);
-        print("%s.down=%d", base, key.downPosition);
-        print("%s.hid=%d", base, key.hidEnabled);
+        print("GET key%d.rt=%d", key.index + 1, key.rapidTrigger);
+        print("GET key%d.crt=%d", key.index + 1, key.continuousRapidTrigger);
+        print("GET key%d.rtus=%d", key.index + 1, key.rapidTriggerUpSensitivity);
+        print("GET key%d.rtds=%d", key.index + 1, key.rapidTriggerDownSensitivity);
+        print("GET key%d.lh=%d", key.index + 1, key.lowerHysteresis);
+        print("GET key%d.uh=%d", key.index + 1, key.upperHysteresis);
+        print("GET key%d.key=%d", key.index + 1, key.keyChar);
+        print("GET key%d.rest=%d", key.index + 1, key.restPosition);
+        print("GET key%d.down=%d", key.index + 1, key.downPosition);
+        print("GEt key%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
