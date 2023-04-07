@@ -43,9 +43,11 @@
     {              \
         A0, A1, A2 \
     }
-#else
+#elif KEYS == 2
 #define HE_PINS \
     {           \
         A0, A1  \
     }
+#else 
+#error The firmware only supports 2 or 3 keys.
 #endif
