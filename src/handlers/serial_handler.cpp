@@ -3,8 +3,9 @@
 #include "handlers/keypad_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
-extern "C" {
-    #include "pico/bootrom.h"
+extern "C"
+{
+#include "pico/bootrom.h"
 }
 
 // Define a handy macro for printing with a newline character at the end.
@@ -36,13 +37,13 @@ void SerialHandler::handleSerialInput(String *inputStr)
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
 #if DEBUG
-    else if(isEqual(command, "echo"))
+    else if (isEqual(command, "echo"))
     {
         echo(parameters);
     }
 #endif
 
-    // Handle key specific commands.
+    // Handle key specific commands by checking if the command starts with "key".
     if (strstr(command, "key") == command)
     {
         // Split the command into the key string and the setting name.
@@ -92,7 +93,15 @@ void SerialHandler::handleSerialInput(String *inputStr)
             else if (isEqual(setting, "hid"))
                 hid(key, isTrue(arg0));
         }
+
+        // Free the key and value allocated on the heap through getArgumentAt()
+        free(keyStr);
+        free(setting);
     }
+
+    // Free the arguments allocated on the heap through getArgumentAt()
+    free(command);
+    free(arg0);
 }
 
 void SerialHandler::ping()

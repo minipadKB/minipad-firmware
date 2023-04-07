@@ -23,6 +23,7 @@ char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
     }
 
     // Return either the found element or an empty string.
+    // Important: Result has to be free'd due to substring's heap allocation.
     return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
 }
 
