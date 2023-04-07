@@ -6,51 +6,52 @@
 // structs that might get modified on a firmware update and have to be reset back to their default values then later on.
 inline Configuration defaultConfig =
 {
-  .version = Configuration::getVersion(),
-  .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd' },
-  .keys = {
+    .version = Configuration::getVersion(),
+    .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd' },
+    .keys =
     {
-        .index = 0,
-        .rapidTrigger = false,
-        .continuousRapidTrigger = false,
-        .rapidTriggerUpSensitivity = 50,
-        .rapidTriggerDownSensitivity = 50,
-        .lowerHysteresis = 250,
-        .upperHysteresis = 300,
-        .keyChar = 'z',
-        .hidEnabled = false,
-        .restPosition = 1800,
-        .downPosition = 1100
-    },
-    {
-        .index = 1,
-        .rapidTrigger = false,
-        .continuousRapidTrigger = false,
-        .rapidTriggerUpSensitivity = 50,
-        .rapidTriggerDownSensitivity = 50,
-        .lowerHysteresis = 250,
-        .upperHysteresis = 300,
-        .keyChar = 'x',
-        .hidEnabled = false,
-        .restPosition = 1800,
-        .downPosition = 1100
-    },
+        {
+            .index = 0,
+            .rapidTrigger = false,
+            .continuousRapidTrigger = false,
+            .rapidTriggerUpSensitivity = 50,
+            .rapidTriggerDownSensitivity = 50,
+            .lowerHysteresis = 250,
+            .upperHysteresis = 300,
+            .keyChar = 'z',
+            .hidEnabled = false,
+            .restPosition = 1800,
+            .downPosition = 1100
+        },
+        {
+            .index = 1,
+            .rapidTrigger = false,
+            .continuousRapidTrigger = false,
+            .rapidTriggerUpSensitivity = 50,
+            .rapidTriggerDownSensitivity = 50,
+            .lowerHysteresis = 250,
+            .upperHysteresis = 300,
+            .keyChar = 'x',
+            .hidEnabled = false,
+            .restPosition = 1800,
+            .downPosition = 1100
+        },
 #if KEYS == 3
-    {
-        .index = 2,
-        .rapidTrigger = false,
-        .continuousRapidTrigger = false,
-        .rapidTriggerUpSensitivity = 50,
-        .rapidTriggerDownSensitivity = 50,
-        .lowerHysteresis = 250,
-        .upperHysteresis = 300,
-        .keyChar = 'c',
-        .hidEnabled = false,
-        .restPosition = 1800,
-        .downPosition = 1100
-    }
+        {
+            .index = 2,
+            .rapidTrigger = false,
+            .continuousRapidTrigger = false,
+            .rapidTriggerUpSensitivity = 50,
+            .rapidTriggerDownSensitivity = 50,
+            .lowerHysteresis = 250,
+            .upperHysteresis = 300,
+            .keyChar = 'c',
+            .hidEnabled = false,
+            .restPosition = 1800,
+            .downPosition = 1100
+        }
 #endif
-  }
+    }
 };
 
 inline class ConfigurationController
