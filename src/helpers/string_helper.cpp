@@ -4,20 +4,25 @@
 
 char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
 {
+    // Remember the amount of found elements, string index of the current one and the total length.
     int found = 0;
     int strIndex[] = {0, -1};
     int length = strlen(input) - 1;
 
+    // Go through all characters and count the delimiters until the end or the desired index was reached.
     for (int i = 0; i <= length && found <= index; i++)
     {
+        // Check if a delimiter was found (element ended) or the end was reached.
         if (input[i] == delimiter || i == length)
         {
+            // Remember that another element was found, as well as the indexes of the string's start and end.
             found++;
             strIndex[0] = strIndex[1] + 1;
             strIndex[1] = (i == length) ? i + 1 : i;
         }
     }
 
+    // Return either the found element or an empty string.
     return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
 }
 
