@@ -11,6 +11,7 @@ inline Configuration defaultConfig =
     .keys =
     {
         {
+            .version = Key::getVersion(),
             .index = 0,
             .rapidTrigger = false,
             .continuousRapidTrigger = false,
@@ -24,6 +25,7 @@ inline Configuration defaultConfig =
             .downPosition = 1100
         },
         {
+            .version = Key::getVersion(),
             .index = 1,
             .rapidTrigger = false,
             .continuousRapidTrigger = false,
@@ -38,6 +40,7 @@ inline Configuration defaultConfig =
         },
 #if KEYS == 3
         {
+            .version = Key::getVersion(),
             .index = 2,
             .rapidTrigger = false,
             .continuousRapidTrigger = false,
