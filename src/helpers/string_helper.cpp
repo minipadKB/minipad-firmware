@@ -20,7 +20,7 @@ void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, cha
             strIndex[1] = (i == length) ? i + 1 : i;
         }
 
-        // If the index matches the found elements, exit early to save unecessary runtime performance.
+        // If the index matches the found elements, exit early to save resources.
         if (found == index)
             break;
     }
