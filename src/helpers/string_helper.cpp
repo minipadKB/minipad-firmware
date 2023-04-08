@@ -4,12 +4,12 @@
 void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, char *output)
 {
     // Remember the amount of found elements, string index of the current one and the total length.
-    int found = 0;
-    int strIndex[] = {0, -1};
-    int length = strlen(input) - 1;
+    uint8_t found = 0;
+    int16_t strIndex[] = {0, -1};
+    size_t length = strlen(input) - 1;
 
     // Go through all characters and count the delimiters until the end or the desired index was reached.
-    for (int i = 0; i <= length && found <= index; i++)
+    for (size_t i = 0; i <= length && found <= index; i++)
     {
         // Check if a delimiter was found (element ended) or the end was reached.
         if (input[i] == delimiter || i == length)
@@ -19,6 +19,10 @@ void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, cha
             strIndex[0] = strIndex[1] + 1;
             strIndex[1] = (i == length) ? i + 1 : i;
         }
+
+        // If the index matches the found elements, exit early to save unecessary runtime performance.
+        if (found == index)
+            break;
     }
 
     // If not enough elements for the desired index were found, set the output buffer to an empty string.
@@ -27,9 +31,9 @@ void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, cha
     // Otherwise, fill the specified output buffer with the argument as the substring of the input.
     else
     {
-        for (int i = strIndex[0]; i < strIndex[1]; i++)
+        for (int16_t i = strIndex[0]; i < strIndex[1]; i++)
             output[i - strIndex[0]] = input[i];
-        
+
         // Finish the string with a zero terminator.
         output[strIndex[1] - strIndex[0]] = '\0';
     }
@@ -38,14 +42,14 @@ void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, cha
 void StringHelper::toLower(char *input)
 {
     // Go through all characters and replace them with their lowercase version.
-    for (int i = 0; i < strlen(input); i++)
+    for (size_t i = 0; i < strlen(input); i++)
         input[i] = tolower(input[i]);
 }
 
 void StringHelper::replace(char *input, char target, char replacement)
 {
     // Go through all characters and replace it if it matches the target character.
-    for (int i = 0; i < strlen(input); i++)
+    for (size_t i = 0; i < strlen(input); i++)
         if (input[i] == target)
             input[i] = replacement;
 }
