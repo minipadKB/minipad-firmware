@@ -10,8 +10,8 @@ struct KeyState
     // State whether the key is currently pressed down.
     bool pressed = false;
 
-    // State whether rapid trigger is currently active.
-    bool rapidTriggerEnabled = false;
+    // State whether the key is currently inside the rapid trigger zone (below the lower hysteresis).
+    bool inRapidTriggerZone = false;
 
     // The current peak value for the rapid trigger logic.
     uint16_t rapidTriggerPeak = 65535;

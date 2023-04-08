@@ -25,8 +25,6 @@ private:
     uint16_t mapToTravelDistance(Key key, uint16_t value);
     void checkTraditional(Key key, uint16_t value);
     void checkRapidTrigger(Key key, uint16_t value);
-    bool checkRapidTriggerPressKey(Key key, uint16_t value);
-    bool checkRapidTriggerReleaseKey(Key key, uint16_t value);
     void pressKey(Key key);
     void releaseKey(Key key);
 } KeypadHandler;
