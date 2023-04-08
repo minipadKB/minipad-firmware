@@ -10,7 +10,7 @@ inline class KeypadHandler
 public:
     KeypadHandler()
     {
-        // Initialize the SMA filters.
+        // Initialize the key states with their default values.
         for (uint8_t i = 0; i < KEYS; i++)
             _keyStates[i] = KeyState();
     }
