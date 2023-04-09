@@ -10,7 +10,7 @@ inline class KeypadHandler
 public:
     KeypadHandler()
     {
-        // Initialize the SMA filters.
+        // Initialize the key states with their default values.
         for (uint8_t i = 0; i < KEYS; i++)
             _keyStates[i] = KeyState();
     }
@@ -25,8 +25,6 @@ private:
     uint16_t mapToTravelDistance(const Key &key, uint16_t value) const;
     void checkTraditional(const Key &key, uint16_t value);
     void checkRapidTrigger(const Key &key, uint16_t value);
-    bool checkRapidTriggerPressKey(const Key &key, uint16_t value);
-    bool checkRapidTriggerReleaseKey(const Key &key, uint16_t value);
     void pressKey(const Key &key);
     void releaseKey(const Key &key);
 } KeypadHandler;

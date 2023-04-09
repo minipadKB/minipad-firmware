@@ -6,7 +6,7 @@ uint16_t SMAFilter::operator()(uint16_t value)
 {
     // Calculate the new sum by removing the oldest element and adding the new one.
     sum = sum - buffer[index] + value;
-    
+
     // Overwrite the oldest element in the circular buffer with the new one.
     buffer[index] = value;
 

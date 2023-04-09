@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -46,7 +46,7 @@ jobs:
 
       - name: Build 3K Firmware
         run: pio run --environment minipad-3k --verbose
-        
+
       - name: Create Release
         uses: actions/create-release@v1
         id: create_release
@@ -68,7 +68,7 @@ jobs:
           asset_path: ./.pio/build/minipad-2k/firmware.uf2
           asset_name: minipad_firmware_2k.uf2
           asset_content_type: application/octet-stream
-        
+
       - name: Upload 3K Firmware Artifact
         uses: actions/upload-release-asset@v1
         env:
