@@ -1,37 +1,55 @@
 #include <Arduino.h>
 #include "helpers/string_helper.hpp"
-#include "memory"
 
-char *StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index)
+void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, char *output)
 {
-    int found = 0;
-    int strIndex[] = {0, -1};
-    int length = strlen(input) - 1;
+    // Remember the amount of found elements, string index of the current one and the total length.
+    uint8_t found = 0;
+    int16_t strIndex[] = {0, -1};
+    size_t length = strlen(input) - 1;
 
-    for (int i = 0; i <= length && found <= index; i++)
+    // Go through all characters and count the delimiters until the end or the desired index was reached.
+    for (size_t i = 0; i <= length && found <= index; i++)
     {
+        // Check if a delimiter was found (element ended) or the end was reached.
         if (input[i] == delimiter || i == length)
         {
+            // Remember that another element was found, as well as the indexes of the string's start and end.
             found++;
             strIndex[0] = strIndex[1] + 1;
             strIndex[1] = (i == length) ? i + 1 : i;
         }
+
+        // If the index matches the found elements, exit early to save resources.
+        if (found == index)
+            break;
     }
 
-    return found > index ? substring(input, strIndex[0], strIndex[1] - strIndex[0]) : (char *)"";
+    // If not enough elements for the desired index were found, set the output buffer to an empty string.
+    if (found <= index)
+        output[0] = '\0';
+    // Otherwise, fill the specified output buffer with the argument as the substring of the input.
+    else
+    {
+        for (int16_t i = strIndex[0]; i < strIndex[1]; i++)
+            output[i - strIndex[0]] = input[i];
+
+        // Finish the string with a zero terminator.
+        output[strIndex[1] - strIndex[0]] = '\0';
+    }
 }
 
 void StringHelper::toLower(char *input)
 {
     // Go through all characters and replace them with their lowercase version.
-    for (int i = 0; i < strlen(input); i++)
+    for (size_t i = 0; i < strlen(input); i++)
         input[i] = tolower(input[i]);
 }
 
 void StringHelper::replace(char *input, char target, char replacement)
 {
     // Go through all characters and replace it if it matches the target character.
-    for (int i = 0; i < strlen(input); i++)
+    for (size_t i = 0; i < strlen(input); i++)
         if (input[i] == target)
             input[i] = replacement;
 }
@@ -73,19 +91,4 @@ void StringHelper::makeSafename(char *str)
     // character array on the fly and not doing this would cause the char array to have old letters from the input at the end.
     // e.g. "  hello  world  " turns "hello worldrld  " so we place a zero terminator after the "world" word.
     *str = '\0';
-}
-
-char *StringHelper::substring(char *input, int offset, int length)
-{
-    // Allocate a new character array with an extra character for the zero terminator.
-    char *res = new char[length + 1];
-
-    // Go from 0 to the length of the substring and add the character at that index + the offset to the new character array.
-    for (int i = 0; i < length; i++)
-        res[i] = *(input + offset + i);
-
-    // Put the zero terminator at the end of the character array.
-    res[length] = 0;
-
-    return res;
 }

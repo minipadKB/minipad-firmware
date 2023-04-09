@@ -14,7 +14,7 @@
 
 // The minimum difference between the lower and upper hysteresis. This is important to not have the key continuously
 // actuate if you do very very slight movements or if the fluctuation is simply too high. It also defines the gap there
-// has to be between the defined TRAVEL_DISTANCE_IN_0_01MM and the upper hysteresis so the actuation logic cannot 
+// has to be between the defined TRAVEL_DISTANCE_IN_0_01MM and the upper hysteresis so the actuation logic cannot
 // possibly get stuck if you press the key down but happen to not be able to get back up enough.
 #define HYSTERESIS_TOLERANCE 10
 
@@ -43,9 +43,11 @@
     {              \
         A2, A1, A0 \
     }
-#else
+#elif KEYS == 2
 #define HE_PINS \
     {           \
         A1, A0  \
     }
+#else
+#error The firmware only supports 2 or 3 keys.
 #endif

@@ -3,8 +3,9 @@
 #include "handlers/keypad_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
-extern "C" {
-    #include "pico/bootrom.h"
+extern "C"
+{
+#include "pico/bootrom.h"
 }
 
 // Define a handy macro for printing with a newline character at the end.
@@ -17,10 +18,14 @@ void SerialHandler::handleSerialInput(String *inputStr)
     (*inputStr).toCharArray(input, (*inputStr).length() + 1);
     StringHelper::toLower(input);
 
-    // Get the first argument of the input, separated by whitespaces.
-    char *command = StringHelper::getArgumentAt(input, ' ', 0);
+    // Parse the command as the first argument, separated by whitespaces.
+    char command[1024];
+    StringHelper::getArgumentAt(input, ' ', 0, command);
+
+    // Get a pointer pointing to the start of all parameters for the command and parse them.
     char *parameters = input + strlen(command) + 1;
-    char *arg0 = StringHelper::getArgumentAt(parameters, ' ', 0);
+    char arg0[1024];
+    StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "ping"))
@@ -36,18 +41,20 @@ void SerialHandler::handleSerialInput(String *inputStr)
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
 #if DEBUG
-    else if(isEqual(command, "echo"))
+    else if (isEqual(command, "echo"))
     {
         echo(parameters);
     }
 #endif
 
-    // Handle key specific commands.
+    // Handle key specific commands by checking if the command starts with "key".
     if (strstr(command, "key") == command)
     {
         // Split the command into the key string and the setting name.
-        char *keyStr = StringHelper::getArgumentAt(command, '.', 0);
-        char *setting = StringHelper::getArgumentAt(command, '.', 1);
+        char keyStr[1024];
+        char setting[1024];
+        StringHelper::getArgumentAt(command, '.', 0, keyStr);
+        StringHelper::getArgumentAt(command, '.', 1, setting);
 
         // By default, apply this command to all keys.
         Key *keys = ConfigController.config.keys;
@@ -122,21 +129,19 @@ void SerialHandler::get()
     print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
 
     // Output all key-specific settings.
-    for (Key key : ConfigController.config.keys)
+    for (const Key &key : ConfigController.config.keys)
     {
         // Format the base for all lines being written.
-        char base[10];
-        sprintf(base, "GET key%d", key.index + 1);
-        print("%s.rt=%d", base, key.rapidTrigger);
-        print("%s.crt=%d", base, key.continuousRapidTrigger);
-        print("%s.rtus=%d", base, key.rapidTriggerUpSensitivity);
-        print("%s.rtds=%d", base, key.rapidTriggerDownSensitivity);
-        print("%s.lh=%d", base, key.lowerHysteresis);
-        print("%s.uh=%d", base, key.upperHysteresis);
-        print("%s.key=%d", base, key.keyChar);
-        print("%s.rest=%d", base, key.restPosition);
-        print("%s.down=%d", base, key.downPosition);
-        print("%s.hid=%d", base, key.hidEnabled);
+        print("GET key%d.rt=%d", key.index + 1, key.rapidTrigger);
+        print("GET key%d.crt=%d", key.index + 1, key.continuousRapidTrigger);
+        print("GET key%d.rtus=%d", key.index + 1, key.rapidTriggerUpSensitivity);
+        print("GET key%d.rtds=%d", key.index + 1, key.rapidTriggerDownSensitivity);
+        print("GET key%d.lh=%d", key.index + 1, key.lowerHysteresis);
+        print("GET key%d.uh=%d", key.index + 1, key.upperHysteresis);
+        print("GET key%d.key=%d", key.index + 1, key.keyChar);
+        print("GET key%d.rest=%d", key.index + 1, key.restPosition);
+        print("GET key%d.down=%d", key.index + 1, key.downPosition);
+        print("GEt key%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
