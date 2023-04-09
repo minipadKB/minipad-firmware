@@ -141,7 +141,7 @@ void SerialHandler::get()
         print("GET key%d.key=%d", key.index + 1, key.keyChar);
         print("GET key%d.rest=%d", key.index + 1, key.restPosition);
         print("GET key%d.down=%d", key.index + 1, key.downPosition);
-        print("GEt key%d.hid=%d", key.index + 1, key.hidEnabled);
+        print("GET key%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
