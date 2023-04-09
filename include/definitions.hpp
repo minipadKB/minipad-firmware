@@ -41,11 +41,11 @@
 #if KEYS == 3
 #define HE_PINS    \
     {              \
-        A0, A1, A2 \
+        A2, A1, A0 \
     }
 #else
 #define HE_PINS \
     {           \
-        A0, A1  \
+        A1, A0  \
     }
 #endif
