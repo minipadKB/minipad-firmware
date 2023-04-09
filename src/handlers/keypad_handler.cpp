@@ -53,7 +53,7 @@
 void KeypadHandler::handle()
 {
     // Go through all keys and run the checks.
-    for (Key key : ConfigController.config.keys)
+    for (const Key &key : ConfigController.config.keys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
         uint16_t rawValue = read(key);
@@ -74,7 +74,7 @@ void KeypadHandler::handle()
     Keyboard.sendReport();
 }
 
-void KeypadHandler::checkTraditional(Key key, uint16_t value)
+void KeypadHandler::checkTraditional(const Key &key, uint16_t value)
 {
     // Check whether the value passes the lower or upper hysteresis.
     // If the value drops <= the lower hysteresis, the key is pressed down.
@@ -85,7 +85,7 @@ void KeypadHandler::checkTraditional(Key key, uint16_t value)
         releaseKey(key);
 }
 
-void KeypadHandler::checkRapidTrigger(Key key, uint16_t value)
+void KeypadHandler::checkRapidTrigger(const Key &key, uint16_t value)
 {
     // RT STEP 1: Reset the rapid trigger state if the value left the rapid trigger zone (normal) or was fully released (CRT).
     // If the value is above the upper hysteresis the value is not (anymore) inside the rapid trigger zone
@@ -123,7 +123,7 @@ void KeypadHandler::checkRapidTrigger(Key key, uint16_t value)
         _keyStates[key.index].rapidTriggerPeak = value;
 }
 
-void KeypadHandler::pressKey(Key key)
+void KeypadHandler::pressKey(const Key &key)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (_keyStates[key.index].pressed || !key.hidEnabled)
@@ -134,7 +134,7 @@ void KeypadHandler::pressKey(Key key)
     Keyboard.press(key.keyChar);
 }
 
-void KeypadHandler::releaseKey(Key key)
+void KeypadHandler::releaseKey(const Key &key)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!_keyStates[key.index].pressed)
@@ -146,15 +146,15 @@ void KeypadHandler::releaseKey(Key key)
 }
 
 // Initialize the pins array once from the defined pins.
-static const uint8_t pins[] = HE_PINS;
+static constexpr uint8_t pins[] = HE_PINS;
 
-uint16_t KeypadHandler::read(Key key)
+uint16_t KeypadHandler::read(const Key &key)
 {
     // Read the value from the port of the specified key, filter it through the SMA filter and return it.
     return _keyStates[key.index].filter(analogRead(pins[key.index]));
 }
 
-uint16_t KeypadHandler::mapToTravelDistance(Key key, uint16_t value)
+uint16_t KeypadHandler::mapToTravelDistance(const Key &key, uint16_t value) const
 {
     // Map the value with the calibrated down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.

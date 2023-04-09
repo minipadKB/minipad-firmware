@@ -129,7 +129,7 @@ void SerialHandler::get()
     print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
 
     // Output all key-specific settings.
-    for (Key key : ConfigController.config.keys)
+    for (const Key &key : ConfigController.config.keys)
     {
         // Format the base for all lines being written.
         print("GET key%d.rt=%d", key.index + 1, key.rapidTrigger);

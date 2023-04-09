@@ -21,10 +21,10 @@ public:
 private:
     KeyState _keyStates[KEYS];
 
-    uint16_t read(Key key);
-    uint16_t mapToTravelDistance(Key key, uint16_t value);
-    void checkTraditional(Key key, uint16_t value);
-    void checkRapidTrigger(Key key, uint16_t value);
-    void pressKey(Key key);
-    void releaseKey(Key key);
+    uint16_t read(const Key &key);
+    uint16_t mapToTravelDistance(const Key &key, uint16_t value) const;
+    void checkTraditional(const Key &key, uint16_t value);
+    void checkRapidTrigger(const Key &key, uint16_t value);
+    void pressKey(const Key &key);
+    void releaseKey(const Key &key);
 } KeypadHandler;
