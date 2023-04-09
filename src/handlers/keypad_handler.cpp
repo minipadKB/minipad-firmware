@@ -53,7 +53,7 @@
 void KeypadHandler::handle()
 {
     // Go through all keys and run the checks.
-    for (const Key key : ConfigController.config.keys)
+    for (const Key &key : ConfigController.config.keys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
         uint16_t rawValue = read(key);
