@@ -1,0 +1,80 @@
+name: PlatformIO CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - release-ci
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install CI-Util Dependencies
+        run: pip install --upgrade requests
+
+      - name: Set Firmware Version
+        id: get_version
+        run: python ci-util.py --set-version
+
+      - name: Firmware Version Update Check
+        run: python ci-util.py --fail-on-no-version-increment
+
+      - name: Generate Changelog
+        id: generate_changelog
+        run: python ci-util.py --generate-changelog
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build 2K Firmware
+        run: pio run --environment minipad-2k --verbose
+
+      - name: Build 3K Firmware
+        run: pio run --environment minipad-3k --verbose
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.generate_changelog.outputs.changelog_title }}
+          tag_name: ${{ steps.get_version.outputs.firmware_version }}
+          body_path: CURRENT_CHANGELOG.md
+
+      - name: Upload 2K Firmware Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.pio/build/minipad-2k/firmware.uf2
+          asset_name: minipad_firmware_2k.uf2
+          asset_content_type: application/octet-stream
+
+      - name: Upload 3K Firmware Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./.pio/build/minipad-3k/firmware.uf2
+          asset_name: minipad_firmware_3k.uf2
+          asset_content_type: application/octet-stream

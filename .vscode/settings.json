@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "memory": "cpp",
+        "functional": "cpp",
+        "cmath": "cpp",
+        "new": "cpp",
+        "optional": "cpp",
+        "ostream": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
+    },
+    "cmake.configureOnOpen": false
+}

@@ -1,31 +1,30 @@
+#pragma once
+
 #include "config/configuration_controller.hpp"
-#include "config/tolerance_configuration.hpp"
+#include "helpers/sma_filter.hpp"
+#include "handlers/key_state.hpp"
 #include "definitions.hpp"
 
-class KeypadHandler
+inline class KeypadHandler
 {
 public:
-    KeypadHandler(ConfigurationController *configController);
-    virtual ~KeypadHandler();
+    KeypadHandler()
+    {
+        // Initialize the key states with their default values.
+        for (uint8_t i = 0; i < KEYS; i++)
+            _keyStates[i] = KeyState();
+    }
 
-    void check();
+    void handle();
+    bool outputMode;
 
 private:
-    ConfigurationController *configController;
+    KeyState _keyStates[KEYS];
 
-#ifdef KEYS_3
-    bool keyPressedStates[3];
-    uint16_t currentRapidTriggerPeak[3];
-#else
-    bool keyPressedStates[2];
-    uint16_t currentRapidTriggerPeak[2];
-#endif
-
-    uint16_t read(uint8_t keyIndex);
-    void checkTraditional(uint8_t keyIndex, uint16_t value);
-    void checkRapidTrigger(uint8_t keyIndex, uint16_t value);
-    bool checkRapidTriggerPressKey(uint8_t keyIndex, uint16_t value);
-    bool checkRapidTriggerReleaseKey(uint8_t keyIndex, uint16_t value);
-    void pressKey(uint8_t keyIndex);
-    void releaseKey(uint8_t keyIndex);
-};
+    uint16_t read(const Key &key);
+    uint16_t mapToTravelDistance(const Key &key, uint16_t value) const;
+    void checkTraditional(const Key &key, uint16_t value);
+    void checkRapidTrigger(const Key &key, uint16_t value);
+    void pressKey(const Key &key);
+    void releaseKey(const Key &key);
+} KeypadHandler;
