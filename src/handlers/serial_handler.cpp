@@ -42,9 +42,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         out(isTrue(arg0));
 #if DEBUG
     else if (isEqual(command, "echo"))
-    {
         echo(parameters);
-    }
 #endif
 
     // Handle key specific commands by checking if the command starts with "key".
