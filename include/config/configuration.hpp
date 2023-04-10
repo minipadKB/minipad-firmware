@@ -22,9 +22,9 @@ struct Configuration
 
         // To reset the configuration if the user switches from a 2-key firmware to a 3-key, mutate the version.
 #if KEYS == 3
-        return -version;
-#else
-        return version;
+        version = -version;
 #endif
+
+        return version;
     }
 };
