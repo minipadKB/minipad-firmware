@@ -1,7 +1,7 @@
 #pragma once
 
-// The version of this firmware in the YYYYMMDD.PATCH format. (e.g. 20221219.2 for the 2nd release on the 19th december 2022)
-#define FIRMWARE_VERSION "20230410.1"
+// The version of this firmware in the YYYY.MDD.PATCH format. (e.g. 2022.1219.2 for the 2nd release on the 19th december 2022)
+#define FIRMWARE_VERSION "2023.410.1"
 
 // ┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 // │                                                                                                   │
