@@ -8,7 +8,7 @@ from typing import Optional
 
 # Get the firmware version from the definitions.hpp file
 def get_firmware_version() -> Optional[str]:
-    with open("./include/definitions.hpp") as f:
+    with open("./include/definitions.hpp", encoding="utf8") as f:
         for line in f.readlines():
             if line.startswith("#define FIRMWARE_VERSION"):
                 version = line.split('"')[1]
@@ -19,8 +19,16 @@ def get_firmware_version() -> Optional[str]:
 # Get the changelog from the CHANGELOG.md file via # headers
 def get_changelog(version: str) -> tuple[str, list[str]]:
     with open("./CHANGELOG.md", "r") as f:
+        # Get all lines in the file
+        full_changelog = f.readlines()
+
+        # Check if a section for the version exists
+        if not any(line.startswith(f"# {version}") for line in full_changelog):
+            print(f"::error::Changelog for version '{version}' not found")
+            sys.exit(1)
+
         # Skip the lines while it does not start with # <version>
-        from_version_start = list(itertools.dropwhile(lambda x: not x.startswith(f"# {version}"), f))
+        from_version_start = list(itertools.dropwhile(lambda line: not line.startswith(f"# {version}"), full_changelog))
 
         # Remember the version title and remove the line afterwards
         version_title = from_version_start[0][2:-1]
@@ -35,7 +43,7 @@ def get_changelog(version: str) -> tuple[str, list[str]]:
         return (version_title, list(changelog))
 
 def main() -> None:
-
+    sys.argv.append("--generate-changelog")
     # Check if exactly one argument was specified
     if len(sys.argv) != 2:
         print("::error::Invalid argument count")
