@@ -5,7 +5,7 @@
 inline class SerialHandler
 {
 public:
-    void handleSerialInput(String *inputStr);
+    void handleSerialInput(char *buff);
 
 private:
     void ping();

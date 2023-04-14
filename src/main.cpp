@@ -26,10 +26,14 @@ void setup()
 void loop()
 {
     // Check for any serial commands received.
-    while (Serial.available())
+    while (Serial.available() > 0)
     {
-        String str = Serial.readStringUntil('\n');
-        SerialHandler.handleSerialInput(&str);
+        char buff[INPUT_BUFF_SIZE];
+
+        const size_t bytesRead = Serial.readBytesUntil('\n', buff, INPUT_BUFF_SIZE - 1);
+        buff[bytesRead] = '\0';
+
+        SerialHandler.handleSerialInput(buff);
     }
 
     // Run the keypad handler checks to handle the actual keypad functionality.

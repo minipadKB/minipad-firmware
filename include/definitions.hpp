@@ -26,6 +26,9 @@
 // This value is important to reset the rapid trigger state properly with continuous rapid trigger.
 #define CONTINUOUS_RAPID_TRIGGER_THRESHOLD 10
 
+// Size of the array which the serial buffer is copied to
+#define INPUT_BUFF_SIZE 64
+
 // The resolution for the ADCs on the RP2040. The maximum compatible value on it is 12 bit.
 #define ANALOG_RESOLUTION 12
 

@@ -11,20 +11,18 @@ extern "C"
 // Define a handy macro for printing with a newline character at the end.
 #define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
 
-void SerialHandler::handleSerialInput(String *inputStr)
+void SerialHandler::handleSerialInput(char *buff)
 {
-    // Convert the string into a character array for further parsing and make it lowercase.
-    char input[(*inputStr).length() + 1];
-    (*inputStr).toCharArray(input, (*inputStr).length() + 1);
-    StringHelper::toLower(input);
+    // Lowercases the buffer content
+    StringHelper::toLower(buff);
 
     // Parse the command as the first argument, separated by whitespaces.
-    char command[1024];
-    StringHelper::getArgumentAt(input, ' ', 0, command);
+    char command[INPUT_BUFF_SIZE];
+    StringHelper::getArgumentAt(buff, ' ', 0, command);
 
     // Get a pointer pointing to the start of all parameters for the command and parse them.
-    char *parameters = input + strlen(command) + 1;
-    char arg0[1024];
+    char *parameters = buff + strlen(command) + 1;
+    char arg0[INPUT_BUFF_SIZE];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
     // Handle the global commands and pass their expected required parameters.
@@ -49,8 +47,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "key") == command)
     {
         // Split the command into the key string and the setting name.
-        char keyStr[1024];
-        char setting[1024];
+        char keyStr[INPUT_BUFF_SIZE];
+        char setting[INPUT_BUFF_SIZE];
         StringHelper::getArgumentAt(command, '.', 0, keyStr);
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
