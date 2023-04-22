@@ -150,8 +150,16 @@ static constexpr uint8_t pins[] = HE_PINS;
 
 uint16_t KeypadHandler::read(const Key &key)
 {
-    // Read the value from the port of the specified key, filter it through the SMA filter and return it.
-    return _keyStates[key.index].filter(analogRead(pins[key.index]));
+    // Read the value from the port of the specified key.
+    uint16_t value = analogRead(pins[key.index]);
+
+    // Invert the value if the definition is set.
+#ifdef INVERT_SENSOR_READINGS
+    value = 4095 - value;
+#endif
+
+    // Filter the value through the SMA filter and return it.
+    return _keyStates[key.index].filter(value);
 }
 
 uint16_t KeypadHandler::mapToTravelDistance(const Key &key, uint16_t value) const

@@ -37,6 +37,10 @@
 // guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
 #define TRAVEL_DISTANCE_IN_0_01MM 400
 
+// Uncomment this line if the sensor readings go up when the key is being pressed down.
+// By default, the firmware is made to handle the readings going down and not up.
+// #define INVERT_SENSOR_READINGS
+
 // Define the ports used for the HE sensors.
 #if KEYS == 3
 #define HE_PINS    \
