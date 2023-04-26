@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 // Configuration for the keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
 struct Key
