@@ -11,17 +11,17 @@ extern "C"
 // Define a handy macro for printing with a newline character at the end.
 #define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
 
-void SerialHandler::handleSerialInput(char *buff)
+void SerialHandler::handleSerialInput(char *inputBuffer)
 {
     // Lowercases the buffer content
-    StringHelper::toLower(buff);
+    StringHelper::toLower(inputBuffer);
 
     // Parse the command as the first argument, separated by whitespaces.
     char command[INPUT_BUFF_SIZE];
-    StringHelper::getArgumentAt(buff, ' ', 0, command);
+    StringHelper::getArgumentAt(inputBuffer, ' ', 0, command);
 
     // Get a pointer pointing to the start of all parameters for the command and parse them.
-    char *parameters = buff + strlen(command) + 1;
+    char *parameters = inputBuffer + strlen(command) + 1;
     char arg0[INPUT_BUFF_SIZE];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 

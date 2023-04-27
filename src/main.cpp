@@ -28,12 +28,12 @@ void loop()
     // Check for any serial commands received.
     while (Serial.available() > 0)
     {
-        char buff[INPUT_BUFF_SIZE];
+        char inputBuffer[INPUT_BUFF_SIZE];
 
-        const size_t bytesRead = Serial.readBytesUntil('\n', buff, INPUT_BUFF_SIZE - 1);
-        buff[bytesRead] = '\0';
+        const size_t bytesRead = Serial.readBytesUntil('\n', inputBuffer, INPUT_BUFF_SIZE - 1);
+        inputBuffer[bytesRead] = '\0';
 
-        SerialHandler.handleSerialInput(buff);
+        SerialHandler.handleSerialInput(inputBuffer);
     }
 
     // Run the keypad handler checks to handle the actual keypad functionality.
