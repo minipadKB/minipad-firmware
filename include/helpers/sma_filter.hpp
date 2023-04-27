@@ -7,8 +7,19 @@ class SMAFilter
 public:
     SMAFilter() {}
 
-    // Initialize the SMAFilter instance with the specified sample exponent. (1 = 1 sample, 2 = 4 samples, 3 = 8 samples, ...)
-    SMAFilter(uint8_t samplesExponent) : samplesExponent(samplesExponent), samples(pow(2, samplesExponent)), buffer(new uint16_t[samples]{0}){};
+    // Initialize the SMAFilter instance with the specified sample exponent.
+    // (1 = 1 sample, 2 = 4 samples, 3 = 8 samples, ...)
+    SMAFilter(uint8_t samplesExponent)
+        : samplesExponent(samplesExponent)
+        , samples(pow(2, samplesExponent))
+        , buffer(new uint16_t[samples] {0})
+    {}
+
+    ~SMAFilter()
+    {
+        delete[] buffer;
+    }
+
     uint16_t operator()(uint16_t value);
 
 private:
