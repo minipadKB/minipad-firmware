@@ -9,7 +9,8 @@ Configuration getDefaultConfig()
 {
     Configuration config = {
         .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
-        .heKeys = {}
+        .heKeys = {},
+        .digitalKeys = {}
     };
 
     // Populate the hall effect keys array with the correct amount of hall effect keys.
@@ -35,6 +36,19 @@ Configuration getDefaultConfig()
         };
     }
 
+    // Populate the digital keys array with the correct amount of digital keys.
+    for(uint8_t i = 0; i < DIGITAL_KEYS; i++)
+    {
+        config.digitalKeys[i] = {
+            .index = i,
+
+             // Assign the keys from a forwards. (z, y, x, w, v, ...)
+             // With too many keys (>26?), this would eventually run out of characters.
+            .keyChar = (char)('a' + i),
+            .hidEnabled = false
+        };
+    }
+
     return config;
 };
 
@@ -51,5 +65,7 @@ public:
     void saveConfig();
 
     Configuration config;
+
+private:
     Configuration defaultConfig;
 } ConfigController;

@@ -90,9 +90,9 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
         // If the value drops <= the lower hysteresis, the key is pressed down.
         // If the value rises >= the upper hysteresis, the key is released.
         if (value <= key.lowerHysteresis)
-            pressKey(key);
+            pressHEKey(key);
         else if (value >= key.upperHysteresis)
-            releaseKey(key);
+            releaseHEKey(key);
 
         // Return here to not run into the rapid trigger code.
         return;
@@ -114,7 +114,7 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
     // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
     if (value <= key.lowerHysteresis && !_heKeyStates[key.index].inRapidTriggerZone)
     {
-        pressKey(key);
+        pressHEKey(key);
         _heKeyStates[key.index].inRapidTriggerZone = true;
     }
 
@@ -122,11 +122,11 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
     // Check whether the key should be pressed. This is the case if the key is currently not pressed,
     // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
     else if (!_heKeyStates[key.index].pressed && _heKeyStates[key.index].inRapidTriggerZone && value + key.rapidTriggerDownSensitivity <= _heKeyStates[key.index].rapidTriggerPeak)
-        pressKey(key);
+        pressHEKey(key);
     // Check whether the key should be released. This is the case if the key is currently pressed down and either the
     // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
     else if (_heKeyStates[key.index].pressed && (!_heKeyStates[key.index].inRapidTriggerZone || value >= _heKeyStates[key.index].rapidTriggerPeak + key.rapidTriggerUpSensitivity))
-        releaseKey(key);
+        releaseHEKey(key);
 
     // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
@@ -138,15 +138,15 @@ void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
     // Check whether the pressed state changed.
     if(pressed && !_digitalKeyStates[key.index].pressed)
-      ; //  pressKey(key);
+      pressDigitalKey(key);
     else if(!pressed && _digitalKeyStates[key.index].pressed)
-      ; // releaseKey(key);
+      releaseDigitalKey(key);
 
     // Update the state whether the key is pressed down.
     _digitalKeyStates[key.index].pressed = pressed;
 }
 
-void KeypadHandler::pressKey(const HEKey &key)
+void KeypadHandler::pressHEKey(const HEKey &key)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (_heKeyStates[key.index].pressed || !key.hidEnabled)
@@ -157,7 +157,7 @@ void KeypadHandler::pressKey(const HEKey &key)
     Keyboard.press(key.keyChar);
 }
 
-void KeypadHandler::releaseKey(const HEKey &key)
+void KeypadHandler::releaseHEKey(const HEKey &key)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!_heKeyStates[key.index].pressed)
@@ -166,6 +166,28 @@ void KeypadHandler::releaseKey(const HEKey &key)
     // Send the HID instruction to the computer.
     Keyboard.release(key.keyChar);
     _heKeyStates[key.index].pressed = false;
+}
+
+void KeypadHandler::pressDigitalKey(const DigitalKey &key)
+{
+    // Check whether the key is already pressed or HID commands are not enabled on the key.
+    if (_digitalKeyStates[key.index].pressed || !key.hidEnabled)
+        return;
+
+    // Send the HID instruction to the computer.
+    _digitalKeyStates[key.index].pressed = true;
+    Keyboard.press(key.keyChar);
+}
+
+void KeypadHandler::releaseDigitalKey(const DigitalKey &key)
+{
+    // Check whether the key is already pressed or HID commands are not enabled on the key.
+    if (!_digitalKeyStates[key.index].pressed)
+        return;
+
+    // Send the HID instruction to the computer.
+    Keyboard.release(key.keyChar);
+    _digitalKeyStates[key.index].pressed = false;
 }
 
 uint16_t KeypadHandler::readHEKey(const HEKey &key)

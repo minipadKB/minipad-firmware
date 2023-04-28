@@ -47,14 +47,22 @@
 // NOTE: By the uint8 datatype, the amount of keys is limited to 255.
 // NOTE: By the default config initialization, the amount of keys is limited to
 //       around 26 since the characters are assigned backwards started from 'z'.
+// NOTE: By the RP2040, the amount of analog pins (and therefore keys) is limited o 4.
 #define HE_PIN(index) A0 + HE_KEYS - index - 1
 
 // Macro for getting the pin of the specified index of the digital key. The pin order is not swapped here, meaning
-// the first digital key is on pin 10, the second on 11, and so on.
-// NOTE: This way, the amount of keys is limited to 16 since the 10th key overlaps with the first analog port, 26.
-#define DIGITAL_PIN(index) 10 + DIGITAL_KEYS - index - 1
+// the first digital key is on pin 1, the second on 11, and so on.
+// NOTE: This way, the amount of keys is limited to 26 since the 27th key overlaps with the first analog port, 26.
+#define DIGITAL_PIN(index) 1 + DIGITAL_KEYS - index - 1
 
-// Add a compiler error if the firmware is being tried to built with more than the supported 1-3 keys.
-#if HE_KEYS > 3 || HE_KEYS < 1
-#error As of right now, the firmware only supports 1-3 hall effect keys.
+// Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
+// (only 4 ADC pns available)
+#if HE_KEYS > 4
+#error As of right now, the firmware only supports up to 4 hall effect keys.
+#endif
+
+// Add a compiler error if the firmware is being tried to built with more than the supported 26 digital keys.
+// (limited amount of ports + characters)
+#if DIGITAL_KEYS > 26
+#error As of right now, the firmware only supports up to 26 digital keys.
 #endif
