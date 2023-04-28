@@ -41,17 +41,15 @@
 // By default, the firmware is made to handle the readings going down and not up.
 // #define INVERT_SENSOR_READINGS
 
-// Define the ports used for the HE sensors.
-#if KEYS == 3
-#define HE_PINS    \
-    {              \
-        A2, A1, A0 \
-    }
-#elif KEYS == 2
-#define HE_PINS \
-    {           \
-        A1, A0  \
-    }
-#else
-#error The firmware only supports 2 or 3 keys.
+// Macro for getting the pin of the specified key index. The pin order is being swapped here,
+// meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted,
+// depending on how the PCB / hardware of the device using this firmware is built.
+// NOTE: By the uint8 datatype, the amount of keys is limited to 255.
+// NOTE: By the default config initialization, the amount of keys is limited to
+//       around 26 since the characters are assigned backwards started from 'z'.
+#define HE_PIN(index) 26 + HE_KEYS - index - 1
+
+// Add a compiler error if the firmware is being tried to built with more than the supported 1-3 keys.
+#if HE_KEYS > 3 || HE_KEYS < 1
+#error As of right now, the firmware only supports 1-3 hall effect keys.
 #endif

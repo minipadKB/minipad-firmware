@@ -14,10 +14,10 @@ void ConfigurationController::loadConfig()
         config = defaultConfig;
         save = true;
     }
-    if (config.keys[0].version != defaultConfig.keys[0].version)
+    if (config.heKeys[0].version != defaultConfig.heKeys[0].version)
     {
-        for (int i = 0; i < KEYS; i++)
-            config.keys[i] = defaultConfig.keys[i];
+        for (int i = 0; i < HE_KEYS; i++)
+            config.heKeys[i] = defaultConfig.heKeys[i];
         save = true;
     }
 

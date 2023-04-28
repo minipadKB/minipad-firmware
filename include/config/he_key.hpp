@@ -2,11 +2,11 @@
 
 #include <stdint.h>
 
-// Configuration for the keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
-struct Key
+// Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
+struct HEKey
 {
     // Version of the configuration, used to check whether the struct layout in the EEPROM is up-to-date.
-    int64_t version;
+    int64_t version = HEKey::getVersion();
 
     // The index of the key. This is hardcoded in the default config and is not changed.
     // It does not serve a config purpose but is instead for accessing the index from the Key object.

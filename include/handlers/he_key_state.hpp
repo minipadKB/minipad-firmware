@@ -5,7 +5,7 @@
 #include "definitions.hpp"
 
 // A struct containing info about the state of a key for the keypad handler.
-struct KeyState
+struct HEKeyState
 {
     // State whether the key is currently pressed down.
     bool pressed = false;

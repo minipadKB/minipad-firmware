@@ -55,25 +55,25 @@ void SerialHandler::handleSerialInput(String *inputStr)
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
         // By default, apply this command to all keys.
-        Key *keys = ConfigController.config.keys;
+        HEKey *keys = ConfigController.config.heKeys;
 
         // If an index is specified ("keyX"), replace that keys array with just that key.
         if (strlen(keyStr) > 3)
         {
             // Get the index and check if it's in the valid range.
             uint8_t keyIndex = atoi(keyStr + 3) - 1;
-            if (keyIndex >= KEYS)
+            if (keyIndex >= HE_KEYS)
                 return;
 
             // Replace the array with that single key.
-            keys = &ConfigController.config.keys[keyIndex];
+            keys = &ConfigController.config.heKeys[keyIndex];
         }
 
         // Apply the command to all targetted keys.
-        for (uint8_t i = 0; i < (strlen(keyStr) > 3 ? 1 : KEYS); i++)
+        for (uint8_t i = 0; i < (strlen(keyStr) > 3 ? 1 : HE_KEYS); i++)
         {
             // Get the key from the pointer array.
-            Key &key = keys[i];
+            HEKey &key = keys[i];
 
             // Handle the settings.
             if (isEqual(setting, "rt"))
@@ -103,7 +103,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 void SerialHandler::ping()
 {
     // Print out the pong message including the firmware version and specifications of the keypad.
-    print("PONG %s%s %s | KEYS=%d", FIRMWARE_VERSION, DEBUG ? "-dev" : "", ConfigController.config.name, KEYS);
+    print("PONG %s%s %s | HE_KEYS=%d", FIRMWARE_VERSION, DEBUG ? "-dev" : "", ConfigController.config.name, HE_KEYS);
 }
 
 void SerialHandler::boot()
@@ -127,7 +127,7 @@ void SerialHandler::get()
     print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
 
     // Output all key-specific settings.
-    for (const Key &key : ConfigController.config.keys)
+    for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Format the base for all lines being written.
         print("GET key%d.rt=%d", key.index + 1, key.rapidTrigger);
@@ -166,19 +166,19 @@ void SerialHandler::echo(char *input)
     Serial.println(input);
 }
 
-void SerialHandler::rt(Key &key, bool state)
+void SerialHandler::rt(HEKey &key, bool state)
 {
     // Set the rapid trigger config value to the specified state.
     key.rapidTrigger = state;
 }
 
-void SerialHandler::crt(Key &key, bool state)
+void SerialHandler::crt(HEKey &key, bool state)
 {
     // Set the continuous rapid trigger config value to the specified state.
     key.continuousRapidTrigger = state;
 }
 
-void SerialHandler::rtus(Key &key, uint16_t value)
+void SerialHandler::rtus(HEKey &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
@@ -186,7 +186,7 @@ void SerialHandler::rtus(Key &key, uint16_t value)
         key.rapidTriggerUpSensitivity = value;
 }
 
-void SerialHandler::rtds(Key &key, uint16_t value)
+void SerialHandler::rtds(HEKey &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
@@ -194,7 +194,7 @@ void SerialHandler::rtds(Key &key, uint16_t value)
         key.rapidTriggerDownSensitivity = value;
 }
 
-void SerialHandler::lh(Key &key, uint16_t value)
+void SerialHandler::lh(HEKey &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the upper hysteresis.
     if (key.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
@@ -202,7 +202,7 @@ void SerialHandler::lh(Key &key, uint16_t value)
         key.lowerHysteresis = value;
 }
 
-void SerialHandler::uh(Key &key, uint16_t value)
+void SerialHandler::uh(HEKey &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
     // Also make sure the upper hysteresis is at least said tolerance away from TRAVEL_DISTANCE_IN_0_01MM
@@ -212,7 +212,7 @@ void SerialHandler::uh(Key &key, uint16_t value)
         key.upperHysteresis = value;
 }
 
-void SerialHandler::keyChar(Key &key, uint8_t keyChar)
+void SerialHandler::keyChar(HEKey &key, uint8_t keyChar)
 {
     // Check if the specified key is a letter with a byte value between 97 and 122.
     if (keyChar >= 97 && keyChar <= 122)
@@ -220,7 +220,7 @@ void SerialHandler::keyChar(Key &key, uint8_t keyChar)
         key.keyChar = keyChar;
 }
 
-void SerialHandler::rest(Key &key, uint16_t value)
+void SerialHandler::rest(HEKey &key, uint16_t value)
 {
     // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
     if (value > key.downPosition && value <= pow(2, ANALOG_RESOLUTION) - 1)
@@ -228,7 +228,7 @@ void SerialHandler::rest(Key &key, uint16_t value)
         key.restPosition = value;
 }
 
-void SerialHandler::down(Key &key, uint16_t value)
+void SerialHandler::down(HEKey &key, uint16_t value)
 {
     // Check whether the specified value is smaller than the rest position.
     if (value < key.restPosition)
@@ -236,7 +236,7 @@ void SerialHandler::down(Key &key, uint16_t value)
         key.downPosition = value;
 }
 
-void SerialHandler::hid(Key &key, bool state)
+void SerialHandler::hid(HEKey &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
