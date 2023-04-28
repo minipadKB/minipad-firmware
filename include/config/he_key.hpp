@@ -9,14 +9,13 @@ struct HEKey
     int64_t version = HEKey::getVersion();
 
     // The index of the key. This is hardcoded in the default config and is not changed.
-    // It does not serve a config purpose but is instead for accessing the index from the Key object.
+    // It does not serve a config purpose but is instead for accessing the index from the HEKey object.
     uint8_t index;
 
     // Bool whether rapid trigger is enabled or not.
     bool rapidTrigger;
 
     // Bool whether continuous rapid trigger is enabled or not.
-    // This ignores the hysteresis once it has been passed until the key is fully released.
     bool continuousRapidTrigger;
 
     // The sensitivity of the rapid trigger algorithm when pressing up.
@@ -25,16 +24,16 @@ struct HEKey
     // The sensitivity of the rapid trigger algorithm when pressing down.
     uint16_t rapidTriggerDownSensitivity;
 
-    // The value below which the button is pressed and rapid trigger is active in rapid trigger mode.
+    // The value below which the key is pressed and rapid trigger is active in rapid trigger mode.
     uint16_t lowerHysteresis;
 
-    // The value below which the button is no longer pressed and rapid trigger is no longer active in rapid trigger mode.
+    // The value below which the key is no longer pressed and rapid trigger is no longer active in rapid trigger mode.
     uint16_t upperHysteresis;
 
-    // The corresponding keys sent via HID interface
+    // The corresponding key sent via HID interface.
     char keyChar;
 
-    // Bools whether HID commands are sent on the keys.
+    // Bools whether HID commands are sent on the key.
     bool hidEnabled;
 
     // The value read when the keys are in rest position/all the way down.
