@@ -41,13 +41,18 @@
 // By default, the firmware is made to handle the readings going down and not up.
 // #define INVERT_SENSOR_READINGS
 
-// Macro for getting the pin of the specified key index. The pin order is being swapped here,
-// meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted,
-// depending on how the PCB / hardware of the device using this firmware is built.
+// Macro for getting the hall effect sensor pin of the specified key index. The pin order is being swapped here,
+// meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted, depending on how the PCB
+// and hardware of the device using this firmware has been designed. The A0 constant is 26 in the RP2040 environment.
 // NOTE: By the uint8 datatype, the amount of keys is limited to 255.
 // NOTE: By the default config initialization, the amount of keys is limited to
 //       around 26 since the characters are assigned backwards started from 'z'.
-#define HE_PIN(index) 26 + HE_KEYS - index - 1
+#define HE_PIN(index) A0 + HE_KEYS - index - 1
+
+// Macro for getting the pin of the specified index of the digital key. The pin order is not swapped here, meaning
+// the first digital key is on pin 10, the second on 11, and so on.
+// NOTE: This way, the amount of keys is limited to 16 since the 10th key overlaps with the first analog port, 26.
+#define DIGITAL_PIN(index) 10 + DIGITAL_KEYS - index - 1
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 1-3 keys.
 #if HE_KEYS > 3 || HE_KEYS < 1

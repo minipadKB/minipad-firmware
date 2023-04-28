@@ -67,6 +67,16 @@ void KeypadHandler::handle()
         checkHEKey(key, mappedValue);
     }
 
+    // Go through all digital keys and run the checks.
+    for (const DigitalKey &key : ConfigController.config.digitalKeys)
+    {
+        // Read the digital value from the key pin.
+        bool pressed = readDigitalKey(key);
+
+        // Run the checks on the digital key.
+        checkDigitalKey(key, pressed);
+    }
+
     // Send the key report via the HID interface after updating the report.
     Keyboard.sendReport();
 }
@@ -124,6 +134,18 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
         _heKeyStates[key.index].rapidTriggerPeak = value;
 }
 
+void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
+{
+    // Check whether the pressed state changed.
+    if(pressed && !_digitalKeyStates[key.index].pressed)
+      ; //  pressKey(key);
+    else if(!pressed && _digitalKeyStates[key.index].pressed)
+      ; // releaseKey(key);
+
+    // Update the state whether the key is pressed down.
+    _digitalKeyStates[key.index].pressed = pressed;
+}
+
 void KeypadHandler::pressKey(const HEKey &key)
 {
     // Check whether the key is already pressed or HID commands are not enabled on the key.
@@ -158,6 +180,12 @@ uint16_t KeypadHandler::readHEKey(const HEKey &key)
 
     // Filter the value through the SMA filter and return it.
     return _heKeyStates[key.index].filter(value);
+}
+
+bool KeypadHandler::readDigitalKey(const DigitalKey &key)
+{
+    // Read the digital key and return whether tha signal is HIGH.
+    return digitalRead(DIGITAL_PIN(key.index));
 }
 
 uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const
