@@ -290,6 +290,12 @@ void SerialHandler::dkey_char(DigitalKey &key, uint8_t keyChar)
         key.keyChar = keyChar;
 }
 
+void SerialHandler::dkey_hid(DigitalKey &key, bool state)
+{
+    // Set the hid config value of the specified key to the specified state.
+    key.hidEnabled = state;
+}
+
 bool SerialHandler::isTrue(char *str)
 {
     return isEqual(str, "1") || isEqual(str, "true");
