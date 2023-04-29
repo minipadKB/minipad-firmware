@@ -16,7 +16,9 @@ public:
             _heKeyStates[i] = HEKeyState();
 
         // Initialize the digital key states with their default values.
+#pragma GCC diagnostic ignored "-Wtype-limits"
         for (uint8_t i = 0; i < DIGITAL_KEYS; i++)
+#pragma GCC diagnostic pop
             _digitalKeyStates[i] = DigitalKeyState();
     }
 

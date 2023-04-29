@@ -53,7 +53,9 @@ private:
         }
 
         // Populate the digital keys array with the correct amount of digital keys.
+#pragma GCC diagnostic ignored "-Wtype-limits"
         for (uint8_t i = 0; i < DIGITAL_KEYS; i++)
+#pragma GCC diagnostic pop
         {
             config.digitalKeys[i] = {
                 .index = i,

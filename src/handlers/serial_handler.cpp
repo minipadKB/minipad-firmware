@@ -114,7 +114,9 @@ void SerialHandler::handleSerialInput(String *inputStr)
         {
             // Get the index and check if it's in the valid range.
             uint8_t keyIndex = atoi(keyStr + 4) - 1;
+#pragma GCC diagnostic ignored "-Wtype-limits"
             if (keyIndex >= DIGITAL_KEYS)
+#pragma GCC diagnostic pop
                 return;
 
             // Replace the array with that single digital key.
