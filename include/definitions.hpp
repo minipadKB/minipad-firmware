@@ -51,9 +51,9 @@
 #define HE_PIN(index) A0 + HE_KEYS - index - 1
 
 // Macro for getting the pin of the specified index of the digital key. The pin order is not swapped here, meaning
-// the first digital key is on pin 1, the second on 11, and so on.
+// the first digital key is on pin 0, the second on 1, and so on.
 // NOTE: This way, the amount of keys is limited to 26 since the 27th key overlaps with the first analog port, 26.
-#define DIGITAL_PIN(index) 1 + DIGITAL_KEYS - index - 1
+#define DIGITAL_PIN(index) 0 + DIGITAL_KEYS - index - 1
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
 // (only 4 ADC pns available)
