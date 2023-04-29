@@ -43,8 +43,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
         echo(parameters);
 #endif
 
-    // Handle hall effect key specific commands by checking if the command starts with "key".
-    if (strstr(command, "key") == command)
+    // Handle hall effect key specific commands by checking if the command starts with "hkey".
+    if (strstr(command, "hkey") == command)
     {
         // Split the command into the key string and the setting name.
         char keyStr[1024];
@@ -55,11 +55,11 @@ void SerialHandler::handleSerialInput(String *inputStr)
         // By default, apply this command to all hall effect keys.
         HEKey *keys = ConfigController.config.heKeys;
 
-        // If an index is specified ("keyX"), replace that keys array with just that key.
-        if (strlen(keyStr) > 3)
+        // If an index is specified ("hkeyX"), replace that keys array with just that key.
+        if (strlen(keyStr) > 4)
         {
             // Get the index and check if it's in the valid range.
-            uint8_t keyIndex = atoi(keyStr + 3) - 1;
+            uint8_t keyIndex = atoi(keyStr + 4) - 1;
             if (keyIndex >= HE_KEYS)
                 return;
 
@@ -68,32 +68,32 @@ void SerialHandler::handleSerialInput(String *inputStr)
         }
 
         // Apply the command to all targetted hall effect keys.
-        for (uint8_t i = 0; i < (strlen(keyStr) > 3 ? 1 : HE_KEYS); i++)
+        for (uint8_t i = 0; i < (strlen(keyStr) > 4 ? 1 : HE_KEYS); i++)
         {
             // Get the key from the pointer array.
             HEKey &key = keys[i];
 
             // Handle the settings.
             if (isEqual(setting, "rt"))
-                key_rt(key, isTrue(arg0));
+                hkey_rt(key, isTrue(arg0));
             else if (isEqual(setting, "crt"))
-                key_crt(key, isTrue(arg0));
+                hkey_crt(key, isTrue(arg0));
             else if (isEqual(setting, "rtus"))
-                key_rtus(key, atoi(arg0));
+                hkey_rtus(key, atoi(arg0));
             else if (isEqual(setting, "rtds"))
-                key_rtds(key, atoi(arg0));
+                hkey_rtds(key, atoi(arg0));
             else if (isEqual(setting, "lh"))
-                key_lh(key, atoi(arg0));
+                hkey_lh(key, atoi(arg0));
             else if (isEqual(setting, "uh"))
-                key_uh(key, atoi(arg0));
+                hkey_uh(key, atoi(arg0));
             else if (isEqual(setting, "char"))
-                key_char(key, atoi(arg0));
+                hkey_char(key, atoi(arg0));
             else if (isEqual(setting, "rest"))
-                key_rest(key, atoi(arg0));
+                hkey_rest(key, atoi(arg0));
             else if (isEqual(setting, "down"))
-                key_down(key, atoi(arg0));
+                hkey_down(key, atoi(arg0));
             else if (isEqual(setting, "hid"))
-                key_hid(key, isTrue(arg0));
+                hkey_hid(key, isTrue(arg0));
         }
     }
 
@@ -163,16 +163,16 @@ void SerialHandler::get()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Format the base for all lines being written.
-        print("GET key%d.rt=%d", key.index + 1, key.rapidTrigger);
-        print("GET key%d.crt=%d", key.index + 1, key.continuousRapidTrigger);
-        print("GET key%d.rtus=%d", key.index + 1, key.rapidTriggerUpSensitivity);
-        print("GET key%d.rtds=%d", key.index + 1, key.rapidTriggerDownSensitivity);
-        print("GET key%d.lh=%d", key.index + 1, key.lowerHysteresis);
-        print("GET key%d.uh=%d", key.index + 1, key.upperHysteresis);
-        print("GET key%d.char=%d", key.index + 1, key.keyChar);
-        print("GET key%d.rest=%d", key.index + 1, key.restPosition);
-        print("GET key%d.down=%d", key.index + 1, key.downPosition);
-        print("GET key%d.hid=%d", key.index + 1, key.hidEnabled);
+        print("GET hkey%d.rt=%d", key.index + 1, key.rapidTrigger);
+        print("GET hkey%d.crt=%d", key.index + 1, key.continuousRapidTrigger);
+        print("GET hkey%d.rtus=%d", key.index + 1, key.rapidTriggerUpSensitivity);
+        print("GET hkey%d.rtds=%d", key.index + 1, key.rapidTriggerDownSensitivity);
+        print("GET hkey%d.lh=%d", key.index + 1, key.lowerHysteresis);
+        print("GET hkey%d.uh=%d", key.index + 1, key.upperHysteresis);
+        print("GET hkey%d.char=%d", key.index + 1, key.keyChar);
+        print("GET hkey%d.rest=%d", key.index + 1, key.restPosition);
+        print("GET hkey%d.down=%d", key.index + 1, key.downPosition);
+        print("GET hkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
     // Output all digital key-specific settings.
@@ -206,19 +206,19 @@ void SerialHandler::echo(char *input)
     Serial.println(input);
 }
 
-void SerialHandler::key_rt(HEKey &key, bool state)
+void SerialHandler::hkey_rt(HEKey &key, bool state)
 {
     // Set the rapid trigger config value to the specified state.
     key.rapidTrigger = state;
 }
 
-void SerialHandler::key_crt(HEKey &key, bool state)
+void SerialHandler::hkey_crt(HEKey &key, bool state)
 {
     // Set the continuous rapid trigger config value to the specified state.
     key.continuousRapidTrigger = state;
 }
 
-void SerialHandler::key_rtus(HEKey &key, uint16_t value)
+void SerialHandler::hkey_rtus(HEKey &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
@@ -226,7 +226,7 @@ void SerialHandler::key_rtus(HEKey &key, uint16_t value)
         key.rapidTriggerUpSensitivity = value;
 }
 
-void SerialHandler::key_rtds(HEKey &key, uint16_t value)
+void SerialHandler::hkey_rtds(HEKey &key, uint16_t value)
 {
     // Check if the specified value is within the tolerance-TRAVEL_DISTANCE_IN_0_01MM boundary.
     if (value >= RAPID_TRIGGER_TOLERANCE && value <= TRAVEL_DISTANCE_IN_0_01MM)
@@ -234,7 +234,7 @@ void SerialHandler::key_rtds(HEKey &key, uint16_t value)
         key.rapidTriggerDownSensitivity = value;
 }
 
-void SerialHandler::key_lh(HEKey &key, uint16_t value)
+void SerialHandler::hkey_lh(HEKey &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the upper hysteresis.
     if (key.upperHysteresis - value >= HYSTERESIS_TOLERANCE)
@@ -242,7 +242,7 @@ void SerialHandler::key_lh(HEKey &key, uint16_t value)
         key.lowerHysteresis = value;
 }
 
-void SerialHandler::key_uh(HEKey &key, uint16_t value)
+void SerialHandler::hkey_uh(HEKey &key, uint16_t value)
 {
     // Check if the specified value is at least the hysteresis tolerance away from the lower hysteresis.
     // Also make sure the upper hysteresis is at least said tolerance away from TRAVEL_DISTANCE_IN_0_01MM
@@ -252,7 +252,7 @@ void SerialHandler::key_uh(HEKey &key, uint16_t value)
         key.upperHysteresis = value;
 }
 
-void SerialHandler::key_char(HEKey &key, uint8_t keyChar)
+void SerialHandler::hkey_char(HEKey &key, uint8_t keyChar)
 {
     // Check if the specified key is a letter with a byte value between 97 and 122.
     if (keyChar >= 97 && keyChar <= 122)
@@ -260,7 +260,7 @@ void SerialHandler::key_char(HEKey &key, uint8_t keyChar)
         key.keyChar = keyChar;
 }
 
-void SerialHandler::key_rest(HEKey &key, uint16_t value)
+void SerialHandler::hkey_rest(HEKey &key, uint16_t value)
 {
     // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
     if (value > key.downPosition && value <= pow(2, ANALOG_RESOLUTION) - 1)
@@ -268,7 +268,7 @@ void SerialHandler::key_rest(HEKey &key, uint16_t value)
         key.restPosition = value;
 }
 
-void SerialHandler::key_down(HEKey &key, uint16_t value)
+void SerialHandler::hkey_down(HEKey &key, uint16_t value)
 {
     // Check whether the specified value is smaller than the rest position.
     if (value < key.restPosition)
@@ -276,7 +276,7 @@ void SerialHandler::key_down(HEKey &key, uint16_t value)
         key.downPosition = value;
 }
 
-void SerialHandler::key_hid(HEKey &key, bool state)
+void SerialHandler::hkey_hid(HEKey &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
