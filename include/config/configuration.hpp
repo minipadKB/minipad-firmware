@@ -15,7 +15,7 @@ struct Configuration
     // A list of all hall effect key configurations. (rapid trigger, hysteresis, calibration, ...)
     HEKey heKeys[HE_KEYS];
 
-    // A list of all digital key confiurations. (key char, hid state, ...)
+    // A list of all digital key configurations. (key char, hid state, ...)
     DigitalKey digitalKeys[DIGITAL_KEYS];
 
     // Returns the version constant of the latest Configuration layout.

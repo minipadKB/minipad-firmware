@@ -136,15 +136,11 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
 
 void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
-    Serial.println(String(key.index) + " " + String(pressed));
-    // Check whether the pressed state changed.
-    if(pressed && !_digitalKeyStates[key.index].pressed)
+    // Check whether the key is pressed and send the HID command.
+    if(pressed)
       pressDigitalKey(key);
-    else if(!pressed && _digitalKeyStates[key.index].pressed)
+    else
       releaseDigitalKey(key);
-
-    // Update the state whether the key is pressed down.
-    _digitalKeyStates[key.index].pressed = pressed;
 }
 
 void KeypadHandler::pressHEKey(const HEKey &key)
@@ -196,7 +192,10 @@ uint16_t KeypadHandler::readHEKey(const HEKey &key)
     // Read the value from the port of the specified key.
     uint16_t value = analogRead(HE_PIN(key.index));
 
-    // Invert the value if the definition is set.
+    // Invert the value if the definition is set since in rare fields of application the sensor
+    // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
+    // Since this firmware expects the value to go down when the button is pressed down, this is needed.
+    // TODO: Replace 4095 with pow(2, ANALOG_RESOLUTION) - 1
 #ifdef INVERT_SENSOR_READINGS
     value = 4095 - value;
 #endif
@@ -207,7 +206,7 @@ uint16_t KeypadHandler::readHEKey(const HEKey &key)
 
 bool KeypadHandler::readDigitalKey(const DigitalKey &key)
 {
-    // Read the digital key and return whether tha signal is HIGH.
+    // Read the digital key and return whether the signal is HIGH.
     return digitalRead(DIGITAL_PIN(key.index));
 }
 

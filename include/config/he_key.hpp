@@ -4,7 +4,7 @@
 #include "key.hpp"
 
 // Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
-struct HEKey : public Key
+struct HEKey : Key
 {
     // Bool whether rapid trigger is enabled or not.
     bool rapidTrigger;

@@ -11,6 +11,10 @@ extern "C"
 // Define a handy macro for printing with a newline character at the end.
 #define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
 
+// Define two more handy macros for interpreting the serial input.
+#define isEqual(str1, str2) strcmp(str1, str2) == 0
+#define isTrue(str) isEqual(str, "1") || isEqual(str, "true")
+
 void SerialHandler::handleSerialInput(String *inputStr)
 {
     // Convert the string into a character array for further parsing and make it lowercase.
@@ -56,6 +60,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         HEKey *keys = ConfigController.config.heKeys;
 
         // If an index is specified ("hkeyX"), replace that keys array with just that key.
+        // This is checked by looking whether the key string has > 4 characters.
         if (strlen(keyStr) > 4)
         {
             // Get the index and check if it's in the valid range.
@@ -86,14 +91,14 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 hkey_lh(key, atoi(arg0));
             else if (isEqual(setting, "uh"))
                 hkey_uh(key, atoi(arg0));
-            else if (isEqual(setting, "char"))
-                hkey_char(key, atoi(arg0));
             else if (isEqual(setting, "rest"))
                 hkey_rest(key, atoi(arg0));
             else if (isEqual(setting, "down"))
                 hkey_down(key, atoi(arg0));
+            else if (isEqual(setting, "char"))
+                key_char(key, atoi(arg0));
             else if (isEqual(setting, "hid"))
-                hkey_hid(key, isTrue(arg0));
+                key_hid(key, isTrue(arg0));
         }
     }
 
@@ -110,6 +115,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         DigitalKey *keys = ConfigController.config.digitalKeys;
 
         // If an index is specified ("dkeyX"), replace that keys array with just that key.
+        // This is checked by looking whether the key string has > 4 characters.
         if (strlen(keyStr) > 4)
         {
             // Get the index and check if it's in the valid range.
@@ -131,9 +137,9 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
             // Handle the settings.
             if (isEqual(setting, "char"))
-                dkey_char(key, atoi(arg0));
+                key_char(key, atoi(arg0));
             else if (isEqual(setting, "hid"))
-                dkey_hid(key, isTrue(arg0));
+                key_hid(key, isTrue(arg0));
         }
     }
 }
@@ -193,7 +199,7 @@ void SerialHandler::name(char *name)
     // Get the length of the name and check if it's within the 1-128 characters boundary.
     size_t length = strlen(name);
     if (length >= 1 && length <= 128)
-        strcpy(ConfigController.config.name, name);
+        memcpy(ConfigController.config.name, name, length);
 }
 
 void SerialHandler::out(bool state)
@@ -254,14 +260,6 @@ void SerialHandler::hkey_uh(HEKey &key, uint16_t value)
         key.upperHysteresis = value;
 }
 
-void SerialHandler::hkey_char(HEKey &key, uint8_t keyChar)
-{
-    // Check if the specified key is a letter with a byte value between 97 and 122.
-    if (keyChar >= 97 && keyChar <= 122)
-        // Set the key config value of the specified key to the specified state.
-        key.keyChar = keyChar;
-}
-
 void SerialHandler::hkey_rest(HEKey &key, uint16_t value)
 {
     // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
@@ -278,33 +276,16 @@ void SerialHandler::hkey_down(HEKey &key, uint16_t value)
         key.downPosition = value;
 }
 
-void SerialHandler::hkey_hid(HEKey &key, bool state)
+void SerialHandler::key_char(Key &key, uint8_t keyChar)
 {
-    // Set the hid config value of the specified key to the specified state.
-    key.hidEnabled = state;
-}
-
-void SerialHandler::dkey_char(DigitalKey &key, uint8_t keyChar)
-{
-    // Check if the specified key is a letter with a byte value between 97 and 122.
-    if (keyChar >= 97 && keyChar <= 122)
+    // Check if the specified key is a letter with a byte value between 97 (a) and 122 (z).
+    if (keyChar >= 'a' && keyChar <= 'z')
         // Set the key config value of the specified key to the specified state.
         key.keyChar = keyChar;
 }
 
-void SerialHandler::dkey_hid(DigitalKey &key, bool state)
+void SerialHandler::key_hid(Key &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
-}
-
-bool SerialHandler::isTrue(char *str)
-{
-    return isEqual(str, "1") || isEqual(str, "true");
-}
-
-bool SerialHandler::isEqual(char *str1, const char *str2)
-{
-    // Compare the specified strings and return whether they are equal or not.
-    return strcmp(str1, str2) == 0;
 }

@@ -10,7 +10,7 @@ public:
     {
         defaultConfig = getDefaultConfig();
         config = defaultConfig;
-    };
+    }
 
     void loadConfig();
     void saveConfig();
@@ -27,8 +27,7 @@ private:
         Configuration config = {
             .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
             .heKeys = {},
-            .digitalKeys = {}
-        };
+            .digitalKeys = {}};
 
         // Populate the hall effect keys array with the correct amount of hall effect keys.
         for (uint8_t i = 0; i < HE_KEYS; i++)
@@ -36,10 +35,10 @@ private:
             config.heKeys[i] = {
                 {
                     .index = i,
-                    // Assign the keys from z downwards. (z, y, x, w, v, ...)
-                    // With too many keys (>26?), this would eventually run out of characters.
-                   .keyChar = (char)('z' - i),
-                    .hidEnabled = false
+                     // Assign the keys from z downwards. (z, y, x, w, v, ...)
+                     // With too many keys (>26?), this would eventually run out of characters.
+                     .keyChar = (char)('z' - i),
+                     .hidEnabled = false
                 },
 
                 .rapidTrigger = false,
@@ -51,6 +50,7 @@ private:
                 .lowerHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.55),
                 .upperHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.675),
 
+                // Approximate calibration values on a 49E sensor with 12-bit resolution.
                 .restPosition = 1800,
                 .downPosition = 1100
             };
@@ -68,8 +68,7 @@ private:
                     // Assign the keys from a forwards. (z, y, x, w, v, ...)
                     // With too many keys (>26?), this would eventually run out of characters.
                     .keyChar = (char)('a' + i),
-                    .hidEnabled = false
-                }
+                    .hidEnabled = false}
             };
         }
 
