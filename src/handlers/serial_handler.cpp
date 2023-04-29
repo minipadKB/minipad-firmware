@@ -159,7 +159,7 @@ void SerialHandler::get()
     print("GET rtol=%d", RAPID_TRIGGER_TOLERANCE);
     print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
 
-    // Output all key-specific settings.
+    // Output all hall effect key-specific settings.
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Format the base for all lines being written.
@@ -169,10 +169,17 @@ void SerialHandler::get()
         print("GET key%d.rtds=%d", key.index + 1, key.rapidTriggerDownSensitivity);
         print("GET key%d.lh=%d", key.index + 1, key.lowerHysteresis);
         print("GET key%d.uh=%d", key.index + 1, key.upperHysteresis);
-        print("GET key%d.key=%d", key.index + 1, key.keyChar);
+        print("GET key%d.char=%d", key.index + 1, key.keyChar);
         print("GET key%d.rest=%d", key.index + 1, key.restPosition);
         print("GET key%d.down=%d", key.index + 1, key.downPosition);
         print("GET key%d.hid=%d", key.index + 1, key.hidEnabled);
+    }
+
+    // Output all digital key-specific settings.
+    for (const DigitalKey &key : ConfigController.config.digitalKeys)
+    {
+        print("GET dkey%d.char=%d", key.index + 1, key.keyChar);
+        print("GET dkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
