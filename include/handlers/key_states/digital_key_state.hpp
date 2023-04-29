@@ -9,5 +9,5 @@
 struct DigitalKeyState : KeyState
 {
     // This struct is empty on purpose. The only purpose it serves is explicitly having
-    // a type for the digital keys, instead of differentiating between KeyState and HEKeyState.
+    // a type for the digital keys, instead of differentiating between KeyState and DigitalKeyState.
 };

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Keyboard.h>
+#include "config/keys/key_type.hpp"
 #include "handlers/keypad_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
@@ -90,9 +91,9 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
         // If the value drops <= the lower hysteresis, the key is pressed down.
         // If the value rises >= the upper hysteresis, the key is released.
         if (value <= key.lowerHysteresis)
-            pressKey(key, true);
+            pressKey(key);
         else if (value >= key.upperHysteresis)
-            releaseKey(key, true);
+            releaseKey(key);
 
         // Return here to not run into the rapid trigger code.
         return;
@@ -114,7 +115,7 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
     // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
     if (value <= key.lowerHysteresis && !_heKeyStates[key.index].inRapidTriggerZone)
     {
-        pressKey(key, true);
+        pressKey(key);
         _heKeyStates[key.index].inRapidTriggerZone = true;
     }
 
@@ -122,11 +123,11 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
     // Check whether the key should be pressed. This is the case if the key is currently not pressed,
     // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
     else if (!_heKeyStates[key.index].pressed && _heKeyStates[key.index].inRapidTriggerZone && value + key.rapidTriggerDownSensitivity <= _heKeyStates[key.index].rapidTriggerPeak)
-        pressKey(key, true);
+        pressKey(key);
     // Check whether the key should be released. This is the case if the key is currently pressed down and either the
     // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
     else if (_heKeyStates[key.index].pressed && (!_heKeyStates[key.index].inRapidTriggerZone || value >= _heKeyStates[key.index].rapidTriggerPeak + key.rapidTriggerUpSensitivity))
-        releaseKey(key, true);
+        releaseKey(key);
 
     // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
@@ -138,16 +139,15 @@ void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
     // Check whether the key is pressed and send the HID command.
     if (pressed)
-        pressKey(key, false);
+        pressKey(key);
     else
-        releaseKey(key, false);
+        releaseKey(key);
 }
 
-void KeypadHandler::pressKey(const Key &key, bool isHeKey)
+void KeypadHandler::pressKey(const Key &key)
 {
-    bool *pressedPtr = &_heKeyStates[key.index].pressed;
-    if (!isHeKey)
-        pressedPtr = &_digitalKeyStates[key.index].pressed;
+    // Get the pointer to the correct pressed bool depending on the key type.
+    bool *pressedPtr = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed : &_digitalKeyStates[key.index].pressed;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (pressedPtr || !key.hidEnabled)
@@ -158,11 +158,10 @@ void KeypadHandler::pressKey(const Key &key, bool isHeKey)
     Keyboard.press(key.keyChar);
 }
 
-void KeypadHandler::releaseKey(const Key &key, bool isHeKey)
+void KeypadHandler::releaseKey(const Key &key)
 {
-    bool *pressedPtr = &_heKeyStates[key.index].pressed;
-    if (!isHeKey)
-        pressedPtr = &_digitalKeyStates[key.index].pressed;
+    // Get the pointer to the correct pressed bool depending on the key type.
+    bool *pressedPtr = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed : &_digitalKeyStates[key.index].pressed;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (pressedPtr)

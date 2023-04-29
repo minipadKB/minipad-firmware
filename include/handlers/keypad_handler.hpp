@@ -31,8 +31,8 @@ private:
 
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
-    void pressKey(const Key &key, bool isHeKey);
-    void releaseKey(const Key &key, bool isHeKey);
+    void pressKey(const Key &key);
+    void releaseKey(const Key &key);
     uint16_t readHEKey(const HEKey &key);
     bool readDigitalKey(const DigitalKey &key);
     uint16_t mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const;
