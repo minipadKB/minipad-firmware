@@ -275,6 +275,14 @@ void SerialHandler::key_hid(HEKey &key, bool state)
     key.hidEnabled = state;
 }
 
+void SerialHandler::dkey_char(DigitalKey &key, uint8_t keyChar)
+{
+    // Check if the specified key is a letter with a byte value between 97 and 122.
+    if (keyChar >= 97 && keyChar <= 122)
+        // Set the key config value of the specified key to the specified state.
+        key.keyChar = keyChar;
+}
+
 bool SerialHandler::isTrue(char *str)
 {
     return isEqual(str, "1") || isEqual(str, "true");
