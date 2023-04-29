@@ -152,8 +152,8 @@ void SerialHandler::get()
 {
     // Output all global settings.
     print("GET version=%s%s", FIRMWARE_VERSION, DEBUG ? "-dev" : "");
-    print("GET hkeys=%s", HE_KEYS);
-    print("GET dkeys=%s", DIGITAL_KEYS);
+    print("GET hkeys=%d", HE_KEYS);
+    print("GET dkeys=%d", DIGITAL_KEYS);
     print("GET name=%s", ConfigController.config.name);
     print("GET htol=%d", HYSTERESIS_TOLERANCE);
     print("GET rtol=%d", RAPID_TRIGGER_TOLERANCE);
