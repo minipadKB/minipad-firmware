@@ -56,7 +56,7 @@
 #define DIGITAL_PIN(index) 0 + DIGITAL_KEYS - index - 1
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
-// (only 4 ADC pns available)
+// (only 4 ADC pins available)
 #if HE_KEYS > 4
 #error As of right now, the firmware only supports up to 4 hall effect keys.
 #endif
