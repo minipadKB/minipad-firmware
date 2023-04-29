@@ -136,6 +136,7 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
 
 void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
+    Serial.println(String(key.index) + " " + String(pressed));
     // Check whether the pressed state changed.
     if(pressed && !_digitalKeyStates[key.index].pressed)
       pressDigitalKey(key);
