@@ -48,7 +48,8 @@ private:
                 .keyChar = (char)('z' - i),
                 .hidEnabled = false,
                 .restPosition = 1800,
-                .downPosition = 1100};
+                .downPosition = 1100
+            };
         }
 
         // Populate the digital keys array with the correct amount of digital keys.
@@ -60,7 +61,8 @@ private:
                 // Assign the keys from a forwards. (z, y, x, w, v, ...)
                 // With too many keys (>26?), this would eventually run out of characters.
                 .keyChar = (char)('a' + i),
-                .hidEnabled = false};
+                .hidEnabled = false
+            };
         }
 
         return config;
