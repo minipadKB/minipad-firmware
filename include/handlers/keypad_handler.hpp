@@ -2,8 +2,8 @@
 
 #include "config/configuration_controller.hpp"
 #include "helpers/sma_filter.hpp"
-#include "handlers/he_key_state.hpp"
-#include "handlers/digital_key_state.hpp"
+#include "handlers/key_states/he_key_state.hpp"
+#include "handlers/key_states/digital_key_state.hpp"
 #include "definitions.hpp"
 
 inline class KeypadHandler
@@ -31,10 +31,8 @@ private:
 
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
-    void pressHEKey(const HEKey &key);
-    void releaseHEKey(const HEKey &key);
-    void pressDigitalKey(const DigitalKey &key);
-    void releaseDigitalKey(const DigitalKey &key);
+    void pressKey(const Key &key, bool isHeKey);
+    void releaseKey(const Key &key, bool isHeKey);
     uint16_t readHEKey(const HEKey &key);
     bool readDigitalKey(const DigitalKey &key);
     uint16_t mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const;

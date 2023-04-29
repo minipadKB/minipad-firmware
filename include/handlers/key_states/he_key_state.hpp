@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Arduino.h>
+#include "handlers/key_states/key_state.hpp"
 #include "helpers/sma_filter.hpp"
 #include "definitions.hpp"
 
 // A struct containing info about the state of a hall effect key for the keypad handler.
-struct HEKeyState
+struct HEKeyState : KeyState
 {
     // State whether the hall effect key is currently pressed down.
     bool pressed = false;

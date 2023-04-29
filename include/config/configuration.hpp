@@ -1,7 +1,7 @@
 #pragma once
 
-#include "he_key.hpp"
-#include "digital_key.hpp"
+#include "config/keys/he_key.hpp"
+#include "config/keys/digital_key.hpp"
 
 // Configuration for the whole firmware, containing the name of the keypad and it's configurations.
 struct Configuration
