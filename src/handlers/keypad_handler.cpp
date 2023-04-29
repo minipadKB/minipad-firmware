@@ -57,7 +57,7 @@ void KeypadHandler::handle()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
-        uint16_t rawValue = readHEKey(key);
+        uint16_t rawValue = readKey(key);
         uint16_t mappedValue = mapSensorValueToTravelDistance(key, rawValue);
 
         // If the output mode is enabled, output the raw and mapped values.
@@ -72,7 +72,7 @@ void KeypadHandler::handle()
     for (const DigitalKey &key : ConfigController.config.digitalKeys)
     {
         // Read the digital value from the key pin.
-        bool pressed = readDigitalKey(key);
+        bool pressed = readKey(key);
 
         // Run the checks on the digital key.
         checkDigitalKey(key, pressed);
@@ -147,52 +147,65 @@ void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 void KeypadHandler::pressKey(const Key &key)
 {
     // Get the pointer to the correct pressed bool depending on the key type.
-    bool *pressedPtr = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed : &_digitalKeyStates[key.index].pressed;
+    // In case the key type is neither digital or hall effect (which shouldn't happen),
+    // it defaults to a bool pointer to true, therefore the function exists out further down.
+    bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
+                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : (bool *)false;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if (pressedPtr || !key.hidEnabled)
+    if (pressed || !key.hidEnabled)
         return;
 
     // Send the HID instruction to the computer.
-    *pressedPtr = true;
+    *pressed = true;
     Keyboard.press(key.keyChar);
 }
 
 void KeypadHandler::releaseKey(const Key &key)
 {
     // Get the pointer to the correct pressed bool depending on the key type.
-    bool *pressedPtr = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed : &_digitalKeyStates[key.index].pressed;
+    // In case the key type is neither digital or hall effect (which shouldn't happen),
+    // it defaults to a bool pointer to true, therefore the function exists out further down.
+    bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
+                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : (bool *)false;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if (pressedPtr)
+    if (!pressed)
         return;
 
     // Send the HID instruction to the computer.
     Keyboard.release(key.keyChar);
-    *pressedPtr = false;
+    *pressed = false;
 }
 
-uint16_t KeypadHandler::readHEKey(const HEKey &key)
+uint16_t KeypadHandler::readKey(const Key &key)
 {
-    // Read the value from the port of the specified key.
-    uint16_t value = analogRead(HE_PIN(key.index));
+    // Perform a digital read if the key is a digital one.
+    if (key.type == KeyType::Digital)
+    {
+        // Read the digital key and return 0 or 1 depending on whether the signal is HIGH or LOW.
+        return digitalRead(DIGITAL_PIN(key.index));
+    }
+    // Perform an analog read if the key is a hall effect one.
+    else if (key.type == KeyType::HallEffect)
+    {
+        // Read the value from the port of the specified key.
+        uint16_t value = analogRead(HE_PIN(key.index));
 
-    // Invert the value if the definition is set since in rare fields of application the sensor
-    // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
-    // Since this firmware expects the value to go down when the button is pressed down, this is needed.
-    // TODO: Replace 4095 with pow(2, ANALOG_RESOLUTION) - 1
+        // Invert the value if the definition is set since in rare fields of application the sensor
+        // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
+        // Since this firmware expects the value to go down when the button is pressed down, this is needed.
+        // TODO: Replace 4095 with pow(2, ANALOG_RESOLUTION) - 1
 #ifdef INVERT_SENSOR_READINGS
-    value = 4095 - value;
+        value = 4095 - value;
 #endif
 
-    // Filter the value through the SMA filter and return it.
-    return _heKeyStates[key.index].filter(value);
-}
-
-bool KeypadHandler::readDigitalKey(const DigitalKey &key)
-{
-    // Read the digital key and return whether the signal is HIGH.
-    return digitalRead(DIGITAL_PIN(key.index));
+        // Filter the value through the SMA filter and return it.
+        return _heKeyStates[key.index].filter(value);
+    }
+    // Otherwise, in case anything goes wrong, default to 0.
+    else
+        return 0;
 }
 
 uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const
