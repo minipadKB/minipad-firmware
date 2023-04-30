@@ -7,9 +7,8 @@
 // Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
 struct HEKey : Key
 {
-    // Hides the type field of the underlying Key object and replaces it with the HallEffect key type.
-    // Used to identify the type of key that a Key object was initialized as (e.g. HEKey).
-    KeyType type = KeyType::HallEffect;
+    // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. HEKey).
+    HEKey() { type = KeyType::HallEffect; }
 
     // Bool whether rapid trigger is enabled or not.
     bool rapidTrigger;
