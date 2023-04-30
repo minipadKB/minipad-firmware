@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "helpers/string_helper.hpp"
 
-void getArgumentAt(const char* input, char delimiter, uint8_t index, char* output)
+void StringHelper::getArgumentAt(const char* input, char delimiter, uint8_t index, char* output)
 {
     // Remember the amount of found elements, start and end index of the current one and the total length.
     uint8_t found = 0;
