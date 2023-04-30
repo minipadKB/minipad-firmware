@@ -150,7 +150,7 @@ void KeypadHandler::pressKey(const Key &key)
     // In case the key type is neither digital or hall effect (which shouldn't happen),
     // it defaults to a bool pointer to true, therefore the function exists out further down.
     bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : (bool *)false;
+                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (pressed || !key.hidEnabled)
@@ -165,9 +165,9 @@ void KeypadHandler::releaseKey(const Key &key)
 {
     // Get the pointer to the correct pressed bool depending on the key type.
     // In case the key type is neither digital or hall effect (which shouldn't happen),
-    // it defaults to a bool pointer to true, therefore the function exists out further down.
+    // it defaults to a null pointer, therefore the function exists out further down.
     bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : (bool *)false;
+                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressed)
