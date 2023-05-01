@@ -36,8 +36,8 @@ private:
             config.heKeys[i].index = i;
 
             // Assign the keys from z downwards. (z, y, x, w, v, ...)
-            // With too many keys (>26?), this would eventually run out of characters.
-            config.heKeys[i].keyChar = (char)('z' - i);
+            // After 26 keys, stick to an 'a' key to not overflow.
+            config.heKeys[i].keyChar = i >= 26 ? 'a' : (char)('z' - i);
 
             config.heKeys[i].hidEnabled = false;
             config.heKeys[i].rapidTrigger = false;
@@ -62,9 +62,9 @@ private:
             config.digitalKeys[i] = DigitalKey();
             config.digitalKeys[i].index = i;
 
-            // Assign the keys from a forwards. (z, y, x, w, v, ...)
-            // With too many keys (>26?), this would eventually run out of characters.
-            config.digitalKeys[i].keyChar = (char)('a' + i),
+            // Assign the keys from a forwards. (a, b, c, d, e, ...)
+            // After 26 keys, stick to an 'z' key to not overflow.
+            config.digitalKeys[i].keyChar = i >= 26 ? 'z' : (char)('a' + i),
             config.digitalKeys[i].hidEnabled = false;
         }
 
