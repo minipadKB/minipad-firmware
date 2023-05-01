@@ -199,7 +199,7 @@ void SerialHandler::name(char *name)
     // Get the length of the name and check if it's within the 1-128 characters boundary.
     size_t length = strlen(name);
     if (length >= 1 && length <= 128)
-        memcpy(ConfigController.config.name, name, length);
+        memcpy(ConfigController.config.name, name + '\0', length + 1);
 }
 
 void SerialHandler::out(bool state)
