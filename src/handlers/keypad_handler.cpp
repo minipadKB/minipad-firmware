@@ -62,7 +62,7 @@ void KeypadHandler::handle()
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
-            Serial.printf("OUT key%d=%d %d\n", key.index + 1, rawValue, mappedValue);
+            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, rawValue, mappedValue);
 
         // Run the checks on the HE key.
         checkHEKey(key, mappedValue);
