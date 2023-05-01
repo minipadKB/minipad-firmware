@@ -153,7 +153,7 @@ void KeypadHandler::pressKey(const Key &key)
                   : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if (pressed || !key.hidEnabled)
+    if (*pressed || !key.hidEnabled)
         return;
 
     // Send the HID instruction to the computer.
@@ -170,7 +170,7 @@ void KeypadHandler::releaseKey(const Key &key)
                   : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
-    if (!pressed)
+    if (!*pressed)
         return;
 
     // Send the HID instruction to the computer.
