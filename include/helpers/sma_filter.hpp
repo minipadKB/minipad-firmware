@@ -15,11 +15,6 @@ public:
         , buffer(new uint16_t[samples] {0})
     {}
 
-    ~SMAFilter()
-    {
-        delete[] buffer;
-    }
-
     uint16_t operator()(uint16_t value);
 
 private:
