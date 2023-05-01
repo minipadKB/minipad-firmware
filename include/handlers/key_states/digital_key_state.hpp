@@ -8,6 +8,6 @@
 // A struct containing info about the state of a digital key for the keypad handler.
 struct DigitalKeyState : KeyState
 {
-    // This struct is empty on purpose. The only purpose it serves is explicitly having
-    // a type for the digital keys, instead of differentiating between KeyState and DigitalKeyState.
+    // The last time a key press on the digital key was sent, in milliseconds since firmware bootup.
+    unsigned long lastDebounce = 0;
 };

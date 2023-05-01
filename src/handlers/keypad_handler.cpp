@@ -138,9 +138,12 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
 void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
     // Check whether the key is pressed and send the HID command.
-    if (pressed)
+    if (pressed && millis() - _digitalKeyStates[key.index].lastDebounce >= DIGITAL_DEBOUNCE_DELAY)
+    {
         pressKey(key);
-    else
+        _digitalKeyStates[key.index].lastDebounce = millis();
+    }
+    else if(!pressed)
         releaseKey(key);
 }
 
