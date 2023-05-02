@@ -8,23 +8,20 @@ public:
     void handleSerialInput(String *inputStr);
 
 private:
-    void ping();
     void boot();
     void save();
     void get();
     void name(char *name);
     void out(bool state);
     void echo(char *input);
-    void rt(Key &key, bool state);
-    void crt(Key &key, bool state);
-    void rtus(Key &key, uint16_t value);
-    void rtds(Key &key, uint16_t value);
-    void lh(Key &key, uint16_t value);
-    void uh(Key &key, uint16_t value);
-    void keyChar(Key &key, uint8_t value);
-    void rest(Key &key, uint16_t value);
-    void down(Key &key, uint16_t value);
-    void hid(Key &key, bool state);
-    bool isTrue(char *str);
-    bool isEqual(char *str1, const char *str2);
+    void hkey_rt(HEKey &key, bool state);
+    void hkey_crt(HEKey &key, bool state);
+    void hkey_rtus(HEKey &key, uint16_t value);
+    void hkey_rtds(HEKey &key, uint16_t value);
+    void hkey_lh(HEKey &key, uint16_t value);
+    void hkey_uh(HEKey &key, uint16_t value);
+    void hkey_rest(HEKey &key, uint16_t value);
+    void hkey_down(HEKey &key, uint16_t value);
+    void key_char(Key &key, uint8_t keyChar);
+    void key_hid(Key &key, bool state);
 } SerialHandler;

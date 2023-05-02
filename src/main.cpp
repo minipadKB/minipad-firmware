@@ -7,7 +7,7 @@
 
 void setup()
 {
-    // Initialize the EEPROM and load the configuration from it.
+    // Initialize the EEPROM with 1024 bytes and load the configuration from it.
     EEPROM.begin(1024);
     ConfigController.loadConfig();
 
