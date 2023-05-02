@@ -15,8 +15,9 @@ public:
             _keyStates[i] = KeyState();
     }
 
-    void handle();
     bool outputMode = false;
+
+    void handle();
 
 private:
     KeyState _keyStates[KEYS];
