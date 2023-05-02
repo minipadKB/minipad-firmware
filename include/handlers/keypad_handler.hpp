@@ -16,7 +16,7 @@ public:
     }
 
     void handle();
-    bool outputMode;
+    bool outputMode = false;
 
 private:
     KeyState _keyStates[KEYS];
