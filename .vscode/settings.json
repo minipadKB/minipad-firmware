@@ -10,7 +10,11 @@
         "array": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "ranges": "cpp",
+        "iosfwd": "cpp",
+        "limits": "cpp",
+        "streambuf": "cpp"
     },
     "cmake.configureOnOpen": false
 }

@@ -41,17 +41,33 @@
 // By default, the firmware is made to handle the readings going down and not up.
 // #define INVERT_SENSOR_READINGS
 
-// Define the ports used for the HE sensors.
-#if KEYS == 3
-#define HE_PINS    \
-    {              \
-        A2, A1, A0 \
-    }
-#elif KEYS == 2
-#define HE_PINS \
-    {           \
-        A1, A0  \
-    }
-#else
-#error The firmware only supports 2 or 3 keys.
+// The delay for the debounce on digital keys. This is necessary because the contacts on digital buttons "bounce",
+// meaning instead of a steady HIGH signal you'll get a couple signal changes (e.g. HIGH LOW HIGH LOW HIGH)
+// This millisecond delay is the minimum time between button presses for the HID signal to send to the host device.
+#define DIGITAL_DEBOUNCE_DELAY 50
+
+// Macro for getting the hall effect sensor pin of the specified key index. The pin order is being swapped here,
+// meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted, depending on how the PCB
+// and hardware of the device using this firmware has been designed. The A0 constant is 26 in the RP2040 environment.
+// NOTE: By the uint8 datatype, the amount of keys is limited to 255.
+// NOTE: By the default config initialization, the amount of keys is limited to
+//       around 26 since the characters are assigned backwards started from 'z'.
+// NOTE: By the RP2040, the amount of analog pins (and therefore keys) is limited o 4.
+#define HE_PIN(index) A0 + HE_KEYS - index - 1
+
+// Macro for getting the pin of the specified index of the digital key. The pin order is not swapped here, meaning
+// the first digital key is on pin 0, the second on 1, and so on.
+// NOTE: This way, the amount of keys is limited to 26 since the 27th key overlaps with the first analog port, 26.
+#define DIGITAL_PIN(index) 0 + DIGITAL_KEYS - index - 1
+
+// Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
+// (only 4 ADC pins available)
+#if HE_KEYS > 4
+#error As of right now, the firmware only supports up to 4 hall effect keys.
+#endif
+
+// Add a compiler error if the firmware is being tried to built with more than the supported 26 digital keys.
+// (limited amount of ports + characters)
+#if DIGITAL_KEYS > 26
+#error As of right now, the firmware only supports up to 26 digital keys.
 #endif
