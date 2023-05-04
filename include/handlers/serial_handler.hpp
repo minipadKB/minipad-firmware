@@ -13,6 +13,7 @@ private:
     void get();
     void name(char *name);
     void out(bool state);
+    void debug(bool state);
     void echo(char *input);
     void hkey_rt(HEKey &key, bool state);
     void hkey_crt(HEKey &key, bool state);

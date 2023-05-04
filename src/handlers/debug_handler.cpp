@@ -18,9 +18,9 @@ void DebugHandler::print(const char *module, const char *format, ...)
     va_end(args);
 }
 
-void DebugHandler::reportHESensorReading(const HEKey &key, uint16_t raw, uint16_t mapped)
+void DebugHandler::reportHESensorReading(const HEKey &key, uint16_t filtered, uint16_t mapped)
 {
-    print("HESensorReading", "key_idx: %d, raw: %d, mapped: %d, rest: %d, down: %d", key.index, raw, mapped, key.restPosition, key.downPosition);
+    print("HESensorReading", "key_idx: %d, filtered: %d, mapped: %d, rest: %d, down: %d", key.index, filtered, mapped, key.restPosition, key.downPosition);
 }
 
 void DebugHandler::reportDigitalReading(const DigitalKey &key, bool pressed)

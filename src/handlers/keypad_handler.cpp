@@ -58,15 +58,15 @@ void KeypadHandler::handle()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
-        uint16_t raw = readKey(key);
-        uint16_t mapped = mapSensorValueToTravelDistance(key, raw);
+        uint16_t filtered = readKey(key);
+        uint16_t mapped = mapSensorValueToTravelDistance(key, filtered);
 
         // Report the read values to the debug handler.
-        DebugHandler.reportHESensorReading(key, raw, mapped);
+        DebugHandler.reportHESensorReading(key, filtered, mapped);
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
-            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, raw, mapped);
+            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, filtered, mapped);
 
         // Run the checks on the HE key.
         checkHEKey(key, mapped);

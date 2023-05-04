@@ -43,6 +43,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
         name(parameters);
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
+    else if (isEqual(command, "debug"))
+        debug(isTrue(arg0));
 #if DEBUG
     else if (isEqual(command, "echo"))
         echo(parameters);
@@ -75,9 +77,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
         // Report the parsed key command to the debug handler. If only one key was targetted,
         // use a buffer and sprintf in order to convert the uint8_t index to a string.
-        char keyIndex[1024];
-        sprintf(keyIndex, "%d", keys[0].index);
-        DebugHandler.reportSerialInputKey(input, strlen(keyStr) > 4 ? "all" : keyIndex, setting, parameters);
+        DebugHandler.reportSerialInputKey(input, keyStr, setting, parameters);
 
         // Apply the command to all targetted hall effect keys.
         for (uint8_t i = 0; i < (strlen(keyStr) > 4 ? 1 : HE_KEYS); i++)
@@ -119,6 +119,10 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
         // By default, apply this command to all digital keys.
         DigitalKey *keys = ConfigController.config.digitalKeys;
+
+        // Report the parsed key command to the debug handler. If only one key was targetted,
+        // use a buffer and sprintf in order to convert the uint8_t index to a string.
+        DebugHandler.reportSerialInputKey(input, keyStr, setting, parameters);
 
         // If an index is specified ("dkeyX"), replace that keys array with just that key.
         // This is checked by looking whether the key string has > 4 characters.
@@ -215,6 +219,12 @@ void SerialHandler::out(bool state)
 {
     // Set the calibration mode field of the keypad handler to the specified state.
     KeypadHandler.outputMode = state;
+}
+
+void SerialHandler::debug(bool state)
+{
+    // Set the debug mode field of the debug handler to the specified state.
+    DebugHandler.enabled = state;
 }
 
 void SerialHandler::echo(char *input)

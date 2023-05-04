@@ -5,10 +5,10 @@
 #include "config/keys/he_key.hpp"
 #include "config/keys/key.hpp"
 
-class DebugHandler
+inline class DebugHandler
 {
 public:
-    void reportHESensorReading(const HEKey &key, uint16_t raw, uint16_t mapped);
+    void reportHESensorReading(const HEKey &key, uint16_t filtered, uint16_t mapped);
     void reportDigitalReading(const DigitalKey &key, bool presed);
     void reportSMAFiltering(const Key &key, uint16_t raw, uint16_t filtered);
     void reportSerialInputGlobal(const char* input, const char* command, const char* parameters);
