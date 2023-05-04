@@ -2,6 +2,7 @@
 #include <Keyboard.h>
 #include "config/keys/key_type.hpp"
 #include "handlers/keypad_handler.hpp"
+#include "handlers/debug_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
@@ -57,15 +58,18 @@ void KeypadHandler::handle()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
-        uint16_t rawValue = readKey(key);
-        uint16_t mappedValue = mapSensorValueToTravelDistance(key, rawValue);
+        uint16_t raw = readKey(key);
+        uint16_t mapped = mapSensorValueToTravelDistance(key, raw);
+
+        // Report the read values to the debug handler.
+        DebugHandler.reportHESensorReading(key, raw, mapped);
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
-            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, rawValue, mappedValue);
+            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, raw, mapped);
 
         // Run the checks on the HE key.
-        checkHEKey(key, mappedValue);
+        checkHEKey(key, mapped);
     }
 
     // Go through all digital keys and run the checks.
@@ -73,6 +77,9 @@ void KeypadHandler::handle()
     {
         // Read the digital value from the key pin.
         bool pressed = readKey(key);
+
+        // Report the pressed state to the debug handler.
+        DebugHandler.reportDigitalReading(key, pressed);
 
         // Run the checks on the digital key.
         checkDigitalKey(key, pressed);
@@ -203,8 +210,12 @@ uint16_t KeypadHandler::readKey(const Key &key)
         value = 4095 - value;
 #endif
 
-        // Filter the value through the SMA filter and return it.
-        return _heKeyStates[key.index].filter(value);
+        // Filter the value through the SMA filter.
+        uint16_t filtered = _heKeyStates[key.index].filter(value);
+
+        // Report the read and filtered value to the debug handler and return the filtered value.
+        DebugHandler.reportSMAFiltering(key, value, filtered);
+        return filtered;
     }
     // Otherwise, in case anything goes wrong, default to 0.
     else

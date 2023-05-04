@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
+#include "handlers/debug_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 extern "C"
@@ -72,6 +73,12 @@ void SerialHandler::handleSerialInput(String *inputStr)
             keys = &ConfigController.config.heKeys[keyIndex];
         }
 
+        // Report the parsed key command to the debug handler. If only one key was targetted,
+        // use a buffer and sprintf in order to convert the uint8_t index to a string.
+        char keyIndex[1024];
+        sprintf(keyIndex, "%d", keys[0].index);
+        DebugHandler.reportSerialInputKey(input, strlen(keyStr) > 4 ? "all" : keyIndex, setting, parameters);
+
         // Apply the command to all targetted hall effect keys.
         for (uint8_t i = 0; i < (strlen(keyStr) > 4 ? 1 : HE_KEYS); i++)
         {
@@ -101,9 +108,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 key_hid(key, isTrue(arg0));
         }
     }
-
     // Handle digital key specific commands by checking if the command starts with "dkey".
-    if (strstr(command, "dkey") == command)
+    else if (strstr(command, "dkey") == command)
     {
         // Split the command into the key string and the setting name.
         char keyStr[1024];
@@ -142,6 +148,9 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 key_hid(key, isTrue(arg0));
         }
     }
+    // If the input was not a key command, report a global command execution to the debug handler.
+    else
+        DebugHandler.reportSerialInputGlobal(input, command, parameters);
 }
 
 void SerialHandler::boot()
