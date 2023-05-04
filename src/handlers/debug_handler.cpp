@@ -40,5 +40,5 @@ void DebugHandler::reportSerialInputGlobal(const char *input, const char *comman
 
 void DebugHandler::reportSerialInputKey(const char *input, const char *key, const char *setting, const char *value)
 {
-    print("SerialInput", "input: '%s', key: '%s', setting: '%s', value: '%s'", key, setting, value);
+    print("SerialInput", "input: '%s', key: '%s', setting: '%s', value: '%s'", input, key, setting, value);
 }
