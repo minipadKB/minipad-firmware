@@ -32,6 +32,9 @@ void SerialHandler::handleSerialInput(String *inputStr)
     char arg0[1024];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
+    // Report a global command execution to the debug handler.
+    DebugHandler.reportSerialInputGlobal(input, command, parameters);
+
     // Handle the global commands and pass their expected required parameters.
     if (isEqual(command, "boot"))
         boot();
@@ -152,9 +155,6 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 key_hid(key, isTrue(arg0));
         }
     }
-    // If the input was not a key command, report a global command execution to the debug handler.
-    else
-        DebugHandler.reportSerialInputGlobal(input, command, parameters);
 }
 
 void SerialHandler::boot()
