@@ -26,7 +26,7 @@
 // This value is important to reset the rapid trigger state properly with continuous rapid trigger.
 #define CONTINUOUS_RAPID_TRIGGER_THRESHOLD 10
 
-// The resolution for the ADCs on the RP2040. The maximum compatible value on it is 12 bit.
+// The resolution for the ADCs on the RP2040. The maximum compatible value on it is 16 bit.
 #define ANALOG_RESOLUTION 12
 
 // The exponent for the amount of samples for the SMA filter. This filter reduces fluctuation of analog values.
