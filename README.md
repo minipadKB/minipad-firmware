@@ -10,12 +10,7 @@ This firmware is designed specifically to work with our open-source PCB, which c
 
 </div>
 
-Although this firmware is made for aforementioned PCB, it can be used for different kinds of (hall effect) keypad/keyboard projects due to it's support of both digital and hall effect buttons, as well as no real limitation on how many keys to use. Support for multiplexing is planned but has not started development.
-
-**Table of contents**
--
 - [minipad-firmware](#minipad-firmware)
-  - [**Table of contents**](#table-of-contents)
 - [Features](#features)
   - [Planned Features](#planned-features)
 - [Installation on an RP2040 micro controller](#installation-on-an-rp2040-micro-controller)
@@ -24,6 +19,9 @@ Although this firmware is made for aforementioned PCB, it can be used for differ
 
 # Features
 
+Although this firmware is made for the aforementioned PCB, it can be used for different kinds of (hall effect) keypad/keyboard projects due to it's support of both digital and hall effect buttons, as well as no real limitation on how many keys to use.
+
+Here is a list of features that are both planned and available:
 - An unlimited amount of Hall Effect or Digital keys
 - Rapid Trigger (explained [here](https://github.com/minipadKB/minipad-firmware/blob/master/src/handlers/keypad_handler.cpp#L13)) with 0.01mm resolution
 - Flexible, configurable travel distance of switches
