@@ -148,6 +148,8 @@ Here is a list of commands and examples for them:
 *Example*: `dkey.hid false`</br>
 *Description*: Enables/Disables the HID output (meaning whether the key signal is sent to the host device) on the specified key(s).
 
+</details>
+
 # Licenses
 
 [arduino-pico](https://github.com/minipadkb/arduino-pico) by [minipadkb](https://github.com/minipadkb), fork of [arduino-pico](https://github.com/earlephilhower/arduino-pico) by [earlephilhower](https://github.com/earlephilhower), distributed under [LGPL v2.1](https://github.com/earlephilhower/arduino-pico/blob/master/LICENSE)
