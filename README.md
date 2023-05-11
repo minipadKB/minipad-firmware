@@ -60,6 +60,8 @@ Either a single key or all keys at one can be targetted. If you wish to target a
 
 Here is a list of commands and examples for them:
 
+**Global commands**
+-
 *Command*: `boot`</br>
 *Syntax*: `boot`</br>
 *Example*: `boot`</br>
@@ -90,6 +92,8 @@ Here is a list of commands and examples for them:
 *Example*: `echo I am a string.`</br>
 *Description*: Echoes the specified string, used for development purposes.
 
+**Key-related commands**
+-
 *Command*: `hkey.rt`</br>
 *Syntax*: `hkey.rt <bool>`</br>
 *Example*: `hkey.rt 1`</br>
