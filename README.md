@@ -1,6 +1,15 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <a href="https://discord.gg/minipad"><img src="https://discordapp.com/api/guilds/1056311828344483840/widget.png"></a>
 
+**Table of contents**
+-
+- [minipad-firmware](#minipad-firmware)
+- [Features](#features)
+  - [Planned Features](#planned-features)
+- [Installation on an RP2040 micro controller](#installation-on-an-rp2040-micro-controller)
+- [Setup for development](#setup-for-development)
+- [Licenses](#licenses)
+
 
 # minipad-firmware
 
@@ -17,6 +26,8 @@ Although this firmware is made for aforementioned PCB, it can be used for differ
 - Adjustable actuation point (0.01mm resolution)
 - Software-based low pass filter for analog stability
 - Configurable keychar pressed upon key interaction
+- Serial communication protocol for configuration
+- UI application for configuration, [minitility](https://github.com/minipadkb/minitility)
 
 Planned Features
 -
