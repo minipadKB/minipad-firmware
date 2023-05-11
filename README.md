@@ -18,7 +18,7 @@ Although this firmware is made for aforementioned PCB, it can be used for differ
 - Software-based low pass filter for analog stability
 - Configurable keychar pressed upon key interaction
 
-Planned
+Planned Features
 -
 - Support for RGB lights, including configurable colors and effects
 - Usage of multiplexers to allow for more keys to be used on the hardware
