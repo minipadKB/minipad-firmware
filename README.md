@@ -4,6 +4,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <a href="https://discord.gg/minipad"><img src="https://discordapp.com/api/guilds/1056311828344483840/widget.png"></a>
+![](https://img.shields.io/github/downloads/minipadkb/minipad-firmware/total)
 
 The firmware for the minipad, an RP2040-based 2-3-key keypad for the rhythm game osu!.
 
