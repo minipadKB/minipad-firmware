@@ -1,5 +1,4 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-<a href="https://discord.gg/minipad"><img src="https://discordapp.com/api/guilds/1056311828344483840/widget.png"></a>
+
 
 **Table of contents**
 -
@@ -10,11 +9,17 @@
 - [Setup for development](#setup-for-development)
 - [Licenses](#licenses)
 
+<div align="center">
 
 # minipad-firmware
 
-This is the firmware for the minipad, an RP2040-based 2-to-3-key keypad for the rhythm game osu!.
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+<a href="https://discord.gg/minipad"><img src="https://discordapp.com/api/guilds/1056311828344483840/widget.png"></a>
+
+Firmware for the minipad, an RP2040-based 2-to-3-key keypad for the rhythm game osu!.</br>
 This firmware is designed specifically to work with our open-source PCB, which can be found [here](https://github.com/minipadkb/minipad).
+
+</div>
 
 Although this firmware is made for aforementioned PCB, it can be used for different kinds of (hall effect) keypad/keyboard projects due to it's support of both digital and hall effect buttons, as well as no real limitation on how many keys to use. Support for multiplexing is planned but has not started development.
 
