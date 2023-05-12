@@ -170,8 +170,8 @@ We're more than happy to help you get along with the firmware, as well as adjust
 
 # Licenses
 
-| Project | Original Repository | Forked Repository | License |
+| Component | Original Repository | Forked Repository | License |
 |:-------:|:-------------------:|:-----------------:|:-------:|
-| Arduino Pico | [earlephilhower/arduino-pico](https://github.com/earlephilhower/arduino-pico) | [minipadkb/arduino-pico](https://github.com/minipadkb/arduino-pico) | ![LGPLv2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg) |
-| Keyboard | [earlephilhower/Keyboard](https://github.com/earlephilhower/Keyboard) | [minipadKB/Keyboard](https://github.com/minipadKB/Keyboard) | ![LGPLv3.0](https://img.shields.io/badge/License-LGPL%20v3.0-blue.svg) |
-| Pico SDK | [raspberry/pico-sdk](https://github.com/raspberry/pico-sdk) | [minipadKB/pico-sdk](https://github.com/minipadKB/pico-sdk) | ![BSD-3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg) |
+| Arduino Pico | [earlephilhower/arduino-pico](https://github.com/earlephilhower/arduino-pico) | [minipadkb/arduino-pico](https://github.com/minipadkb/arduino-pico) | [![LGPLv2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://github.com/minipadKB/arduino-pico/blob/master/LICENSE) |
+| Keyboard | [earlephilhower/Keyboard](https://github.com/earlephilhower/Keyboard) | [minipadKB/Keyboard](https://github.com/minipadKB/Keyboard) | [![LGPLv3.0](https://img.shields.io/badge/License-LGPL%20v3.0-blue.svg)](https://github.com/minipadKB/Keyboard/blob/master/LICENSE) |
+| Pico SDK | [raspberrypi/pico-sdk](https://github.com/raspberrypi/pico-sdk) | [minipadKB/pico-sdk](https://github.com/minipadKB/pico-sdk) | [![BSD-3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/minipadKB/pico-sdk/blob/master/LICENSE.TXT) |
