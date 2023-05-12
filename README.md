@@ -52,7 +52,7 @@ If you are not familiar with the usage of PlatformIO, a Quick Start guide can be
 
 Note: Uploading the firmware only works if the micro controller is set into bootloader mode. This can be done using the BOOTSEL button on development boards or setting the minipad into bootloader mode via minitility. A guide on the latter can be found [here](https://minipad.minii.moe/docs/minitility/get-started).
 
-# Minipad Serial Protocol (MSP)
+# Minipad Serial Protocol (MSP) 🔗
 
 The firmware is being configured and accessed from the host device via Serial communication at a baud rate of 115200.
 
@@ -155,7 +155,7 @@ Here is a list of commands and examples for them:
 
 </details>
 
-# Commercial usage
+# Commercial usage 💵
 
 As the firmware is distributed under the GPL-3 license, commercial usage is allowed for anyone, given that your source code and any changes made are released to the public.
 
