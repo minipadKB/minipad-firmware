@@ -56,6 +56,8 @@ Note: Uploading the firmware only works if the micro controller is set into boot
 
 The firmware is being configured and accessed from the host device via Serial communication at a baud rate of 115200.
 
+We are working on a web-based UI application called "minitility" for communicating with the firmware. You can find the git repository [here](https://github.com/minipadkb/minitility).
+
 All data sent via the serial interface is being interpreted as a command with the following syntax:
 `command arg0 arg1 arg2 ...`. The command and it's arguments are split by whitespaces, ending with a newline character.
 
