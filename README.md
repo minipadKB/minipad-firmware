@@ -167,10 +167,8 @@ We're more than happy to help you get along with the firmware, as well as adjust
 
 # Licenses
 
-[arduino-pico](https://github.com/minipadkb/arduino-pico) by [minipadkb](https://github.com/minipadkb), fork of [arduino-pico](https://github.com/earlephilhower/arduino-pico) by [earlephilhower](https://github.com/earlephilhower), distributed under [LGPL v2.1](https://github.com/earlephilhower/arduino-pico/blob/master/LICENSE)
-
-[Keyboard](https://github.com/minipadKB/minipad-firmware) by [minipadkb](https://github.com/minipadKB), fork of [Keyboard](https://github.com/earlephilhower/Keyboard) by [earlephilhower](https://github.com/earlephilhower), distributed under [LGPL v3.0](https://github.com/minipadkb/Keyboard/blob/master/LICENSE)
-
-[pico-sdk](https://github.com/minipadKB/pico-sdk) by [minipadkb](https://github.com/minipadKB), fork of [pico-sdk](https://github.com/raspberry/pico-sdk) by [raspberry](https://github.com/raspberry), distributed under [BSD-3-Clause](https://github.com/minipadkb/pico-sdk/blob/master/LICENSE)
-
-[Keyboard](https://github.com/minipadKB/minipad-firmware) by [minipadkb](https://github.com/minipadKB), fork of [Keyboard](https://github.com/earlephilhower/Keyboard) by [earlephilhower](https://github.com/earlephilhower), distributed under [LGPL v3.0](https://github.com/minipadkb/Keyboard/blob/master/LICENSE)
+| Project | Original Repository | Forked Repository | License |
+|:-------:|:-------------------:|:-----------------:|:-------:|
+| Arduino Pico | [earlephilhower/arduino-pico](https://github.com/earlephilhower/arduino-pico) | [minipadkb/arduino-pico](https://github.com/minipadkb/arduino-pico) | ![LGPLv2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg) |
+| Keyboard | [earlephilhower/Keyboard](https://github.com/earlephilhower/Keyboard) | [minipadKB/Keyboard](https://github.com/minipadKB/Keyboard) | ![LGPLv3.0](https://img.shields.io/badge/License-LGPL%20v3.0-blue.svg) |
+| Pico SDK | [raspberry/pico-sdk](https://github.com/raspberry/pico-sdk) | [minipadKB/pico-sdk](https://github.com/minipadKB/pico-sdk) | ![BSD-3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg) |
