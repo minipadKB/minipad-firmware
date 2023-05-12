@@ -14,9 +14,13 @@ This firmware is designed specifically to work with our open-source PCB, which c
 [Serial Protocol](#minipad-serial-protocol-msp) • [Licenses](#licenses)
 </div>
 
-# Features
+<div align="center">
+<i>Made with ❤️ by Project Minipad</i>
+</div>
 
-Although this firmware is made for the aforementioned PCB, it can be used for different kinds of (hall effect) keypad/keyboard projects due to it's support of both digital and hall effect buttons, as well as no real limitation on how many keys to use.
+# Features ⌨️
+
+Although this firmware is made for the aforementioned PCB, it can be used for different kinds of (hall effect or not) keypad/keyboard projects due to it's support of both digital and hall effect buttons, as well as no real limitation on how many keys to use.
 
 Here is a list of features that are both planned and available:
 - An unlimited amount of Hall Effect or Digital keys
@@ -28,16 +32,16 @@ Here is a list of features that are both planned and available:
 - Serial communication protocol for configuration
 - UI application for configuration, [minitility](https://github.com/minipadkb/minitility)
 
-Planned Features
+Planned Features 🗒️
 -
 - Support for RGB lights, including configurable colors and effects
 - Usage of multiplexers to allow for more keys to be used on the hardware
 
-# Installation on an RP2040 micro controller
+# Installation ⚡
 
 To flash this firmware on your minipad or other RP2040 board, please refer to our [firmware installation guide](https://minipad.minii.moe/docs/minipad/install-firmware). In there, you can find the instructions on how to initially load the firmware on the keypad, and how to update it later on.
 
-# Setup for development
+# Setup for development 💻
 
 Setting up this project is really simple. The repository is set up using PlatformIO, an IDE in form of an extension for Visual Studio Code.
 You can find a download link for Visual Studio Code [here](https://code.visualstudio.com/). In there, search and install the extension `PlatformIO`.
@@ -150,6 +154,16 @@ Here is a list of commands and examples for them:
 *Description*: Enables/Disables the HID output (meaning whether the key signal is sent to the host device) on the specified key(s).
 
 </details>
+
+# Commercial usage
+
+As the firmware is distributed under the GPL-3 license, commercial usage is allowed for anyone, given that your source code and any changes made are released to the public.
+
+Furthermore, we'd like every company or individuals using the firmware commercially to consider donating us a part of their profit made. This would help us funding the Minipad Project, as well as allowing us to spend more of our free-time to work and maintain this project.
+
+If you're considering financially supporting us, please send a DM to `minisbett#8873` on Discord, or reach out to them via [Twitter](https://twitter.com/minisbett).
+
+We're more than happy to help you get along with the firmware, as well as adjusting it to work on your hardware!
 
 # Licenses
 
