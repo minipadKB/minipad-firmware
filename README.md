@@ -11,7 +11,7 @@ The firmware for the minipad, an RP2040-based 2-3-key keypad for the rhythm game
 
 This firmware is designed specifically to work with our open-source PCB, which can be found in our GitHub repository [here](https://github.com/minipadkb/minipad).
 
-[Features](#features-) • [Installation](#installation-on-an-rp2040-micro-controller-) • [Development Setup](#setup-for-development-)</br>
+[Features](#features-%EF%B8%8F) • [Installation](#installation-) • [Development Setup](#setup-for-development-)</br>
 [Serial Protocol](#minipad-serial-protocol-msp-) • [Licenses](#licenses-)
 </div>
 
