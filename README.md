@@ -56,7 +56,6 @@ Note: Uploading the firmware only works if the micro controller is set into boot
 # Minipad Serial Protocol (MSP) 🔗
 
 The firmware is being configured and accessed from the host device via Serial communication at a baud rate of 115200.
-
 We are working on a web-based UI application called "minitility" for communicating with the firmware. You can find the git repository [here](https://github.com/minipadkb/minitility).
 
 All data sent via the serial interface is being interpreted as a command with the following syntax:
@@ -151,7 +150,7 @@ Here is a list of commands and examples for them:
 *Example*: `dkey.char 97`</br>
 *Description*: Sets the character pressed when the specified key(s) is/are pressed down. The value is the ASCII number of the character. Only lower-case a-z is supported.
 
-*Command*: `hkey.hid` / `dkey.hid`</br>
+*Command*: `hkey.hid`, `dkey.hid`</br>
 *Syntax*: `?key.hid <bool>`</br>
 *Example*: `dkey.hid false`</br>
 *Description*: Enables/Disables the HID output (meaning whether the key signal is sent to the host device) on the specified key(s).
