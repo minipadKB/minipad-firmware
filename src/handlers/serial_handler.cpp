@@ -166,6 +166,7 @@ void SerialHandler::get()
     print("GET htol=%d", HYSTERESIS_TOLERANCE);
     print("GET rtol=%d", RAPID_TRIGGER_TOLERANCE);
     print("GET trdt=%d", TRAVEL_DISTANCE_IN_0_01MM);
+    print("GET ares=%d", ANALOG_RESOLUTION);
 
     // Output all hall effect key-specific settings.
     for (const HEKey &key : ConfigController.config.heKeys)
