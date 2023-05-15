@@ -1,6 +1,8 @@
 # 2023.516.1 - Digital key support!
 
-some text here
+This release adds support for digital keys, which might not be useful for minipad owners *yet*, but is for people DIY-ing a keypad or messing around with the firmware, as well as the collaboratoring commercial products of the Minipad Project. 
+
+This release also prepares the communication with minitility, our configuration software which is coming closer to be ready to use.
 
 ## Features
 
@@ -15,7 +17,7 @@ some text here
 
 ## Changes
 
-- Migrated `ping` command to `get` command
+- Migrated info retrieved via the `ping` to the `get` command
 - Split the `key` identifier in the serial protocol into `hkey` (hall effect) and `dkey` (digital)
 - Changed the command for changing the key pressed from `key` to `char`
 - Removed config versions other than the main `Configuration` object, removed mutations
