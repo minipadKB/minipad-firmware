@@ -8,7 +8,7 @@ This release also prepares the communication with minitility, our configuration 
 
 - Added support for digital keys (push buttons, mechanical switches, ...)
 - Added debounce for digital keys with a default of 50ms
-- Made the amount of hall effect/digital keys fully dynamic, not limited to 2-3
+- Made the amount of hall effect/digital keys fully dynamic, not limited to 2-3 but rather limited to the hardware specifications of the RP2040 micro controller
 
 ## Bug Fixes
 
