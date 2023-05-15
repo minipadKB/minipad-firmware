@@ -17,6 +17,7 @@ some text here
 
 - Migrated `ping` command to `get` command
 - Split the `key` identifier in the serial protocol into `hkey` (hall effect) and `dkey` (digital)
+- Changed the command for changing the key pressed from `key` to `char`
 - Removed config versions other than the main `Configuration` object, removed mutations
 - Switched from hardcoded pin arrays to a formula macro
 - Changed the default values for rest and down positions to 4095 and 0 respectively
