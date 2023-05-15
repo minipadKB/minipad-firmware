@@ -1,3 +1,27 @@
+# 2023.516.1 - Digital key support!
+
+some text here
+
+## Features
+
+- Added support for digital keys (push buttons, mechanical switches, ...)
+- Added debounce for digital keys with a default of 50ms
+- Made the amount of hall effect/digital keys fully dynamic, not limited to 2-3
+
+## Bug Fixes
+
+- Refactored `getArgumentAt` function
+- Fix `name` command not null-terminating
+
+## Changes
+
+- Migrated `ping` command to `get` command
+- Split the `key` identifier in the serial protocol into `hkey` (hall effect) and `dkey` (digital)
+- Removed config versions other than the main `Configuration` object, removed mutations
+- Switched from hardcoded pin arrays to a formula macro
+- Changed the default values for rest and down positions to 4095 and 0 respectively
+- Added definition for reversing the sensor values
+
 # 2023.410.1 - Initial release!
 
 Initial release.
