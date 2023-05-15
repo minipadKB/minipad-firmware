@@ -1,4 +1,4 @@
-# 2023.516.1 - Digital key support!
+# 2023.516.1 - Digital key support, support for more keys!
 
 This release adds support for digital keys, which might not be useful for minipad owners *yet*, but is for people DIY-ing a keypad or messing around with the firmware, as well as the collaboratoring commercial products of the Minipad Project. 
 
