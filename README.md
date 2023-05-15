@@ -3,7 +3,7 @@
 # minipad-firmware
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Downloads](https://img.shields.io/discord/1056311828344483840?label=discord&color=7289da)](https://discord.gg/minipad)
+[![Discord](https://img.shields.io/discord/1056311828344483840?label=discord&color=7289da)](https://discord.gg/minipad)
 [![Downloads](https://img.shields.io/github/downloads/minipadkb/minipad-firmware/total)](https://github.com/minipadKB/minipad-firmware/releases/latest)
 [![Latest Release](https://img.shields.io/github/v/release/minipadkb/minipad-firmware?color=dd00dd)](https://github.com/minipadKB/minipad-firmware/releases/latest)
 
