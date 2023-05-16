@@ -42,7 +42,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         name(parameters);
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
-#if DEBUG
+#ifdef DEV
     else if (isEqual(command, "echo"))
         echo(parameters);
 #endif
