@@ -65,7 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./.pio/build/minipad-2k/firmware.uf2
+          asset_path: ./.pio/build/minipad-2k-prod/firmware.uf2
           asset_name: minipad_firmware_2k_${{ steps.get_version.outputs.firmware_version }}.uf2
           asset_content_type: application/octet-stream
 
@@ -75,6 +75,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./.pio/build/minipad-3k/firmware.uf2
+          asset_path: ./.pio/build/minipad-3k-prod/firmware.uf2
           asset_name: minipad_firmware_3k_${{ steps.get_version.outputs.firmware_version }}.uf2
           asset_content_type: application/octet-stream
