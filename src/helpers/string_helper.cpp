@@ -1,38 +1,35 @@
 #include <Arduino.h>
 #include "helpers/string_helper.hpp"
 
-void StringHelper::getArgumentAt(char *input, char delimiter, uint8_t index, char *output)
+void StringHelper::getArgumentAt(const char* input, char delimiter, uint8_t index, char* output)
 {
-    // Remember the amount of found elements, string index of the current one and the total length.
+    // Remember the amount of found elements, start and end index of the current one and the total length.
     uint8_t found = 0;
-    int16_t strIndex[] = {0, -1};
-    size_t length = strlen(input) - 1;
+    size_t start = 0;
+    size_t length = strlen(input);
 
-    // Go through all characters and count the delimiters until the end or the desired index was reached.
-    for (size_t i = 0; i <= length && found <= index; i++)
+    // Go through all characters and count the delimiters until the desired index was reached.
+    for (size_t i = 0; i <= length; i++)
     {
-        // Check if a delimiter was found (element ended) or the end was reached.
-        if (input[i] == delimiter || i == length)
+        // Check if a delimiter was found.
+        if (i == length || input[i] == delimiter)
         {
-            // Remember that another element was found, as well as the indexes of the string's start and end.
+           // If we found the desired index, fill the specified output buffer with the argument
+           // as the substring of the input if the element was found.
+            if (found == index) {
+                memcpy(output, input + start, i - start);
+                output[i - start] = '\0';
+                return;
+            }
+
+            // Otherwise, increment the found count and update the start index.
             found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == length) ? i + 1 : i;
+            start = i + 1;
         }
     }
 
     // If not enough elements for the desired index were found, set the output buffer to an empty string.
-    if (found <= index)
-        output[0] = '\0';
-    // Otherwise, fill the specified output buffer with the argument as the substring of the input.
-    else
-    {
-        for (int16_t i = strIndex[0]; i < strIndex[1]; i++)
-            output[i - strIndex[0]] = input[i];
-
-        // Finish the string with a zero terminator.
-        output[strIndex[1] - strIndex[0]] = '\0';
-    }
+    output[0] = '\0';
 }
 
 void StringHelper::toLower(char *input)

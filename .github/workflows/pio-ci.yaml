@@ -42,10 +42,10 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Build 2K Firmware
-        run: pio run --environment minipad-2k --verbose
+        run: pio run --environment minipad-2k-prod --verbose
 
       - name: Build 3K Firmware
-        run: pio run --environment minipad-3k --verbose
+        run: pio run --environment minipad-3k-prod --verbose
 
       - name: Create Release
         uses: actions/create-release@v1
