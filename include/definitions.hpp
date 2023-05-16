@@ -74,5 +74,5 @@
 
 // If the debug flag is not set via compiler parameters, default it to 0 since it's required for if statements.
 #ifndef DEV
-#define dEV 0
+#define DEV 0
 #endif
