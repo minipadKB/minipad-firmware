@@ -42,7 +42,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         name(parameters);
     else if (isEqual(command, "out"))
         out(isTrue(arg0));
-#if DEBUG
+#ifdef DEV
     else if (isEqual(command, "echo"))
         echo(parameters);
 #endif
@@ -159,7 +159,7 @@ void SerialHandler::save()
 void SerialHandler::get()
 {
     // Output all global settings.
-    print("GET version=%s%s", FIRMWARE_VERSION, DEBUG ? "-dev" : "");
+    print("GET version=%s%s", FIRMWARE_VERSION, DEV ? "-dev" : "");
     print("GET hkeys=%d", HE_KEYS);
     print("GET dkeys=%d", DIGITAL_KEYS);
     print("GET name=%s", ConfigController.config.name);
