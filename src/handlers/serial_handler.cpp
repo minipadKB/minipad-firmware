@@ -144,6 +144,12 @@ void SerialHandler::handleSerialInput(String *inputStr)
     }
 }
 
+void SerialHandler::printHEKeyOutput(const HEKey &key)
+{
+    // Print out the index of the key, the last sensor reading and the last mapped value in the output format.
+    print("OUT hkey%d=%d %d", key.index, KeypadHandler.heKeyStates[key.index].lastSensorValue, KeypadHandler.heKeyStates[key.index].lastMappedValue);
+}
+
 void SerialHandler::boot()
 {
     // Set the RP2040 into bootloader mode.

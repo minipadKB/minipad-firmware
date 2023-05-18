@@ -6,6 +6,7 @@ inline class SerialHandler
 {
 public:
     void handleSerialInput(String *inputStr);
+    void printHEKeyOutput(const HEKey &key);
 
 private:
     void boot();
