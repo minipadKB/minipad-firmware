@@ -207,7 +207,8 @@ uint16_t KeypadHandler::readKey(const Key &key)
 #endif
 
         // Filter the value through the SMA filter and return it.
-        return _heKeyStates[key.index].filter(value);
+        _heKeyStates[key.index].lastSensorValue = _heKeyStates[key.index].filter(value);
+        return _heKeyStates[key.index].lastSensorValue;
     }
     // Otherwise, in case anything goes wrong, default to 0.
     else
