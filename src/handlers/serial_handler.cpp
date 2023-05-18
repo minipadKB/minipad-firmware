@@ -41,7 +41,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
     else if (isEqual(command, "name"))
         name(parameters);
     else if (isEqual(command, "out"))
-        out(isTrue(arg0));
+        out(isEqual(arg0, ""), isTrue(arg0));
 #ifdef DEV
     else if (isEqual(command, "echo"))
         echo(parameters);
@@ -147,7 +147,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 void SerialHandler::printHEKeyOutput(const HEKey &key)
 {
     // Print out the index of the key, the last sensor reading and the last mapped value in the output format.
-    print("OUT hkey%d=%d %d", key.index, KeypadHandler.heKeyStates[key.index].lastSensorValue, KeypadHandler.heKeyStates[key.index].lastMappedValue);
+    print("OUT hkey%d=%d %d", key.index + 1, KeypadHandler.heKeyStates[key.index].lastSensorValue, KeypadHandler.heKeyStates[key.index].lastMappedValue);
 }
 
 void SerialHandler::boot()
@@ -209,10 +209,15 @@ void SerialHandler::name(char *name)
         memcpy(ConfigController.config.name, name + '\0', length + 1);
 }
 
-void SerialHandler::out(bool state)
+void SerialHandler::out(bool single, bool state)
 {
-    // Set the calibration mode field of the keypad handler to the specified state.
-    KeypadHandler.outputMode = state;
+    // If single is true, no argument was specified. In that case just output every key once.
+    if (single)
+        for (const HEKey &key : ConfigController.config.heKeys)
+            printHEKeyOutput(key);
+    else
+        // Otherwise, set the calibration mode field of the keypad handler to the specified state.
+        KeypadHandler.outputMode = state;
 }
 
 void SerialHandler::echo(char *input)
