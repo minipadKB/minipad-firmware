@@ -26,8 +26,16 @@ void SerialHandler::handleSerialInput(String *inputStr)
     char command[1024];
     StringHelper::getArgumentAt(input, ' ', 0, command);
 
-    // Get a pointer pointing to the start of all parameters for the command and parse them.
-    char *parameters = input + strlen(command) + 1;
+    // Get a pointer pointing to the start of all parameters for the command.
+    char *parameters = input + strlen(command);
+
+    // If the parameters start with a " " it means parameters have been specified.
+    // It's needed because if there are no parameters there's a zero-terminator instead.
+    // Skipping that zero-terminator would lead to arguments filled with memory garbage.
+    if (strstr(parameters, " ") == parameters)
+        parameters += 1;
+
+    // Parse all arguments.
     char arg0[1024];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
@@ -211,6 +219,7 @@ void SerialHandler::name(char *name)
 
 void SerialHandler::out(bool single, bool state)
 {
+    print("single: %d state: %d", single ? 1 : 0, state ? 1 : 0);
     // If single is true, no argument was specified. In that case just output every key once.
     if (single)
         for (const HEKey &key : ConfigController.config.heKeys)
