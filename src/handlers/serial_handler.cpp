@@ -219,7 +219,6 @@ void SerialHandler::name(char *name)
 
 void SerialHandler::out(bool single, bool state)
 {
-    print("single: %d state: %d", single ? 1 : 0, state ? 1 : 0);
     // If single is true, no argument was specified. In that case just output every key once.
     if (single)
         for (const HEKey &key : ConfigController.config.heKeys)
