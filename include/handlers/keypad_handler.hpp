@@ -28,7 +28,7 @@ public:
     DigitalKeyState digitalKeyStates[DIGITAL_KEYS];
 
 private:
-
+    void updateCalibrationValues(const HEKey &key, uint16_t value);
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
     void pressKey(const Key &key);

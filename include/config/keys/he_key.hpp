@@ -27,8 +27,4 @@ struct HEKey : Key
 
     // The value below which the key is no longer pressed and rapid trigger is no longer active in rapid trigger mode.
     uint16_t upperHysteresis;
-
-    // The value read when the keys are in rest position/all the way down.
-    uint16_t restPosition;
-    uint16_t downPosition;
 };
