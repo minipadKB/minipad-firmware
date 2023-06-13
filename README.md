@@ -136,16 +136,6 @@ Here is a list of commands and examples for them:
 *Example*: `hkey.uh 320`</br>
 *Description*: Sets the upper hysteresis for the actuation point above which the key is no longer being pressed. The unit of the value is 0.01mm.
 
-*Command*: `hkey.rest`</br>
-*Syntax*: `hkey.rest <uint16>`</br>
-*Example*: `hkey.rest 1820`</br>
-*Description*: Sets the upper calibration value for the specified key(s). This value acts as the upper boundary of the values read from the hall effect sensor across the travel distance. (when the key is fully lifted)
-
-*Command*: `hkey.down`</br>
-*Syntax*: `hkey.down <uint16>`</br>
-*Example*: `hkey.down 1159`</br>
-*Description*: Sets the lower calibration value for the specified key(s). This value acts as the lower boundary of the values read from the hall effect sensor across the travel distance. (when the key is fully pressed)
-
 *Command*: `hkey.char`, `dkey.char`</br>
 *Syntax*: `?key.char <uint8>`</br>
 *Example*: `dkey.char 97`</br>
