@@ -27,7 +27,8 @@ private:
         Configuration config = {
             .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
             .heKeys = {},
-            .digitalKeys = {}
+            .digitalKeys = {},
+            .leds = {}
         };
 
         // Populate the hall effect keys array with the correct amount of hall effect keys.
