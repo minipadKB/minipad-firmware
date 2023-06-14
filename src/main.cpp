@@ -25,13 +25,13 @@ void setup()
 
 void loop()
 {
-    // Check for any serial commands received.
-    while (Serial.available())
-    {
-        String str = Serial.readStringUntil('\n');
-        SerialHandler.handleSerialInput(&str);
-    }
-
     // Run the keypad handler checks to handle the actual keypad functionality.
     KeypadHandler.handle();
+}
+
+void serialEvent()
+{
+    // Handle incoming serial data.
+    String str = Serial.readStringUntil('\n');
+    SerialHandler.handleSerialInput(&str);
 }
