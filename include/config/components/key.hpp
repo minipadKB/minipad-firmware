@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "config/keys/key_type.hpp"
+#include "config/components/key_type.hpp"
 
 // The base configuration struct for the DigitalKey and HEKey struct, containing the common fields.
 struct Key

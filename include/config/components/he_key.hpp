@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "config/keys/key.hpp"
-#include "config/keys/key_type.hpp"
+#include "config/components/key.hpp"
+#include "config/components/key_type.hpp"
 
 // Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
 struct HEKey : Key

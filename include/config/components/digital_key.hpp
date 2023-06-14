@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "config/keys/key.hpp"
+#include "config/components/key.hpp"
 
 // Configuration for the digital keys of the keypad.
 struct DigitalKey : Key

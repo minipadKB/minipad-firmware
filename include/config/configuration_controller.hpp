@@ -69,6 +69,16 @@ private:
             config.digitalKeys[i].hidEnabled = false;
         }
 
+#pragma GCC diagnostic ignored "-Wtype-limits"
+        for (uint8_t i = 0; i < LEDS; i++)
+#pragma GCC diagnostic pop
+        {
+            config.leds[i] = Led();
+
+            // Set the default ARGB for the leds to half-brightness (80) and white (FFFFFF).
+            config.leds[i].argb = 0x80FFFFFF;
+        }
+
         return config;
     };
 

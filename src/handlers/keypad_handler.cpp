@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Keyboard.h>
-#include "config/keys/key_type.hpp"
+#include "config/components/key_type.hpp"
 #include "handlers/keypad_handler.hpp"
 #include "handlers/serial_handler.hpp"
 #include "helpers/string_helper.hpp"
