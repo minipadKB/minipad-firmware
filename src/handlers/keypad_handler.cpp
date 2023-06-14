@@ -78,6 +78,7 @@ void KeypadHandler::handle()
         if (!heKeyStates[key.index].filter.initialized)
             continue;
 
+        // Make sure to run checks on the calibration values, updating them if available.
         updateCalibrationValues(key, value);
 
         // Run the checks on the HE key.
