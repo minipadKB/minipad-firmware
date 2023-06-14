@@ -6,7 +6,8 @@
 inline class LEDHandler
 {
 public:
-    void handle();
+    void setup();
+    void loop();
 
 private:
     Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEDS, LED_PIN, NEO_RGB + NEO_KHZ800);

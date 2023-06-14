@@ -22,7 +22,7 @@ public:
             digitalKeyStates[i] = DigitalKeyState();
     }
 
-    void handle();
+    void loop();
     bool outputMode;
     HEKeyState heKeyStates[HE_KEYS];
     DigitalKeyState digitalKeyStates[DIGITAL_KEYS];

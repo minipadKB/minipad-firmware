@@ -61,7 +61,7 @@
 #define DIGITAL_PIN(index) 0 + DIGITAL_KEYS - index - 1
 
 // The pin the NeoPixel LEDs are chained onto.
-#define LED_PIN 1
+#define LED_PIN 20
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
 // (only 4 ADC pins available)
