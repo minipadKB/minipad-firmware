@@ -2,6 +2,7 @@
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
 #include "helpers/string_helper.hpp"
+#include "helpers/color_helper.hpp"
 #include "definitions.hpp"
 extern "C"
 {
@@ -150,6 +151,45 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 key_hid(key, isTrue(arg0));
         }
     }
+
+    // Handle led specific commands by checking if the command starts with "led".
+    if (strstr(command, "led") == command)
+    {
+        // Split the command into the led string and the setting name.
+        char ledStr[1024];
+        char setting[1024];
+        StringHelper::getArgumentAt(command, '.', 0, ledStr);
+        StringHelper::getArgumentAt(command, '.', 1, setting);
+
+        // By default, apply this command to all leds.
+        Led *leds = ConfigController.config.leds;
+
+        // If an index is specified ("ledX"), replace that leds array with just that led.
+        // This is checked by looking whether the key string has > 3 characters.
+        if (strlen(ledStr) > 3)
+        {
+            // Get the index and check if it's in the valid range.
+            uint8_t ledIndex = atoi(ledStr + 3) - 1;
+#pragma GCC diagnostic ignored "-Wtype-limits"
+            if (ledIndex >= LEDS)
+#pragma GCC diagnostic pop
+                return;
+
+            // Replace the array with that single digital key.
+            leds = &ConfigController.config.leds[ledIndex];
+        }
+
+        // Apply the command to all targetted leds.
+        for (uint8_t i = 0; i < (strlen(ledStr) > 3 ? 1 : LEDS); i++)
+        {
+            // Get the led from the pointer array.
+            Led &led = leds[i];
+
+            // Handle the settings.
+            if (isEqual(setting, "argb"))
+                led_argb(led, arg0);
+        }
+    }
 }
 
 void SerialHandler::printHEKeyOutput(const HEKey &key)
@@ -185,7 +225,6 @@ void SerialHandler::get()
     // Output all hall effect key-specific settings.
     for (const HEKey &key : ConfigController.config.heKeys)
     {
-        // Format the base for all lines being written.
         print("GET hkey%d.rt=%d", key.index + 1, key.rapidTrigger);
         print("GET hkey%d.crt=%d", key.index + 1, key.continuousRapidTrigger);
         print("GET hkey%d.rtus=%d", key.index + 1, key.rapidTriggerUpSensitivity);
@@ -203,6 +242,16 @@ void SerialHandler::get()
     {
         print("GET dkey%d.char=%d", key.index + 1, key.keyChar);
         print("GET dkey%d.hid=%d", key.index + 1, key.hidEnabled);
+    }
+
+    // Output all digital led-specific settings.
+    for (const Led &led : ConfigController.config.leds)
+    {
+        // Parse the ARGB uint32_t into a hex string.
+        char hex[9];
+        ColorHelper::decToHex(led.argb, hex);
+
+        print("GET led%d.argb=0x%s", led.index, hex);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
@@ -308,4 +357,11 @@ void SerialHandler::key_hid(Key &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
+}
+
+void SerialHandler::led_argb(Led &led, char argb[9])
+{
+    Serial.println("1");
+    // Set the argb config value of the specified led to the specified hex value.
+    led.argb = ColorHelper::hexToDec(argb);
 }

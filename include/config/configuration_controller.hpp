@@ -75,6 +75,7 @@ private:
 #pragma GCC diagnostic pop
         {
             config.leds[i] = Led();
+            config.leds[i].index = i;
 
             // Set the default ARGB for the leds to half-brightness (80) and white (FFFFFF).
             config.leds[i].argb = 0x80FFFFFF;
