@@ -106,7 +106,8 @@ void KeypadHandler::updateCalibrationValues(const HEKey &key, uint16_t value)
         heKeyStates[key.index].restPosition = value - AUTO_CALIBRATION_DEADZONE;
     // If the read value is lower than the current down position (with deadzone applied), update it. Make sure that the distance to the rest position
     // is at least 200 (scaled with the travel distance at a base of 4.00mm) to prevent inaccurate calibration resulting in "crazy behaviour"
-    else if (heKeyStates[key.index].downPosition > value + 5 && heKeyStates[key.index].restPosition - value + 5 >= 200 * TRAVEL_DISTANCE_IN_0_01MM / 400)
+    else if (heKeyStates[key.index].downPosition > value + AUTO_CALIBRATION_DEADZONE &&
+             heKeyStates[key.index].restPosition - value + AUTO_CALIBRATION_DEADZONE >= 200 * TRAVEL_DISTANCE_IN_0_01MM / 400)
         heKeyStates[key.index].downPosition = value + AUTO_CALIBRATION_DEADZONE;
 }
 
