@@ -1,16 +1,10 @@
 #include <Arduino.h>
 #include "helpers/color_helper.hpp"
 
-
 uint32_t ColorHelper::hexToDec(char hex[9])
 {
-    // Initialize result and loop counter.
-    uint32_t result = 0;
-    int i = 0;
-
-    Serial.println("2");
-    Serial.printf("%d\n", result);
-    strtol(hex, NULL, result);
+    // Parse the hex string into an ARGB uint32_t.
+    uint32_t result = strtoul(hex, NULL, 16);
     return result;
 }
 

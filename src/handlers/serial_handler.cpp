@@ -251,7 +251,7 @@ void SerialHandler::get()
         char hex[9];
         ColorHelper::decToHex(led.argb, hex);
 
-        print("GET led%d.argb=0x%s", led.index, hex);
+        print("GET led%d.argb=0x%s", led.index + 1, hex);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
