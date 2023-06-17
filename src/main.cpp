@@ -6,7 +6,7 @@
 #include "handlers/keypad_handler.hpp"
 #include "handlers/led_handler.hpp"
 
-#pragma region Core 1 (Keypad)
+#pragma region Core 0 (Keypad)
 
 void setup()
 {
@@ -24,6 +24,11 @@ void setup()
 
     // Allows to boot into UF2 bootloader mode by pressing the reset button twice.
     rp2040.enableDoubleResetBootloader();
+
+    byte bytes[sizeof(Configuration)];
+    memcpy(bytes, &ConfigController.config, sizeof(Configuration));
+    for(byte b : bytes)
+        rp2040.fifo.push(b);
 }
 
 void loop()
@@ -34,12 +39,22 @@ void loop()
 
 #pragma endregion
 
-#pragma region Core 2 (RGB)
+#pragma region Core 1 (RGB)
 
 void setup1()
 {
     // Pass the setup to the led handler that needs to be setup.
     LEDHandler.setup();
+
+    byte bytes[sizeof(Configuration)];
+    int i = 0;
+    while(i != sizeof(Configuration))
+    {
+        bytes[i] = rp2040.fifo.pop();
+        i++;
+    }
+
+    memcpy(&ConfigController.config, bytes, sizeof(Configuration));
 }
 
 void loop1()
