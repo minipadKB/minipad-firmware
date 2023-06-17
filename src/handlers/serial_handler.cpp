@@ -361,7 +361,6 @@ void SerialHandler::key_hid(Key &key, bool state)
 
 void SerialHandler::led_argb(Led &led, char argb[9])
 {
-    Serial.println("1");
     // Set the argb config value of the specified led to the specified hex value.
     led.argb = ColorHelper::hexToDec(argb);
 }
