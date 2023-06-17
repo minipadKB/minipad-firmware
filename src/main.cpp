@@ -24,11 +24,6 @@ void setup()
 
     // Allows to boot into UF2 bootloader mode by pressing the reset button twice.
     rp2040.enableDoubleResetBootloader();
-
-    byte bytes[sizeof(Configuration)];
-    memcpy(bytes, &ConfigController.config, sizeof(Configuration));
-    for(byte b : bytes)
-        rp2040.fifo.push(b);
 }
 
 void loop()
@@ -45,16 +40,6 @@ void setup1()
 {
     // Pass the setup to the led handler that needs to be setup.
     LEDHandler.setup();
-
-    byte bytes[sizeof(Configuration)];
-    int i = 0;
-    while(i != sizeof(Configuration))
-    {
-        bytes[i] = rp2040.fifo.pop();
-        i++;
-    }
-
-    memcpy(&ConfigController.config, bytes, sizeof(Configuration));
 }
 
 void loop1()
