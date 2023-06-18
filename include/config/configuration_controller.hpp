@@ -77,7 +77,6 @@ private:
         for (uint8_t i = 0; i < LEDS; i++)
 #pragma GCC diagnostic pop
         {
-            ConfigController.
             config.leds.leds[i] = Led();
             config.leds.leds[i].index = i;
 

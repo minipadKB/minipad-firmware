@@ -162,7 +162,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
         // By default, apply this command to all leds.
-        Led *leds = ConfigController.config.leds;
+        Led *leds = ConfigController.config.leds.leds;
 
         // If an index is specified ("ledX"), replace that leds array with just that led.
         // This is checked by looking whether the key string has > 3 characters.
@@ -176,7 +176,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 return;
 
             // Replace the array with that single digital key.
-            leds = &ConfigController.config.leds[ledIndex];
+            leds = &ConfigController.config.leds.leds[ledIndex];
         }
 
         // Apply the command to all targetted leds.
@@ -245,7 +245,7 @@ void SerialHandler::get()
     }
 
     // Output all digital led-specific settings.
-    for (const Led &led : ConfigController.config.leds)
+    for (const Led &led : ConfigController.config.leds.leds)
     {
         // Parse the RGB uint16_t into a hex string.
         char hex[7];
