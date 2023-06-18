@@ -12,9 +12,10 @@ extern "C"
 // Define a handy macro for printing with a newline character at the end.
 #define print(fmt, ...) Serial.printf(fmt "\n", __VA_ARGS__)
 
-// Define two more handy macros for interpreting the serial input.
+// Define three more handy macros for interpreting the serial input.
 #define isEqual(str1, str2) strcmp(str1, str2) == 0
 #define isTrue(str) isEqual(str, "1") || isEqual(str, "true")
+#define startsWith(str1, str2) strstr(str1, str2) == str1
 
 void SerialHandler::handleSerialInput(String *inputStr)
 {
@@ -57,7 +58,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
 #endif
 
     // Handle hall effect key specific commands by checking if the command starts with "hkey".
-    if (strstr(command, "hkey") == command)
+    if (startsWith(command, "hkey"))
     {
         // Split the command into the key string and the setting name.
         char keyStr[1024];
@@ -112,7 +113,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
     }
 
     // Handle digital key specific commands by checking if the command starts with "dkey".
-    if (strstr(command, "dkey") == command)
+    else if (startsWith(command, "dkey"))
     {
         // Split the command into the key string and the setting name.
         char keyStr[1024];
@@ -151,9 +152,21 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 key_hid(key, isTrue(arg0));
         }
     }
+    // Handle global led-related commands by checking if the command starts with "leds.".
+    // Checking for the dot at the end ensures that the identifier is "leds".
+    else if(startsWith(command, "leds."))
+    {
+        // Get the setting name from the command.
+        char setting[1024];
+        StringHelper::getArgumentAt(command, '.', 1, setting);
 
-    // Handle led specific commands by checking if the command starts with "led".
-    if (strstr(command, "led") == command)
+        // Handle the settings.
+        if(isEqual(setting, "btns"))
+            leds_btns(atoi(arg0));
+    }
+
+    // Handle led-specific commands by checking if the command starts with "led".
+    else if (startsWith(command, "led"))
     {
         // Split the command into the led string and the setting name.
         char ledStr[1024];
@@ -244,7 +257,13 @@ void SerialHandler::get()
         print("GET dkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
-    // Output all digital led-specific settings.
+    // Output all global led-related settings if at least one LED is registered.
+    if(LEDS > 0)
+    {
+        print("GET leds.btns=%d", ConfigController.config.leds.brightness);
+    }
+
+    // Output all led-specific settings.
     for (const Led &led : ConfigController.config.leds.leds)
     {
         // Parse the RGB uint16_t into a hex string.
@@ -357,6 +376,12 @@ void SerialHandler::key_hid(Key &key, bool state)
 {
     // Set the hid config value of the specified key to the specified state.
     key.hidEnabled = state;
+}
+
+void SerialHandler::leds_btns(uint8_t value)
+{
+    // Set the brightness of the LEDs to the specified value.
+    ConfigController.config.leds.brightness = value;
 }
 
 void SerialHandler::led_rgb(Led &led, char rgb[7])
