@@ -77,8 +77,8 @@ private:
             config.leds[i] = Led();
             config.leds[i].index = i;
 
-            // Set the default ARGB for the leds to half-brightness (80) and white (FFFFFF).
-            config.leds[i].argb = 0x80FFFFFF;
+            // Set the default RGB for the leds to white (FFFFFF).
+            config.leds[i].rgb = 0xFFFFFF;
         }
 
         return config;

@@ -186,8 +186,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
             Led &led = leds[i];
 
             // Handle the settings.
-            if (isEqual(setting, "argb"))
-                led_argb(led, arg0);
+            if (isEqual(setting, "rgb"))
+                led_rgb(led, arg0);
         }
     }
 }
@@ -247,11 +247,11 @@ void SerialHandler::get()
     // Output all digital led-specific settings.
     for (const Led &led : ConfigController.config.leds)
     {
-        // Parse the ARGB uint32_t into a hex string.
-        char hex[9];
-        ColorHelper::decToHex(led.argb, hex);
+        // Parse the RGB uint16_t into a hex string.
+        char hex[7];
+        ColorHelper::decToHex(led.rgb, hex);
 
-        print("GET led%d.argb=0x%s", led.index + 1, hex);
+        print("GET led%d.rgb=0x%s", led.index + 1, hex);
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
@@ -359,8 +359,8 @@ void SerialHandler::key_hid(Key &key, bool state)
     key.hidEnabled = state;
 }
 
-void SerialHandler::led_argb(Led &led, char argb[9])
+void SerialHandler::led_rgb(Led &led, char rgb[7])
 {
-    // Set the argb config value of the specified led to the specified hex value.
-    led.argb = ColorHelper::hexToDec(argb);
+    // Set the RGB config value of the specified led to the specified hex value.
+    led.rgb = ColorHelper::hexToDec(rgb);
 }

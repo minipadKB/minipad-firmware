@@ -25,5 +25,5 @@ private:
     void hkey_down(HEKey &key, uint16_t value);
     void key_char(Key &key, uint8_t keyChar);
     void key_hid(Key &key, bool state);
-    void led_argb(Led &led, char hex[9]);
+    void led_rgb(Led &led, char hex[7]);
 } SerialHandler;

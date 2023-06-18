@@ -9,6 +9,6 @@ struct Led
     // It does not serve a config purpose but is instead for accessing the index from the Led object.
     uint8_t index;
 
-    // The ARGB color of the led.
-    uint32_t argb;
+    // The RGB color of the led.
+    uint32_t rgb;
 };
