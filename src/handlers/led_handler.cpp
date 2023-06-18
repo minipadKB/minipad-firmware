@@ -10,8 +10,10 @@ void LEDHandler::setup()
 
 void LEDHandler::loop()
 {
-    for (int i = 0; i < 6; i++)
+    // Go through all LEDs and set the configured color.
+    for (int i = 0; i < LEDS; i++)
         pixels.setPixelColor(i, ConfigController.config.leds[i].rgb);
 
+    // Update the pixels.
     pixels.show();
 }

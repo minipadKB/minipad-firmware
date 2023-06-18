@@ -21,13 +21,14 @@ void setup()
     Keyboard.begin();
     Keyboard.setAutoReport(false);
 
+    // Initialize the LED handler.
+    LEDHandler.setup();
+
     // Set the amount of bits for the ADC to the defined one for a better resolution on the analog readings.
     analogReadResolution(ANALOG_RESOLUTION);
 
     // Allows to boot into UF2 bootloader mode by pressing the reset button twice.
     rp2040.enableDoubleResetBootloader();
-
-    LEDHandler.setup();
 }
 
 void loop()
@@ -35,6 +36,7 @@ void loop()
     // Run the keypad handler checks to handle the actual keypad functionality.
     KeypadHandler.loop();
 
+    // Every 100 milliseconds loop through the LED handler.
     if(millis() - last > 100)
     {
         LEDHandler.loop();
