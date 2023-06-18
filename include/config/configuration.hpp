@@ -3,6 +3,7 @@
 #include "config/components/he_key.hpp"
 #include "config/components/digital_key.hpp"
 #include "config/components/led.hpp"
+#include "led_configuration.hpp"
 
 // Configuration for the whole firmware, containing the name of the keypad and it's configurations.
 struct Configuration
@@ -19,8 +20,8 @@ struct Configuration
     // A list of all digital key configurations. (key char, hid state, ...)
     DigitalKey digitalKeys[DIGITAL_KEYS];
 
-    // A list of all LEDs. (rgb, effect, ...)
-    Led leds[LEDS];
+    // The config for the LEDs on the keypad.
+    LedConfiguration leds;
 
     // Returns the version constant of the latest Configuration layout.
     static uint32_t getVersion()

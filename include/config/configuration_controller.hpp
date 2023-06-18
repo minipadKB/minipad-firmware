@@ -28,7 +28,10 @@ private:
             .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
             .heKeys = {},
             .digitalKeys = {},
-            .leds = {}
+            .leds = {
+                .leds = {},
+                .brightness = 50
+            }
         };
 
         // Populate the hall effect keys array with the correct amount of hall effect keys.
@@ -74,11 +77,12 @@ private:
         for (uint8_t i = 0; i < LEDS; i++)
 #pragma GCC diagnostic pop
         {
-            config.leds[i] = Led();
-            config.leds[i].index = i;
+            ConfigController.
+            config.leds.leds[i] = Led();
+            config.leds.leds[i].index = i;
 
             // Set the default RGB for the leds to white (FFFFFF).
-            config.leds[i].rgb = 0xFFFFFF;
+            config.leds.leds[i].rgb = 0xFFFFFF;
         }
 
         return config;
