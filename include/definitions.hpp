@@ -64,7 +64,7 @@
 #define LED_PIN 20
 
 // The type of LEDs for the Adafruit NeoPixel library.
-#define LED_TYPE NEO_RGB + NEO_KHZ800
+#define LED_TYPE NEO_GRB + NEO_KHZ800
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
 // (only 4 ADC pins available)
