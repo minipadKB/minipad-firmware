@@ -10,6 +10,6 @@ public:
     void loop();
 
 private:
-    Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEDS, LED_PIN, NEO_RGB + NEO_KHZ800);
+    Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEDS, LED_PIN, LED_TYPE);
 
 } LEDHandler;
