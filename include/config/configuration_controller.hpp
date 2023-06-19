@@ -24,13 +24,16 @@ private:
     // structs that might get modified on a firmware update and have to be reset back to their default values then later on.
     Configuration getDefaultConfig()
     {
-        Configuration config = {
+        Configuration config =
+        {
             .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
             .heKeys = {},
             .digitalKeys = {},
-            .leds = {
+            .leds =
+            {
                 .leds = {},
-                .brightness = 50
+                .brightness = 50,
+                .effect = LedEffectType::Static
             }
         };
 

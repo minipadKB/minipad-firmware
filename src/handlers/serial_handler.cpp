@@ -154,15 +154,17 @@ void SerialHandler::handleSerialInput(String *inputStr)
     }
     // Handle global led-related commands by checking if the command starts with "leds.".
     // Checking for the dot at the end ensures that the identifier is "leds".
-    else if(startsWith(command, "leds."))
+    else if (startsWith(command, "leds."))
     {
         // Get the setting name from the command.
         char setting[1024];
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
         // Handle the settings.
-        if(isEqual(setting, "btns"))
+        if (isEqual(setting, "btns"))
             leds_btns(atoi(arg0));
+        else if (isEqual(setting, "efct"))
+            leds_efct(atoi(arg0));
     }
 
     // Handle led-specific commands by checking if the command starts with "led".
@@ -258,9 +260,10 @@ void SerialHandler::get()
     }
 
     // Output all global led-related settings if at least one LED is registered.
-    if(LEDS > 0)
+    if (LEDS > 0)
     {
         print("GET leds.btns=%d", ConfigController.config.leds.brightness);
+        print("GET leds.efct=%d", ConfigController.config.leds.effect);
     }
 
     // Output all led-specific settings.
@@ -384,8 +387,18 @@ void SerialHandler::leds_btns(uint8_t value)
     ConfigController.config.leds.brightness = value;
 }
 
+void SerialHandler::leds_efct(uint8_t value)
+{
+    // If an out-of-bounds value was specified, default to static (0).
+    if (value > LedEffectType::MaxValue)
+        value = 0;
+
+    // Set the RGB effect to the specified value.
+    ConfigController.config.leds.effect = (LedEffectType)value;
+}
+
 void SerialHandler::led_rgb(Led &led, char rgb[7])
 {
-    // Set the RGB config value of the specified led to the specified hex value.
+    // Set the rgb config value of the specified led to the specified hex value.
     led.rgb = ColorHelper::hexToDec(rgb);
 }

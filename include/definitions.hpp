@@ -77,8 +77,3 @@
 #if DIGITAL_KEYS > 26
 #error As of right now, the firmware only supports up to 26 digital keys.
 #endif
-
-// If the debug flag is not set via compiler parameters, default it to 0 since it's required for if statements.
-#ifndef DEV
-#define DEV 0
-#endif

@@ -26,5 +26,6 @@ private:
     void key_char(Key &key, uint8_t keyChar);
     void key_hid(Key &key, bool state);
     void leds_btns(uint8_t value);
+    void leds_efct(uint8_t value);
     void led_rgb(Led &led, char hex[7]);
 } SerialHandler;
