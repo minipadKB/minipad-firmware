@@ -114,7 +114,7 @@ Here is a list of commands and examples for them:
 *Command*: `hkey.crt`</br>
 *Syntax*: `hkey.crt <bool>`</br>
 *Example*: `hkey.crt false`</br>
-*Description*: Enables/Disables Continuous Rapid trigger functionality on the specified key(s).
+*Description*: Enables/Disables Continuous Rapid Trigger functionality on the specified key(s).
 
 *Command*: `hkey.rtus`</br>
 *Syntax*: `hkey.rtus <uint16>`</br>

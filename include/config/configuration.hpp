@@ -1,9 +1,20 @@
 #pragma once
 
-#include "config/components/he_key.hpp"
-#include "config/components/digital_key.hpp"
+#include "config/components/keys.hpp"
 #include "config/components/led.hpp"
-#include "led_configuration.hpp"
+
+// Configuration for the LEDs, containing the actual LEDs, brightness, effects, ... of the keypad.
+struct LedConfiguration
+{
+    // A list of all LEDs. (rgb, effect, ...)
+    Led leds[LEDS];
+
+    // The brightness of the LEDs. (0-100)
+    uint8_t brightness;
+
+    // The ID of the RGB effect.
+    LedEffectType effect;
+};
 
 // Configuration for the whole firmware, containing the name of the keypad and it's configurations.
 struct Configuration
@@ -27,7 +38,7 @@ struct Configuration
     static uint32_t getVersion()
     {
         // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-        int64_t version = 2306182302;
+        int64_t version = 2306182346;
 
         return version;
     }
