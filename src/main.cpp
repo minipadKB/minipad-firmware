@@ -6,8 +6,6 @@
 #include "handlers/keypad_handler.hpp"
 #include "handlers/led_handler.hpp"
 
-uint64_t last = 0;
-
 #pragma region Core 0 (Keypad)
 
 void setup()
@@ -21,9 +19,6 @@ void setup()
     Keyboard.begin();
     Keyboard.setAutoReport(false);
 
-    // Initialize the LED handler.
-    LEDHandler.setup();
-
     // Set the amount of bits for the ADC to the defined one for a better resolution on the analog readings.
     analogReadResolution(ANALOG_RESOLUTION);
 
@@ -35,20 +30,13 @@ void loop()
 {
     // Run the keypad handler checks to handle the actual keypad functionality.
     KeypadHandler.loop();
-
-    // Every 100 milliseconds loop through the LED handler.
-    if(millis() - last > 100)
-    {
-        LEDHandler.loop();
-        last = millis();
-    }
 }
 
 #pragma endregion
 
 #pragma region Core 1 (RGB)
 
-/* void setup1()
+void setup1()
 {
     // Pass the setup to the led handler that needs to be setup.
     LEDHandler.setup();
@@ -58,7 +46,7 @@ void loop1()
 {
     // Run the led handler checks to handle the RGB logic.
     LEDHandler.loop();
-} */
+}
 
 #pragma endregion
 
