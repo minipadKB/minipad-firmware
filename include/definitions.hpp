@@ -60,6 +60,12 @@
 // NOTE: This way, the amount of keys is limited to 26 since the 27th key overlaps with the first analog port, 26.
 #define DIGITAL_PIN(index) 0 + DIGITAL_KEYS - index - 1
 
+// The pin the NeoPixel LEDs are chained onto.
+#define LED_PIN 20
+
+// The type of LEDs for the Adafruit NeoPixel library.
+#define LED_TYPE NEO_GRB + NEO_KHZ800
+
 // Add a compiler error if the firmware is being tried to built with more than the supported 4 keys.
 // (only 4 ADC pins available)
 #if HE_KEYS > 4
@@ -70,9 +76,4 @@
 // (limited amount of ports + characters)
 #if DIGITAL_KEYS > 26
 #error As of right now, the firmware only supports up to 26 digital keys.
-#endif
-
-// If the debug flag is not set via compiler parameters, default it to 0 since it's required for if statements.
-#ifndef DEV
-#define DEV 0
 #endif

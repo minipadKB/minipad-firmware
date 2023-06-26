@@ -22,13 +22,12 @@ public:
             digitalKeyStates[i] = DigitalKeyState();
     }
 
-    void handle();
+    void loop();
     bool outputMode;
     HEKeyState heKeyStates[HE_KEYS];
     DigitalKeyState digitalKeyStates[DIGITAL_KEYS];
 
 private:
-
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
     void pressKey(const Key &key);

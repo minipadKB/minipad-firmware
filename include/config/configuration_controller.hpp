@@ -24,10 +24,17 @@ private:
     // structs that might get modified on a firmware update and have to be reset back to their default values then later on.
     Configuration getDefaultConfig()
     {
-        Configuration config = {
+        Configuration config =
+        {
             .name = {'m', 'i', 'n', 'i', 'p', 'a', 'd'},
             .heKeys = {},
-            .digitalKeys = {}
+            .digitalKeys = {},
+            .leds =
+            {
+                .leds = {},
+                .brightness = 50,
+                .effect = LedEffectType::Static
+            }
         };
 
         // Populate the hall effect keys array with the correct amount of hall effect keys.
@@ -67,6 +74,17 @@ private:
             // After 26 keys, stick to an 'z' key to not overflow.
             config.digitalKeys[i].keyChar = i >= 26 ? 'z' : (char)('a' + i),
             config.digitalKeys[i].hidEnabled = false;
+        }
+
+#pragma GCC diagnostic ignored "-Wtype-limits"
+        for (uint8_t i = 0; i < LEDS; i++)
+#pragma GCC diagnostic pop
+        {
+            config.leds.leds[i] = Led();
+            config.leds.leds[i].index = i;
+
+            // Set the default RGB for the leds to white (FFFFFF).
+            config.leds.leds[i].rgb = 0xFFFFFF;
         }
 
         return config;

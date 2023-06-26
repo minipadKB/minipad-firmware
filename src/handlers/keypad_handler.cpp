@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Keyboard.h>
-#include "config/keys/key_type.hpp"
 #include "handlers/keypad_handler.hpp"
 #include "handlers/serial_handler.hpp"
 #include "helpers/string_helper.hpp"
@@ -56,7 +55,7 @@ const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
    Step 4: Depending on whether the key is pressed or not, remember the lowest/highest peak achieved
 */
 
-void KeypadHandler::handle()
+void KeypadHandler::loop()
 {
     // Go through all hall effect keys and run the checks.
     for (const HEKey &key : ConfigController.config.heKeys)

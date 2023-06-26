@@ -4,6 +4,9 @@
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
+#include "handlers/led_handler.hpp"
+
+#pragma region Core 0 (Keypad)
 
 void setup()
 {
@@ -26,8 +29,26 @@ void setup()
 void loop()
 {
     // Run the keypad handler checks to handle the actual keypad functionality.
-    KeypadHandler.handle();
+    KeypadHandler.loop();
 }
+
+#pragma endregion
+
+#pragma region Core 1 (RGB)
+
+void setup1()
+{
+    // Pass the setup to the led handler that needs to be setup.
+    LEDHandler.setup();
+}
+
+void loop1()
+{
+    // Run the led handler checks to handle the RGB logic.
+    LEDHandler.loop();
+}
+
+#pragma endregion
 
 void serialEvent()
 {
