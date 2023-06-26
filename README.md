@@ -154,7 +154,7 @@ As the firmware is distributed under the GPL-3 license, commercial usage is allo
 
 Furthermore, we'd like every company or individuals using the firmware commercially to consider donating us a part of their profit made. This would help us funding the Minipad Project, as well as allowing us to spend more of our free-time to work and maintain this project.
 
-If you're considering financially supporting us, please send a DM to `minisbett#8873` on Discord, or reach out to them via [Twitter](https://twitter.com/minisbett).
+If you're considering financially supporting us, please send a DM to `@minisbett` on Discord, or reach out to them via [Twitter](https://twitter.com/minisbett).
 
 We're more than happy to help you get along with the firmware, as well as adjusting it to work on your hardware!
 
