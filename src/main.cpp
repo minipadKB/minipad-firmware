@@ -12,10 +12,11 @@ void setup()
     EEPROM.begin(1024);
     ConfigController.loadConfig();
 
-    // Initialize the serial and HID interface.
+    // Initialize the serial, HID interface and keypad handler.
     Serial.begin(115200);
     Keyboard.begin();
     Keyboard.setAutoReport(false);
+    KeypadHandler.begin();
 
     // Set the amount of bits for the ADC to the defined one for a better resolution on the analog readings.
     analogReadResolution(ANALOG_RESOLUTION);

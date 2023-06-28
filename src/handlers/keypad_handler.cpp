@@ -6,9 +6,9 @@
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
-// Constant two to the power of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
+// Constant square of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
 // Used to invert the read sensor value in case the INVERT_SENSOR_READINGS definition is set.
-const uint16_t TWO_EXP_ANALOG_RESOLUTION = pow(2, ANALOG_RESOLUTION);
+const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
 
 /*
    Explanation of the Rapid Trigger Logic
@@ -79,7 +79,7 @@ void KeypadHandler::handle()
             continue;
 
         // Make sure to run checks on the calibration values, updating them if available.
-        calibrate(key, value);
+        updateCalibrationValues(key, value);
 
         // Run the checks on the HE key.
         checkHEKey(key, heKeyStates[key.index].lastMappedValue);
@@ -99,21 +99,16 @@ void KeypadHandler::handle()
     Keyboard.sendReport();
 }
 
-void KeypadHandler::calibrate(const HEKey &key, uint16_t value)
+void KeypadHandler::updateCalibrationValues(const HEKey &key, uint16_t value)
 {
-    // Calculate the value with the deadzone in the positive and negative direction applied.
-    uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
-    uint16_t lowerValue = value + AUTO_CALIBRATION_DEADZONE;
-
-    // If the read value with deadzone applied is bigger than the current rest position calibration, update it.
-    if (heKeyStates[key.index].restPosition < upperValue)
-        heKeyStates[key.index].restPosition = upperValue;
-
-    // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
-    // is at least AUTO_CALIBRATION_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
-    else if (heKeyStates[key.index].downPosition > lowerValue &&
-             heKeyStates[key.index].restPosition - lowerValue >= AUTO_CALIBRATION_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
-        heKeyStates[key.index].downPosition = lowerValue;
+    // If the read value is bigger than the current rest position calibration (with deadzone applied), update it.
+    if (heKeyStates[key.index].restPosition < value - AUTO_CALIBRATION_DEADZONE)
+        heKeyStates[key.index].restPosition = value - AUTO_CALIBRATION_DEADZONE;
+    // If the read value is lower than the current down position (with deadzone applied), update it. Make sure that the distance to the rest position
+    // is at least 200 (scaled with the travel distance at a base of 4.00mm) to prevent inaccurate calibration resulting in "crazy behaviour"
+    else if (heKeyStates[key.index].downPosition > value + AUTO_CALIBRATION_DEADZONE &&
+             heKeyStates[key.index].restPosition - value + AUTO_CALIBRATION_DEADZONE >= 200 * TRAVEL_DISTANCE_IN_0_01MM / 400)
+        heKeyStates[key.index].downPosition = value + AUTO_CALIBRATION_DEADZONE;
 }
 
 void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
@@ -235,7 +230,7 @@ uint16_t KeypadHandler::readKey(const Key &key)
         // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
         // Since this firmware expects the value to go down when the button is pressed down, this is needed.
 #ifdef INVERT_SENSOR_READINGS
-        value = TWO_EXP_ANALOG_RESOLUTION - 1 - value;
+        value = ANALOG_RESOLUTION_SQUARED - 1 - value;
 #endif
 
         // Filter the value through the SMA filter and return it.
