@@ -190,7 +190,6 @@ void SerialHandler::get()
         print("GET hkey%d.uh=%d", key.index + 1, key.upperHysteresis);
         print("GET hkey%d.char=%d", key.index + 1, key.keyChar);
         print("GET hkey%d.rest=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].restPosition);
-        print("GET hkey%d.down=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].downPosition);
         print("GET hkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
