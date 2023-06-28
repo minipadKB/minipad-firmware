@@ -49,10 +49,6 @@ private:
             config.heKeys[i].rapidTriggerDownSensitivity = TRAVEL_DISTANCE_IN_0_01MM / 10;
             config.heKeys[i].lowerHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.55);
             config.heKeys[i].upperHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.675);
-
-            // Set the calibration values to the outer boundaries of the possible values to "disable" them.
-            config.heKeys[i].restPosition = pow(2, ANALOG_RESOLUTION) - 1;
-            config.heKeys[i].downPosition = 0;
         }
 
         // Populate the digital keys array with the correct amount of digital keys.

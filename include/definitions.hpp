@@ -26,7 +26,13 @@
 // This value is important to reset the rapid trigger state properly with continuous rapid trigger.
 #define CONTINUOUS_RAPID_TRIGGER_THRESHOLD 10
 
-// The resolution for the ADCs on the RP2040. The maximum compatible value on it is 16 bit.
+// This number will be added to the down position and substracted from the rest position on calibration
+// to introduce a deadzone at the boundaries. This might be desired since values might fluctuate.
+// e.g. if the value fluctuates around 1970 in rest position but peaks at 1975, this would counteract it.
+// 7 may seem like much at first but when "smashing" the button a lot it'll be just right.
+#define AUTO_CALIBRATION_DEADZONE 7
+
+// The resolution for the ADCs on the RP2040. The theoretical maximum value on it is 16 bit (uint16_t).
 #define ANALOG_RESOLUTION 12
 
 // The exponent for the amount of samples for the SMA filter. This filter reduces fluctuation of analog values.

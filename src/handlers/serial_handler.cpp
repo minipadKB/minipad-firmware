@@ -99,10 +99,6 @@ void SerialHandler::handleSerialInput(String *inputStr)
                 hkey_lh(key, atoi(arg0));
             else if (isEqual(setting, "uh"))
                 hkey_uh(key, atoi(arg0));
-            else if (isEqual(setting, "rest"))
-                hkey_rest(key, atoi(arg0));
-            else if (isEqual(setting, "down"))
-                hkey_down(key, atoi(arg0));
             else if (isEqual(setting, "char"))
                 key_char(key, atoi(arg0));
             else if (isEqual(setting, "hid"))
@@ -193,8 +189,8 @@ void SerialHandler::get()
         print("GET hkey%d.lh=%d", key.index + 1, key.lowerHysteresis);
         print("GET hkey%d.uh=%d", key.index + 1, key.upperHysteresis);
         print("GET hkey%d.char=%d", key.index + 1, key.keyChar);
-        print("GET hkey%d.rest=%d", key.index + 1, key.restPosition);
-        print("GET hkey%d.down=%d", key.index + 1, key.downPosition);
+        print("GET hkey%d.rest=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].restPosition);
+        print("GET hkey%d.down=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].downPosition);
         print("GET hkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
@@ -278,22 +274,6 @@ void SerialHandler::hkey_uh(HEKey &key, uint16_t value)
     if (value - key.lowerHysteresis >= HYSTERESIS_TOLERANCE && TRAVEL_DISTANCE_IN_0_01MM - value >= HYSTERESIS_TOLERANCE)
         // Set the upper hysteresis config value to the specified state.
         key.upperHysteresis = value;
-}
-
-void SerialHandler::hkey_rest(HEKey &key, uint16_t value)
-{
-    // Check whether the specified value is bigger than the down position and smaller or equal to the maximum analog value.
-    if (value > key.downPosition && value <= pow(2, ANALOG_RESOLUTION) - 1)
-        // Set the rest position config value of the specified key to the specified state.
-        key.restPosition = value;
-}
-
-void SerialHandler::hkey_down(HEKey &key, uint16_t value)
-{
-    // Check whether the specified value is smaller than the rest position.
-    if (value < key.restPosition)
-        // Set the down position config value of the specified key to the specified state.
-        key.downPosition = value;
 }
 
 void SerialHandler::key_char(Key &key, uint8_t keyChar)
