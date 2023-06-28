@@ -29,14 +29,14 @@ jobs:
 
       - name: Set Firmware Version
         id: get_version
-        run: python ci-util.py --set-version
+        run: python scripts/ci-util.py --set-version
 
       - name: Firmware Version Update Check
-        run: python ci-util.py --fail-on-no-version-increment
+        run: python scripts/ci-util.py --fail-on-no-version-increment
 
       - name: Generate Changelog
         id: generate_changelog
-        run: python ci-util.py --generate-changelog
+        run: python scripts/ci-util.py --generate-changelog
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
