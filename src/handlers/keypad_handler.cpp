@@ -55,6 +55,19 @@ const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
    Step 3: Apply the dynamic travel distance checks, the core of the Rapid Trigger feature
    Step 4: Depending on whether the key is pressed or not, remember the lowest/highest peak achieved
 */
+uint16_t restAdcValue = 0;
+void KeypadHandler::begin()
+{
+    // Initialize the gauss-distance lookup table used to conver the read ADC values to the magnet's distance.
+    for (uint16_t i = 0; i < sizeof(lut); i++)
+    {
+        if (lut[i] == 400)
+        {
+            restAdcValue = i + 1;
+            break;
+        }
+    }
+}
 
 void KeypadHandler::handle()
 {
@@ -78,8 +91,9 @@ void KeypadHandler::handle()
         if (!heKeyStates[key.index].filter.initialized)
             continue;
 
-        // Make sure to run checks on the calibration values, updating them if available.
-        updateCalibrationValues(key, value);
+        // If the read value is bigger than the current rest position calibration (with deadzone applied), update it.
+        if (heKeyStates[key.index].restPosition < value - AUTO_CALIBRATION_DEADZONE)
+            heKeyStates[key.index].restPosition = value - AUTO_CALIBRATION_DEADZONE;
 
         // Run the checks on the HE key.
         checkHEKey(key, heKeyStates[key.index].lastMappedValue);
@@ -97,18 +111,6 @@ void KeypadHandler::handle()
 
     // Send the key report via the HID interface after updating the report.
     Keyboard.sendReport();
-}
-
-void KeypadHandler::updateCalibrationValues(const HEKey &key, uint16_t value)
-{
-    // If the read value is bigger than the current rest position calibration (with deadzone applied), update it.
-    if (heKeyStates[key.index].restPosition < value - AUTO_CALIBRATION_DEADZONE)
-        heKeyStates[key.index].restPosition = value - AUTO_CALIBRATION_DEADZONE;
-    // If the read value is lower than the current down position (with deadzone applied), update it. Make sure that the distance to the rest position
-    // is at least 200 (scaled with the travel distance at a base of 4.00mm) to prevent inaccurate calibration resulting in "crazy behaviour"
-    else if (heKeyStates[key.index].downPosition > value + AUTO_CALIBRATION_DEADZONE &&
-             heKeyStates[key.index].restPosition - value + AUTO_CALIBRATION_DEADZONE >= 200 * TRAVEL_DISTANCE_IN_0_01MM / 400)
-        heKeyStates[key.index].downPosition = value + AUTO_CALIBRATION_DEADZONE;
 }
 
 void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
@@ -243,7 +245,6 @@ uint16_t KeypadHandler::readKey(const Key &key)
 
 uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const
 {
-    // Map the value with the calibrated down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
-    // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
-    return constrain(map(value, heKeyStates[key.index].downPosition, heKeyStates[key.index].restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
+
+    return lut[value + (restAdcValue - heKeyStates[key.index].restPosition)];
 }
