@@ -38,6 +38,12 @@
 // A value too high may cause unresponsiveness. 1 = 1 sample, 2 = 4 samples, 3 = 8 samples, 4 = 16 samples, ...
 #define SMA_FILTER_SAMPLE_EXPONENT 4
 
+// Hall effect switch magnet property definitions used for generating gauss-distance lookup table.
+// All units are specified in meters, meaning 1mm = 0.001.
+#define MAGNET_RADIUS 0.2
+#define MAGNET_THICKNESS 0.2
+#define MAGNET_RESIDUAL_INDUCTION 1280
+
 // The travel distance of the switches, where 1 unit equals 0.01mm. This is used to map the values properly to
 // guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
 #define TRAVEL_DISTANCE_IN_0_01MM 400

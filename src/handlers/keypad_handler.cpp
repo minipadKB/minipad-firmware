@@ -58,10 +58,14 @@ const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
 uint16_t restAdcValue = 0;
 void KeypadHandler::begin()
 {
-    // Initialize the gauss-distance lookup table used to conver the read ADC values to the magnet's distance.
+    // Initialize the gauss-distance lookup table used to convert the read ADC values to the magnet's distance.
+
+    // Find the first value representing a fully released key in the lookup table. The index of that value is the
+    // ADC value representing the rest position of the key. This is necessary to add a potential offset to the LUT
+    // by comparing it with the actual rest position value reached on the key. The LUT is then offset by the difference.
     for (uint16_t i = 0; i < sizeof(lut); i++)
     {
-        if (lut[i] == 400)
+        if (lut[i] == TRAVEL_DISTANCE_IN_0_01MM)
         {
             restAdcValue = i + 1;
             break;
@@ -245,6 +249,7 @@ uint16_t KeypadHandler::readKey(const Key &key)
 
 uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const
 {
-
+    // Get the mm value from the lookup table based on the ADC value offset to align the LUT with the rest position.
+    // e.g. if the LUT considers 1974 all the way up but in reality it is 1990, the LUT is offset so that 1990 is considered all the way up.
     return lut[value + (restAdcValue - heKeyStates[key.index].restPosition)];
 }
