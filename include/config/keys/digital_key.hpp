@@ -7,6 +7,7 @@
 struct DigitalKey : Key
 {
     DigitalKey() : Key(KeyType::Digital, 0, '\0') {}
+
     // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. DigitalKey) and index.
     // Assign the key char from a forwards (a, b, c, d, e, ...). After 26 keys, stick to an 'z' key to not overflow.
     DigitalKey(uint8_t index) : Key(KeyType::Digital, index, index >= 26 ? 'z' : (char)('a' + index)) {}

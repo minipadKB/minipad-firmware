@@ -148,7 +148,7 @@ void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
         pressKey(key);
         digitalKeyStates[key.index].lastDebounce = millis();
     }
-    else if(!pressed)
+    else if (!pressed)
         releaseKey(key);
 }
 
@@ -158,7 +158,8 @@ void KeypadHandler::pressKey(const Key &key)
     // In case the key type is neither digital or hall effect (which shouldn't happen),
     // it defaults to a bool pointer to true, therefore the function exists out further down.
     bool *pressed = key.type == KeyType::HallEffect ? &heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &digitalKeyStates[key.index].pressed : nullptr;
+                    : key.type == KeyType::Digital  ? &digitalKeyStates[key.index].pressed
+                                                    : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressed || *pressed || !key.hidEnabled)
@@ -175,7 +176,8 @@ void KeypadHandler::releaseKey(const Key &key)
     // In case the key type is neither digital or hall effect (which shouldn't happen),
     // it defaults to a null pointer, therefore the function exists out further down.
     bool *pressed = key.type == KeyType::HallEffect ? &heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &digitalKeyStates[key.index].pressed : nullptr;
+                    : key.type == KeyType::Digital  ? &digitalKeyStates[key.index].pressed
+                                                    : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressed || !*pressed)
@@ -188,6 +190,8 @@ void KeypadHandler::releaseKey(const Key &key)
 
 uint16_t KeypadHandler::readKey(const Key &key)
 {
+    Serial.println(key.type == KeyType::HallEffect);
+    Serial.println("1");
     // Perform a digital read if the key is a digital one.
     if (key.type == KeyType::Digital)
     {
@@ -197,8 +201,10 @@ uint16_t KeypadHandler::readKey(const Key &key)
     // Perform an analog read if the key is a hall effect one.
     else if (key.type == KeyType::HallEffect)
     {
+        Serial.println("a");
         // Read the value from the port of the specified key.
         uint16_t value = analogRead(HE_PIN(key.index));
+        Serial.println(value);
 
         // Invert the value if the definition is set since in rare fields of application the sensor
         // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
