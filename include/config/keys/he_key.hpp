@@ -8,6 +8,8 @@
 // Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
 struct HEKey : Key
 {
+    HEKey() : Key(KeyType::HallEffect, 0, '\0') {}
+
     // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. HEKey) and index.
     // Assign the key char from z downwards (z, y, x, w, v, ...). After 26 keys, stick to an 'a' key to not overflow.
     HEKey(uint8_t index) : Key(KeyType::HallEffect, index, index >= 26 ? 'a' : (char)('z' - index)) {}

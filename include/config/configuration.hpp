@@ -13,10 +13,10 @@ struct Configuration
     char name[128] = "minipad";
 
     // A list of all hall effect key configurations. (rapid trigger, hysteresis, calibration, ...)
-    HEKey heKeys[HE_KEYS] = {};
+    HEKey heKeys[HE_KEYS];
 
     // A list of all digital key configurations. (key char, hid state, ...)
-    DigitalKey digitalKeys[DIGITAL_KEYS] = {};
+    DigitalKey digitalKeys[DIGITAL_KEYS];
 
     // Returns the version constant of the latest Configuration layout.
     static uint32_t getVersion()

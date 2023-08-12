@@ -25,7 +25,7 @@ private:
     // structs that might get modified on a firmware update and have to be reset back to their default values then later on.
     Configuration getDefaultConfig()
     {
-        Configuration config = Configuration();
+        Configuration config;
 
         // Populate the hall effect keys array with the correct amount of hall effect keys.
         for (uint8_t i = 0; i < HE_KEYS; i++)
