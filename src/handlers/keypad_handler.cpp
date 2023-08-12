@@ -6,9 +6,9 @@
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
-// Constant square of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
+// Constant two to the power of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
 // Used to invert the read sensor value in case the INVERT_SENSOR_READINGS definition is set.
-const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
+const uint16_t TWO_EXP_ANALOG_RESOLUTION = pow(2, ANALOG_RESOLUTION);
 
 /*
    Explanation of the Rapid Trigger Logic
@@ -204,7 +204,7 @@ uint16_t KeypadHandler::readKey(const Key &key)
         // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
         // Since this firmware expects the value to go down when the button is pressed down, this is needed.
 #ifdef INVERT_SENSOR_READINGS
-        value = ANALOG_RESOLUTION_SQUARED - 1 - value;
+        value = TWO_EXP_ANALOG_RESOLUTION - 1 - value;
 #endif
 
         // Filter the value through the SMA filter and return it.
