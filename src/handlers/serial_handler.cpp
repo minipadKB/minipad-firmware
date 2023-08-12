@@ -296,10 +296,8 @@ void SerialHandler::hkey_down(HEKey &key, uint16_t value)
 
 void SerialHandler::key_char(Key &key, uint8_t keyChar)
 {
-    // Check if the specified key is a letter with a byte value between 97 (a) and 122 (z).
-    if (keyChar >= 'a' && keyChar <= 'z')
-        // Set the key config value of the specified key to the specified state.
-        key.keyChar = keyChar;
+    // Set the key config value of the specified key to the specified state.
+    key.keyChar = keyChar;
 }
 
 void SerialHandler::key_hid(Key &key, bool state)
