@@ -102,7 +102,7 @@ void SerialHandler::handleSerialInput(char *input)
             else if (isEqual(setting, "down"))
                 hkey_down(key, atoi(arg0));
             else if (isEqual(setting, "char"))
-                key_char(key, atoi(arg0));
+                key_char(key, strlen(arg0) == 1 ? (int)arg0[0] : atoi(arg0) /* Allow for either the ASCII character or integer */);
             else if (isEqual(setting, "hid"))
                 key_hid(key, isTrue(arg0));
         }
@@ -143,7 +143,7 @@ void SerialHandler::handleSerialInput(char *input)
 
             // Handle the settings.
             if (isEqual(setting, "char"))
-                key_char(key, atoi(arg0));
+                key_char(key, strlen(arg0) == 1 ? (int)arg0[0] : atoi(arg0) /* Allow for either the ASCII character or integer */);
             else if (isEqual(setting, "hid"))
                 key_hid(key, isTrue(arg0));
         }
