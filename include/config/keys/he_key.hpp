@@ -33,6 +33,6 @@ struct HEKey : Key
     uint16_t upperHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.675);
 
     // The value read when the keys are in rest position/all the way down.
-    uint16_t restPosition = pow(2, ANALOG_RESOLUTION) - 1; // Set to the outer boundaries in order to make
-    uint16_t downPosition = 0;                             // them overwritable by the calibration code.
+    uint16_t restPosition = 0;                             // Set to the outer boundaries in order to make
+    uint16_t downPosition = pow(2, ANALOG_RESOLUTION) - 1; // them overwritable by the calibration code.
 };
