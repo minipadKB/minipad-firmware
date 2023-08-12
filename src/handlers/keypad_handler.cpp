@@ -101,14 +101,17 @@ void KeypadHandler::handle()
 
 void KeypadHandler::updateCalibrationValues(const HEKey &key, uint16_t value)
 {
-    // If the read value is bigger than the current rest position calibration (with deadzone applied), update it.
-    if (heKeyStates[key.index].restPosition < value - AUTO_CALIBRATION_DEADZONE)
-        heKeyStates[key.index].restPosition = value - AUTO_CALIBRATION_DEADZONE;
-    // If the read value is lower than the current down position (with deadzone applied), update it. Make sure that the distance to the rest position
-    // is at least 200 (scaled with the travel distance at a base of 4.00mm) to prevent inaccurate calibration resulting in "crazy behaviour"
-    else if (heKeyStates[key.index].downPosition > value + AUTO_CALIBRATION_DEADZONE &&
-             heKeyStates[key.index].restPosition - value + AUTO_CALIBRATION_DEADZONE >= 200 * TRAVEL_DISTANCE_IN_0_01MM / 400)
-        heKeyStates[key.index].downPosition = value + AUTO_CALIBRATION_DEADZONE;
+    // Calculate the value with the deadzone in the positive and negative direction applied.
+    uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
+    uint16_t lowerValue = value + AUTO_CALIBRATION_DEADZONE;
+    // If the read value with deadzone applied is bigger than the current rest position calibration, update it.
+    if (heKeyStates[key.index].restPosition < upperValue)
+        heKeyStates[key.index].restPosition = upperValue;
+    // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
+    // is at least AUTO_CALIBRATION_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
+    else if (heKeyStates[key.index].downPosition > lowerValue &&
+             heKeyStates[key.index].restPosition - lowerValue >= AUTO_CALIBRATION_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
+        heKeyStates[key.index].downPosition = lowerValue;
 }
 
 void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)

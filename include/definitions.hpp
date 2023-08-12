@@ -32,6 +32,10 @@
 // 7 may seem like much at first but when "smashing" the button a lot it'll be just right.
 #define AUTO_CALIBRATION_DEADZONE 7
 
+// The minimum difference between the rest position and the deadzone-applied down position.
+// It is important to mantain a minimum analog range to prevent "crazy behavior".
+#define AUTO_CALIBRATION_MIN_DISTANCE 200
+
 // The resolution for the ADCs on the RP2040. The theoretical maximum value on it is 16 bit (uint16_t).
 #define ANALOG_RESOLUTION 12
 
