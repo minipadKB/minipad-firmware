@@ -22,7 +22,7 @@ struct Configuration
     static uint32_t getVersion()
     {
         // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-        int64_t version = 2304281204;
+        int64_t version = 2308130046;
 
         return version;
     }
