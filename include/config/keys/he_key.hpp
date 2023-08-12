@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include "config/keys/key.hpp"
 #include "config/keys/key_type.hpp"
 

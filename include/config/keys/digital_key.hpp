@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include "config/keys/key.hpp"
 
 // Configuration for the digital keys of the keypad.
