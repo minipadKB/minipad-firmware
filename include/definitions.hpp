@@ -53,8 +53,6 @@
 // meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted, depending on how the PCB
 // and hardware of the device using this firmware has been designed. The A0 constant is 26 in the RP2040 environment.
 // NOTE: By the uint8 datatype, the amount of keys is limited to 255.
-// NOTE: By the default config initialization, the amount of keys is limited to
-//       around 26 since the characters are assigned backwards started from 'z'.
 // NOTE: By the RP2040, the amount of analog pins (and therefore keys) is limited o 4.
 #define HE_PIN(index) A0 + HE_KEYS - index - 1
 
@@ -70,7 +68,7 @@
 #endif
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 26 digital keys.
-// (limited amount of ports + characters)
+// (limited amount of ports)
 #if DIGITAL_KEYS > 26
 #error As of right now, the firmware only supports up to 26 digital keys.
 #endif
