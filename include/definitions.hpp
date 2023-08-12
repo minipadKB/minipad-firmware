@@ -29,6 +29,9 @@
 // The resolution for the ADCs on the RP2040. The maximum compatible value on it is 16 bit.
 #define ANALOG_RESOLUTION 12
 
+// The buffer size of any serial input. Defined here for consistent use across the serial handler and avoiding of magic numbers.
+#define SERIAL_INPUT_BUFFER_SIZE 1024
+
 // The exponent for the amount of samples for the SMA filter. This filter reduces fluctuation of analog values.
 // A value too high may cause unresponsiveness. 1 = 1 sample, 2 = 4 samples, 3 = 8 samples, 4 = 16 samples, ...
 #define SMA_FILTER_SAMPLE_EXPONENT 4

@@ -15,15 +15,13 @@ extern "C"
 #define isEqual(str1, str2) strcmp(str1, str2) == 0
 #define isTrue(str) isEqual(str, "1") || isEqual(str, "true")
 
-void SerialHandler::handleSerialInput(String *inputStr)
+void SerialHandler::handleSerialInput(char *input)
 {
-    // Convert the string into a character array for further parsing and make it lowercase.
-    char input[(*inputStr).length() + 1];
-    (*inputStr).toCharArray(input, (*inputStr).length() + 1);
+    // Make the input buffer lowercase for further parsing.
     StringHelper::toLower(input);
 
     // Parse the command as the first argument, separated by whitespaces.
-    char command[1024];
+    char command[SERIAL_INPUT_BUFFER_SIZE];
     StringHelper::getArgumentAt(input, ' ', 0, command);
 
     // Get a pointer pointing to the start of all parameters for the command.
@@ -36,7 +34,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
         parameters += 1;
 
     // Parse all arguments.
-    char arg0[1024];
+    char arg0[SERIAL_INPUT_BUFFER_SIZE];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
     // Handle the global commands and pass their expected required parameters.
@@ -59,8 +57,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "hkey") == command)
     {
         // Split the command into the key string and the setting name.
-        char keyStr[1024];
-        char setting[1024];
+        char keyStr[SERIAL_INPUT_BUFFER_SIZE];
+        char setting[SERIAL_INPUT_BUFFER_SIZE];
         StringHelper::getArgumentAt(command, '.', 0, keyStr);
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
@@ -114,8 +112,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "dkey") == command)
     {
         // Split the command into the key string and the setting name.
-        char keyStr[1024];
-        char setting[1024];
+        char keyStr[SERIAL_INPUT_BUFFER_SIZE];
+        char setting[SERIAL_INPUT_BUFFER_SIZE];
         StringHelper::getArgumentAt(command, '.', 0, keyStr);
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
