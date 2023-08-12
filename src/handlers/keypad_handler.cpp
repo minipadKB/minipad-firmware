@@ -190,8 +190,6 @@ void KeypadHandler::releaseKey(const Key &key)
 
 uint16_t KeypadHandler::readKey(const Key &key)
 {
-    Serial.println(key.type == KeyType::HallEffect);
-    Serial.println("1");
     // Perform a digital read if the key is a digital one.
     if (key.type == KeyType::Digital)
     {
@@ -201,10 +199,8 @@ uint16_t KeypadHandler::readKey(const Key &key)
     // Perform an analog read if the key is a hall effect one.
     else if (key.type == KeyType::HallEffect)
     {
-        Serial.println("a");
         // Read the value from the port of the specified key.
         uint16_t value = analogRead(HE_PIN(key.index));
-        Serial.println(value);
 
         // Invert the value if the definition is set since in rare fields of application the sensor
         // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
