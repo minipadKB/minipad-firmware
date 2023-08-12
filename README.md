@@ -109,22 +109,22 @@ Here is a list of commands and examples for them:
 *Command*: `hkey.rt`</br>
 *Syntax*: `hkey.rt <bool>`</br>
 *Example*: `hkey.rt 1`</br>
-*Description*: Enables/Disables Rapid Trigger functionality on the specified key(s).
+*Description*: Enables/Disables Rapid Trigger functionality on the specified key.
 
 *Command*: `hkey.crt`</br>
 *Syntax*: `hkey.crt <bool>`</br>
 *Example*: `hkey.crt false`</br>
-*Description*: Enables/Disables Continuous Rapid trigger functionality on the specified key(s).
+*Description*: Enables/Disables Continuous Rapid trigger functionality on the specified key.
 
 *Command*: `hkey.rtus`</br>
 *Syntax*: `hkey.rtus <uint16>`</br>
 *Example*: `hkey.rtus 45`</br>
-*Description*: Sets the sensitivity for an upwards movement on the Rapid Trigger feature. The unit of the value is 0.01mm.
+*Description*: Sets the sensitivity for an upwards movement of the Rapid Trigger feature on the key. The unit of the value is 0.01mm.
 
 *Command*: `hkey.rtds`</br>
 *Syntax*: `hkey.rtds <uint16>`</br>
 *Example*: `hkey.rtds 10`</br>
-*Description*: Sets the sensitivity for a downwards movement on the Rapid Trigger feature. The unit of the value is 0.01mm.
+*Description*: Sets the sensitivity for a downwards movement of the Rapid Trigger feature on the key. The unit of the value is 0.01mm.
 
 *Command*: `hkey.lh`</br>
 *Syntax*: `hkey.lh <uint16>`</br>
@@ -137,14 +137,14 @@ Here is a list of commands and examples for them:
 *Description*: Sets the upper hysteresis for the actuation point above which the key is no longer being pressed. The unit of the value is 0.01mm.
 
 *Command*: `hkey.char`, `dkey.char`</br>
-*Syntax*: `?key.char <uint8>`</br>
-*Example*: `dkey.char 97`</br>
-*Description*: Sets the character pressed when the specified key(s) is/are pressed down. The value is the ASCII number of the character. Only lower-case a-z is supported.
+*Syntax*: `?key.char <uint8/character>`</br>
+*Example*: `dkey.char 97` or `dkey.char a`</br>
+*Description*: Sets the character pressed when the specified key is pressed down. The value is the ASCII number of the character.
 
 *Command*: `hkey.hid`, `dkey.hid`</br>
 *Syntax*: `?key.hid <bool>`</br>
 *Example*: `dkey.hid false`</br>
-*Description*: Enables/Disables the HID output (meaning whether the key signal is sent to the host device) on the specified key(s).
+*Description*: Enables/Disables the HID output (meaning whether the key signal is sent to the host device) on the specified key.
 
 </details>
 
