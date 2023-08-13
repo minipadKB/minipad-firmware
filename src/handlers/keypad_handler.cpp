@@ -79,7 +79,7 @@ void KeypadHandler::handle()
             continue;
 
         // Make sure to run checks on the calibration values, updating them if available.
-        updateCalibrationValues(key, value);
+        calibrate(key, value);
 
         // Run the checks on the HE key.
         checkHEKey(key, heKeyStates[key.index].lastMappedValue);
@@ -99,14 +99,16 @@ void KeypadHandler::handle()
     Keyboard.sendReport();
 }
 
-void KeypadHandler::updateCalibrationValues(const HEKey &key, uint16_t value)
+void KeypadHandler::calibrate(const HEKey &key, uint16_t value)
 {
     // Calculate the value with the deadzone in the positive and negative direction applied.
     uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
     uint16_t lowerValue = value + AUTO_CALIBRATION_DEADZONE;
+
     // If the read value with deadzone applied is bigger than the current rest position calibration, update it.
     if (heKeyStates[key.index].restPosition < upperValue)
         heKeyStates[key.index].restPosition = upperValue;
+
     // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
     // is at least AUTO_CALIBRATION_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
     else if (heKeyStates[key.index].downPosition > lowerValue &&
