@@ -1,7 +1,7 @@
 #pragma once
 
 // The version of this firmware in the YYYY.MDD.PATCH format. (e.g. 2022.1219.2 for the 2nd release on the 19th december 2022)
-#define FIRMWARE_VERSION "2023.516.1"
+#define FIRMWARE_VERSION "2023.813.1"
 
 // ┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
 // │                                                                                                   │
@@ -39,6 +39,9 @@
 // The resolution for the ADCs on the RP2040. The theoretical maximum value on it is 16 bit (uint16_t).
 #define ANALOG_RESOLUTION 12
 
+// The buffer size of any serial input. Defined here for consistent use across the serial handler and avoiding of magic numbers.
+#define SERIAL_INPUT_BUFFER_SIZE 1024
+
 // The exponent for the amount of samples for the SMA filter. This filter reduces fluctuation of analog values.
 // A value too high may cause unresponsiveness. 1 = 1 sample, 2 = 4 samples, 3 = 8 samples, 4 = 16 samples, ...
 #define SMA_FILTER_SAMPLE_EXPONENT 4
@@ -60,8 +63,6 @@
 // meaning on a 3-key device the pins are 28, 27 and 26. This macro has to be adjusted, depending on how the PCB
 // and hardware of the device using this firmware has been designed. The A0 constant is 26 in the RP2040 environment.
 // NOTE: By the uint8 datatype, the amount of keys is limited to 255.
-// NOTE: By the default config initialization, the amount of keys is limited to
-//       around 26 since the characters are assigned backwards started from 'z'.
 // NOTE: By the RP2040, the amount of analog pins (and therefore keys) is limited o 4.
 #define HE_PIN(index) A0 + HE_KEYS - index - 1
 
@@ -77,7 +78,7 @@
 #endif
 
 // Add a compiler error if the firmware is being tried to built with more than the supported 26 digital keys.
-// (limited amount of ports + characters)
+// (limited amount of ports)
 #if DIGITAL_KEYS > 26
 #error As of right now, the firmware only supports up to 26 digital keys.
 #endif
