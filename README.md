@@ -92,9 +92,9 @@ Here is a list of commands and examples for them:
 *Description*: Sets the name of the minipad, used to distinguish different devices visually.
 
 *Command*: `out`</br>
-*Syntax*: `out <bool>`</br>
-*Example*: `out true`, `out 0`</br>
-*Description*: Enables/Disables the output mode. The output mode writes the sensor values to the serial monitor, allowing them to be read by software on the host device.
+*Syntax*: `out [bool]`</br>
+*Example*: `out true`, `out 0`, `out`</br>
+*Description*: Enables/Disables the output mode. The output mode writes the sensor values to the serial monitor. If no parameter is specified, the values are written once.
 
 *Command*: `echo` (debug-exclusive)</br>
 *Syntax*: `echo <string>`</br>
