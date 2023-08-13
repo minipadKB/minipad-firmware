@@ -10,7 +10,7 @@ struct Configuration
     uint32_t version = Configuration::getVersion();
 
     // The name of the keypad, used to distinguish it from others.
-    char name[128];
+    char name[128] = "minipad";
 
     // A list of all hall effect key configurations. (rapid trigger, hysteresis, calibration, ...)
     HEKey heKeys[HE_KEYS];
@@ -22,7 +22,7 @@ struct Configuration
     static uint32_t getVersion()
     {
         // Version of the configuration in the format YYMMDDhhmm (e.g. 2301030040 for 12:44am on the 3rd january 2023)
-        int64_t version = 2304281204;
+        int64_t version = 2308130046;
 
         return version;
     }
