@@ -6,6 +6,7 @@
 // Configuration for the digital keys of the keypad.
 struct DigitalKey : Key
 {
+    // Default constructor for the DigitalKey struct for initializing the arrays in the Configuration struct.
     DigitalKey() : Key(KeyType::Digital, 0, '\0') {}
 
     // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. DigitalKey) and index.

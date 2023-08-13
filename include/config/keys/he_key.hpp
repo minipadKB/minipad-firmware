@@ -8,6 +8,7 @@
 // Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
 struct HEKey : Key
 {
+    // Default constructor for the HEKey struct for initializing the arrays in the Configuration struct.
     HEKey() : Key(KeyType::HallEffect, 0, '\0') {}
 
     // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. HEKey) and index.
