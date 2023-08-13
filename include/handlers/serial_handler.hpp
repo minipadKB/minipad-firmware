@@ -5,14 +5,15 @@
 inline class SerialHandler
 {
 public:
-    void handleSerialInput(String *inputStr);
+    void handleSerialInput(char *input);
+    void printHEKeyOutput(const HEKey &key);
 
 private:
     void boot();
     void save();
     void get();
     void name(char *name);
-    void out(bool state);
+    void out(bool single, bool state);
     void echo(char *input);
     void hkey_rt(HEKey &key, bool state);
     void hkey_crt(HEKey &key, bool state);

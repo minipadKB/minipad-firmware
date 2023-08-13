@@ -4,6 +4,7 @@
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
 #include "handlers/keypad_handler.hpp"
+#include "definitions.hpp"
 
 void setup()
 {
@@ -25,13 +26,21 @@ void setup()
 
 void loop()
 {
-    // Check for any serial commands received.
-    while (Serial.available())
-    {
-        String str = Serial.readStringUntil('\n');
-        SerialHandler.handleSerialInput(&str);
-    }
-
     // Run the keypad handler checks to handle the actual keypad functionality.
     KeypadHandler.handle();
+}
+
+void serialEvent()
+{
+    // Handle incoming serial data.
+    while(Serial.available() > 0)
+    {
+        // Read the incoming serial data until a newline into a buffer and terminate it with a null terminator.
+        char input[SERIAL_INPUT_BUFFER_SIZE];
+        const size_t inputLength = Serial.readBytesUntil('\n', input, SERIAL_INPUT_BUFFER_SIZE);
+        input[inputLength] = '\0';
+
+        // Pass the read input to the serial handler to handle it.
+        SerialHandler.handleSerialInput(input);
+    }
 }

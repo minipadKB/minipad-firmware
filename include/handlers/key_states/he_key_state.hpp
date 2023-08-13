@@ -17,6 +17,12 @@ struct HEKeyState : KeyState
     // The current peak value for the rapid trigger logic.
     uint16_t rapidTriggerPeak = 65535;
 
+    // The last value read from the hall effect sensor.
+    uint16_t lastSensorValue = 0;
+
+    // The mapped version of the value read from the hall effect sensor.
+    uint16_t lastMappedValue = 0;
+
     // The simple moving average filter for stabilizing the analog outpt.
     SMAFilter filter = SMAFilter(SMA_FILTER_SAMPLE_EXPONENT);
 };

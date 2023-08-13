@@ -1,3 +1,25 @@
+# 2023.813.1 - QoL Update
+
+This release does a lot of QoL changes, as well as doing the final preparations of the firmware for compabitility with the upcoming configuration software, minitility!</br>
+This update was supposed to include the new auto-calibration functionality but it was deemed to not be production-ready, therefore all current changes are pushed with this smaller update.
+
+## Features
+
+- The `out` command now supports specifying no parameter at all, in which case it outputs the sensor values once
+- The fields `lastSensorValue` and `lastMappedValue` have been added to the `HEKeyState`, allowing to access them across the firmware
+- The key chars supported are no longer restricted to a-z, any character from 0-255 can now be chosen, including modifier keys
+- The `hkey/dkey.char` command now allows characters like `a` or `7` as the parameter, instead of their ASCII number equivalent
+
+# Bug Fixes
+
+- Fixed rare cases in which command handling failed
+
+# Changes
+
+- Serial input handling is now using Arduino's built-in `serialEvent` function
+- All includes of `stdint.h` have been replaced with C++'s `cstdint`
+- The default values of the configuration have been migrated from the `getDefaultConfig` function to their structs
+
 # 2023.516.1 - Digital key support, support for more keys!
 
 This release adds support for digital keys, which might not be useful for minipad owners *yet*, but is for people DIY-ing a keypad or messing around with the firmware, as well as the collaboratoring commercial products of the Minipad Project. 

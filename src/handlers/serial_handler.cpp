@@ -15,20 +15,26 @@ extern "C"
 #define isEqual(str1, str2) strcmp(str1, str2) == 0
 #define isTrue(str) isEqual(str, "1") || isEqual(str, "true")
 
-void SerialHandler::handleSerialInput(String *inputStr)
+void SerialHandler::handleSerialInput(char *input)
 {
-    // Convert the string into a character array for further parsing and make it lowercase.
-    char input[(*inputStr).length() + 1];
-    (*inputStr).toCharArray(input, (*inputStr).length() + 1);
+    // Make the input buffer lowercase for further parsing.
     StringHelper::toLower(input);
 
     // Parse the command as the first argument, separated by whitespaces.
-    char command[1024];
+    char command[SERIAL_INPUT_BUFFER_SIZE];
     StringHelper::getArgumentAt(input, ' ', 0, command);
 
-    // Get a pointer pointing to the start of all parameters for the command and parse them.
-    char *parameters = input + strlen(command) + 1;
-    char arg0[1024];
+    // Get a pointer pointing to the start of all parameters for the command.
+    char *parameters = input + strlen(command);
+
+    // If the parameters start with a " " it means parameters have been specified.
+    // It's needed because if there are no parameters there's a zero-terminator instead.
+    // Skipping that zero-terminator would lead to arguments filled with memory garbage.
+    if (strstr(parameters, " ") == parameters)
+        parameters += 1;
+
+    // Parse all arguments.
+    char arg0[SERIAL_INPUT_BUFFER_SIZE];
     StringHelper::getArgumentAt(parameters, ' ', 0, arg0);
 
     // Handle the global commands and pass their expected required parameters.
@@ -41,7 +47,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
     else if (isEqual(command, "name"))
         name(parameters);
     else if (isEqual(command, "out"))
-        out(isTrue(arg0));
+        out(isEqual(arg0, ""), isTrue(arg0));
 #ifdef DEV
     else if (isEqual(command, "echo"))
         echo(parameters);
@@ -51,8 +57,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "hkey") == command)
     {
         // Split the command into the key string and the setting name.
-        char keyStr[1024];
-        char setting[1024];
+        char keyStr[SERIAL_INPUT_BUFFER_SIZE];
+        char setting[SERIAL_INPUT_BUFFER_SIZE];
         StringHelper::getArgumentAt(command, '.', 0, keyStr);
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
@@ -96,7 +102,7 @@ void SerialHandler::handleSerialInput(String *inputStr)
             else if (isEqual(setting, "down"))
                 hkey_down(key, atoi(arg0));
             else if (isEqual(setting, "char"))
-                key_char(key, atoi(arg0));
+                key_char(key, strlen(arg0) == 1 ? (int)arg0[0] : atoi(arg0) /* Allow for either the ASCII character or integer */);
             else if (isEqual(setting, "hid"))
                 key_hid(key, isTrue(arg0));
         }
@@ -106,8 +112,8 @@ void SerialHandler::handleSerialInput(String *inputStr)
     if (strstr(command, "dkey") == command)
     {
         // Split the command into the key string and the setting name.
-        char keyStr[1024];
-        char setting[1024];
+        char keyStr[SERIAL_INPUT_BUFFER_SIZE];
+        char setting[SERIAL_INPUT_BUFFER_SIZE];
         StringHelper::getArgumentAt(command, '.', 0, keyStr);
         StringHelper::getArgumentAt(command, '.', 1, setting);
 
@@ -137,11 +143,17 @@ void SerialHandler::handleSerialInput(String *inputStr)
 
             // Handle the settings.
             if (isEqual(setting, "char"))
-                key_char(key, atoi(arg0));
+                key_char(key, strlen(arg0) == 1 ? (int)arg0[0] : atoi(arg0) /* Allow for either the ASCII character or integer */);
             else if (isEqual(setting, "hid"))
                 key_hid(key, isTrue(arg0));
         }
     }
+}
+
+void SerialHandler::printHEKeyOutput(const HEKey &key)
+{
+    // Print out the index of the key, the last sensor reading and the last mapped value in the output format.
+    print("OUT hkey%d=%d %d", key.index + 1, KeypadHandler.heKeyStates[key.index].lastSensorValue, KeypadHandler.heKeyStates[key.index].lastMappedValue);
 }
 
 void SerialHandler::boot()
@@ -203,10 +215,15 @@ void SerialHandler::name(char *name)
         memcpy(ConfigController.config.name, name + '\0', length + 1);
 }
 
-void SerialHandler::out(bool state)
+void SerialHandler::out(bool single, bool state)
 {
-    // Set the calibration mode field of the keypad handler to the specified state.
-    KeypadHandler.outputMode = state;
+    // If single is true, no argument was specified. In that case just output every key once.
+    if (single)
+        for (const HEKey &key : ConfigController.config.heKeys)
+            printHEKeyOutput(key);
+    else
+        // Otherwise, set the calibration mode field of the keypad handler to the specified state.
+        KeypadHandler.outputMode = state;
 }
 
 void SerialHandler::echo(char *input)
@@ -279,10 +296,8 @@ void SerialHandler::hkey_down(HEKey &key, uint16_t value)
 
 void SerialHandler::key_char(Key &key, uint8_t keyChar)
 {
-    // Check if the specified key is a letter with a byte value between 97 (a) and 122 (z).
-    if (keyChar >= 'a' && keyChar <= 'z')
-        // Set the key config value of the specified key to the specified state.
-        key.keyChar = keyChar;
+    // Set the key config value of the specified key to the specified state.
+    key.keyChar = keyChar;
 }
 
 void SerialHandler::key_hid(Key &key, bool state)

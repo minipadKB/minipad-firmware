@@ -2,12 +2,13 @@
 #include <Keyboard.h>
 #include "config/keys/key_type.hpp"
 #include "handlers/keypad_handler.hpp"
+#include "handlers/serial_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 
-// Constant square of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
+// Constant two to the power of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
 // Used to invert the read sensor value in case the INVERT_SENSOR_READINGS definition is set.
-const uint16_t ANALOG_RESOLUTION_SQUARED = pow(2, ANALOG_RESOLUTION);
+const uint16_t TWO_EXP_ANALOG_RESOLUTION = pow(2, ANALOG_RESOLUTION);
 
 /*
    Explanation of the Rapid Trigger Logic
@@ -61,15 +62,15 @@ void KeypadHandler::handle()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
-        uint16_t rawValue = readKey(key);
-        uint16_t mappedValue = mapSensorValueToTravelDistance(key, rawValue);
+        heKeyStates[key.index].lastSensorValue = readKey(key);
+        heKeyStates[key.index].lastMappedValue = mapSensorValueToTravelDistance(key, heKeyStates[key.index].lastSensorValue);
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
-            Serial.printf("OUT hkey%d=%d %d\n", key.index + 1, rawValue, mappedValue);
+            SerialHandler.printHEKeyOutput(key);
 
         // Run the checks on the HE key.
-        checkHEKey(key, mappedValue);
+        checkHEKey(key, heKeyStates[key.index].lastMappedValue);
     }
 
     // Go through all digital keys and run the checks.
@@ -108,46 +109,46 @@ void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
     // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
     // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
     if (value >= key.upperHysteresis && !key.continuousRapidTrigger)
-        _heKeyStates[key.index].inRapidTriggerZone = false;
+        heKeyStates[key.index].inRapidTriggerZone = false;
     // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm).
     else if (value >= TRAVEL_DISTANCE_IN_0_01MM - CONTINUOUS_RAPID_TRIGGER_THRESHOLD && key.continuousRapidTrigger)
-        _heKeyStates[key.index].inRapidTriggerZone = false;
+        heKeyStates[key.index].inRapidTriggerZone = false;
 
     // RT STEP 2: If the value entered the rapid trigger zone, perform a press and set the rapid trigger state to true.
     // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
     // the rapid trigger zone is already counted as a trigger. From there on, the actuation point moves dynamically in that zone.
     // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
-    if (value <= key.lowerHysteresis && !_heKeyStates[key.index].inRapidTriggerZone)
+    if (value <= key.lowerHysteresis && !heKeyStates[key.index].inRapidTriggerZone)
     {
         pressKey(key);
-        _heKeyStates[key.index].inRapidTriggerZone = true;
+        heKeyStates[key.index].inRapidTriggerZone = true;
     }
 
     // RT STEP 3: If the key *already is* in the rapid trigger zone (hence the 'else if'), check whether the key has travelled the sufficient amount.
     // Check whether the key should be pressed. This is the case if the key is currently not pressed,
     // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
-    else if (!_heKeyStates[key.index].pressed && _heKeyStates[key.index].inRapidTriggerZone && value + key.rapidTriggerDownSensitivity <= _heKeyStates[key.index].rapidTriggerPeak)
+    else if (!heKeyStates[key.index].pressed && heKeyStates[key.index].inRapidTriggerZone && value + key.rapidTriggerDownSensitivity <= heKeyStates[key.index].rapidTriggerPeak)
         pressKey(key);
     // Check whether the key should be released. This is the case if the key is currently pressed down and either the
     // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
-    else if (_heKeyStates[key.index].pressed && (!_heKeyStates[key.index].inRapidTriggerZone || value >= _heKeyStates[key.index].rapidTriggerPeak + key.rapidTriggerUpSensitivity))
+    else if (heKeyStates[key.index].pressed && (!heKeyStates[key.index].inRapidTriggerZone || value >= heKeyStates[key.index].rapidTriggerPeak + key.rapidTriggerUpSensitivity))
         releaseKey(key);
 
     // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
-    if ((_heKeyStates[key.index].pressed && value < _heKeyStates[key.index].rapidTriggerPeak) || (!_heKeyStates[key.index].pressed && value > _heKeyStates[key.index].rapidTriggerPeak))
-        _heKeyStates[key.index].rapidTriggerPeak = value;
+    if ((heKeyStates[key.index].pressed && value < heKeyStates[key.index].rapidTriggerPeak) || (!heKeyStates[key.index].pressed && value > heKeyStates[key.index].rapidTriggerPeak))
+        heKeyStates[key.index].rapidTriggerPeak = value;
 }
 
 void KeypadHandler::checkDigitalKey(const DigitalKey &key, bool pressed)
 {
     // Check whether the key is pressed and send the HID command.
-    if (pressed && millis() - _digitalKeyStates[key.index].lastDebounce >= DIGITAL_DEBOUNCE_DELAY)
+    if (pressed && millis() - digitalKeyStates[key.index].lastDebounce >= DIGITAL_DEBOUNCE_DELAY)
     {
         pressKey(key);
-        _digitalKeyStates[key.index].lastDebounce = millis();
+        digitalKeyStates[key.index].lastDebounce = millis();
     }
-    else if(!pressed)
+    else if (!pressed)
         releaseKey(key);
 }
 
@@ -156,8 +157,9 @@ void KeypadHandler::pressKey(const Key &key)
     // Get the pointer to the correct pressed bool depending on the key type.
     // In case the key type is neither digital or hall effect (which shouldn't happen),
     // it defaults to a bool pointer to true, therefore the function exists out further down.
-    bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
+    bool *pressed = key.type == KeyType::HallEffect ? &heKeyStates[key.index].pressed
+                    : key.type == KeyType::Digital  ? &digitalKeyStates[key.index].pressed
+                                                    : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressed || *pressed || !key.hidEnabled)
@@ -173,8 +175,9 @@ void KeypadHandler::releaseKey(const Key &key)
     // Get the pointer to the correct pressed bool depending on the key type.
     // In case the key type is neither digital or hall effect (which shouldn't happen),
     // it defaults to a null pointer, therefore the function exists out further down.
-    bool *pressed = key.type == KeyType::HallEffect ? &_heKeyStates[key.index].pressed
-                  : key.type == KeyType::Digital ? &_digitalKeyStates[key.index].pressed : nullptr;
+    bool *pressed = key.type == KeyType::HallEffect ? &heKeyStates[key.index].pressed
+                    : key.type == KeyType::Digital  ? &digitalKeyStates[key.index].pressed
+                                                    : nullptr;
 
     // Check whether the key is already pressed or HID commands are not enabled on the key.
     if (!pressed || !*pressed)
@@ -203,11 +206,11 @@ uint16_t KeypadHandler::readKey(const Key &key)
         // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
         // Since this firmware expects the value to go down when the button is pressed down, this is needed.
 #ifdef INVERT_SENSOR_READINGS
-        value = ANALOG_RESOLUTION_SQUARED - 1 - value;
+        value = TWO_EXP_ANALOG_RESOLUTION - 1 - value;
 #endif
 
         // Filter the value through the SMA filter and return it.
-        return _heKeyStates[key.index].filter(value);
+        return heKeyStates[key.index].filter(value);
     }
     // Otherwise, in case anything goes wrong, default to 0.
     else
