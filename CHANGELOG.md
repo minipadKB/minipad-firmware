@@ -10,11 +10,11 @@ This update was supposed to include the new auto-calibration functionality but i
 - The key chars supported are no longer restricted to a-z, any character from 0-255 can now be chosen, including modifier keys
 - The `hkey/dkey.char` command now allows characters like `a` or `7` as the parameter, instead of their ASCII number equivalent
 
-# Bug Fixes
+## Bug Fixes
 
 - Fixed rare cases in which command handling failed
 
-# Changes
+## Changes
 
 - Serial input handling is now using Arduino's built-in `serialEvent` function
 - All includes of `stdint.h` have been replaced with C++'s `cstdint`
