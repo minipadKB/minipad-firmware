@@ -30,7 +30,7 @@
 // to introduce a deadzone at the boundaries. This might be desired since values might fluctuate.
 // e.g. if the value fluctuates around 1970 in rest position but peaks at 1975, this would counteract it.
 // 7 may seem like much at first but when "smashing" the button a lot it'll be just right.
-#define AUTO_CALIBRATION_DEADZONE 7
+#define AUTO_CALIBRATION_DEADZONE 10
 
 // The minimum difference between the rest position and the deadzone-applied down position.
 // It is important to mantain a minimum analog range to prevent "crazy behavior".
