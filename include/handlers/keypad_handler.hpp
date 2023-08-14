@@ -30,6 +30,13 @@ public:
     DigitalKeyState digitalKeyStates[DIGITAL_KEYS];
 
 private:
+    uint16_t adcReadingToDistance(uint16_t adcReading);
+    uint16_t distanceToAdcReading(uint16_t distance);
+    uint16_t lut[4096];
+    void getSensorOffsets(const Key &key);
+    void applyCalibrationToRawAdcReading(const HEKey &key, uint16_t value);
+    void generate_lut(void);
+    
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
     void pressKey(const Key &key);
