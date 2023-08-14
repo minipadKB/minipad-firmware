@@ -22,17 +22,20 @@ public:
             digitalKeyStates[i] = DigitalKeyState();
     }
 
+    void begin();
     void handle();
+
     bool outputMode;
     HEKeyState heKeyStates[HE_KEYS];
     DigitalKeyState digitalKeyStates[DIGITAL_KEYS];
 
 private:
-    void updateCalibrationValues(const HEKey &key, uint16_t value);
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
     void pressKey(const Key &key);
     void releaseKey(const Key &key);
     uint16_t readKey(const Key &key);
     uint16_t mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const;
+
+    uint16_t gaussDistanceLUT[1 << ANALOG_RESOLUTION];
 } KeypadHandler;

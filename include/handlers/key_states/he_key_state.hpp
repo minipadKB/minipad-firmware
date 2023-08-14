@@ -8,6 +8,8 @@
 // A struct containing info about the state of a hall effect key for the keypad handler.
 struct HEKeyState : KeyState
 {
+    // TODO: Move analog value here too?????
+    uint16_t value = 0;
     // State whether the hall effect key is currently pressed down.
     bool pressed = false;
 
@@ -26,6 +28,9 @@ struct HEKeyState : KeyState
     // The highest value ever read on the sensor. Used for calibration purposes,
     // specifically offsetting the gauss-distance lookup table by this value.
     uint16_t restPosition = 0;
+
+    // Sensor offset to rest at 0 in LUT.
+    uint16_t offset = 0;
 
     // The simple moving average filter for stabilizing the analog outpt.
     SMAFilter filter = SMAFilter(SMA_FILTER_SAMPLE_EXPONENT);

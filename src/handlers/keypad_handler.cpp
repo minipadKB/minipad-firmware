@@ -264,7 +264,7 @@ uint16_t KeypadHandler::distanceToAdcReading(uint16_t distance) {
 }
 
 void KeypadHandler::getSensorOffsets(const Key &key) { // TODO: Is this correct?
-    lutRestPosition = distanceToAdcReading(0);
+    lutRestPosition = distanceToAdcReading(0) + 1;
     for (each HE key) { // TODO: Psuedocode
         key->offset = lutRestPosition - readKey(const Key &key);
     }
@@ -281,9 +281,15 @@ void generate_lut(void) {
     }
 }
 
+void KeypadHandler::calibrate(void) {
+    generate_lut();
+    getSensorOffsets();
+}
+
 // TODO: Rewrite scan logic to work in reverse by default.
 
 /* I really think you should also separate each type of RT into its own function, and switch it
 using a mode per key, even for digital keys, just make it a mode where it scans using pin checks rather than adc
 
-Otherwise move to 2d array style scanning by row and col, will make code a lot easier to fllow in this file*/
+Otherwise move to 2d array style scanning by row and col, will make code a lot easier to fllow in this file.
+*/
