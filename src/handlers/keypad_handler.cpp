@@ -248,3 +248,42 @@ uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_
 
     return lut[value + (restAdcValue - heKeyStates[key.index].restPosition)];
 }
+
+uint16_t KeypadHandler::adcReadingToDistance(uint16_t adcReading) {
+    if (adcReading > a - d ) {
+        // To prevent log( <= 0 )
+        return 0;
+    } else {
+        return constrain(((log(1 - ((adc + d) / a)) / -b) - c), 0, TRAVEL_DISTANCE_IN_0_01MM)
+    }
+}
+
+uint16_t KeypadHandler::distanceToAdcReading(uint16_t distance) {
+    distance = constrain(distance, 0, TRAVEL_DISTANCE_IN_0_01MM);
+    return a * (1 - exp(-b * (distance + c))) - d;
+}
+
+void KeypadHandler::getSensorOffsets(const Key &key) { // TODO: Is this correct?
+    lutRestPosition = distanceToAdcReading(0);
+    for (each HE key) { // TODO: Psuedocode
+        key->offset = lutRestPosition - readKey(const Key &key);
+    }
+}
+
+void KeypadHandler::applyCalibrationToRawAdcReading(const HEKey &key, uint16_t value) {
+    key->value = map(lut[value + key->offset], key->downPosition, key->restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM);
+}
+
+static uint16_t lut[4096] = {0};
+void generate_lut(void) {
+    for (uint16_t i = 0; i < a - d; i++) {
+        lut[i] = adcReadingToDistance(i);
+    }
+}
+
+// TODO: Rewrite scan logic to work in reverse by default.
+
+/* I really think you should also separate each type of RT into its own function, and switch it
+using a mode per key, even for digital keys, just make it a mode where it scans using pin checks rather than adc
+
+Otherwise move to 2d array style scanning by row and col, will make code a lot easier to fllow in this file*/
