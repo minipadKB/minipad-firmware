@@ -248,39 +248,43 @@ uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_
 
     return lut[value + (restAdcValue - heKeyStates[key.index].restPosition)];
 }
-
+// Uses desmos parameters to calculate the distance from the adc reading.
 uint16_t KeypadHandler::adcReadingToDistance(uint16_t adcReading) {
-    if (adcReading > a - d ) {
+    if (adcReading > lutPramA - lutParamD ) {
         // To prevent log( <= 0 )
         return 0;
     } else {
-        return constrain(((log(1 - ((adc + d) / a)) / -b) - c), 0, TRAVEL_DISTANCE_IN_0_01MM)
+        return constrain(((log(1 - ((adc + lutParamD) / lutPramA)) / -lutParamB) - lutParamC), 0, TRAVEL_DISTANCE_IN_0_01MM)
     }
 }
 
+// Uses desmos parameters to calculate the expected adc reading from a distance.
 uint16_t KeypadHandler::distanceToAdcReading(uint16_t distance) {
     distance = constrain(distance, 0, TRAVEL_DISTANCE_IN_0_01MM);
-    return a * (1 - exp(-b * (distance + c))) - d;
+    return lutPramA * (1 - exp(-lutParamB * (distance + lutParamC))) - lutParamD;
 }
 
+// Offset is the difference between the sensor rest position and the lut rest position.
 void KeypadHandler::getSensorOffsets(const Key &key) { // TODO: Is this correct?
     lutRestPosition = distanceToAdcReading(0) + 1;
     for (each HE key) { // TODO: Psuedocode
         key->offset = lutRestPosition - readKey(const Key &key);
     }
 }
-
+// Takes raw adc reading to fully calibrated distance value. 0 - 400.
 void KeypadHandler::applyCalibrationToRawAdcReading(const HEKey &key, uint16_t value) {
     key->value = map(lut[value + key->offset], key->downPosition, key->restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM);
 }
 
+// Generates lookup table from desmos parameters. https://www.desmos.com/calculator/ps4wd127tu
 static uint16_t lut[4096] = {0};
-void generate_lut(void) {
-    for (uint16_t i = 0; i < a - d; i++) {
+void KeypadHandler::generate_lut(void) {
+    for (uint16_t i = 0; i < lutPramA - lutParamD; i++) {
         lut[i] = adcReadingToDistance(i);
     }
 }
 
+// Regenerates LUT and recalculate offsets.
 void KeypadHandler::calibrate(void) {
     generate_lut();
     getSensorOffsets();
