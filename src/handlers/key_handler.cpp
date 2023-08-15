@@ -63,10 +63,6 @@ void KeyHandler::handle()
         // Scan the Hall Effect key to update the values in the key state.
         scanHEKey(keyState);
 
-        // If the output mode is enabled, output the raw sensor value and magnet distance.
-        if (outputMode)
-            SerialHandler.printHEKeyOutput(keyState);
-
         // Only go further if the SMA filter is fully initialized.
         // This is necessary to ensure that read values are not influenced by default zeroes in the filters' buffer.
         if (!keyState.filter.initialized)

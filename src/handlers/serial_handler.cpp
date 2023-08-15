@@ -48,7 +48,7 @@ void SerialHandler::handleSerialInput(char *input)
     else if (isEqual(command, "name"))
         name(parameters);
     else if (isEqual(command, "out"))
-        out(isEqual(arg0, ""), isTrue(arg0));
+        out();
 #ifdef DEV
     else if (isEqual(command, "echo"))
         echo(parameters);
@@ -147,12 +147,6 @@ void SerialHandler::handleSerialInput(char *input)
     }
 }
 
-void SerialHandler::printHEKeyOutput(const HEKeyState &keyState)
-{
-    // Print out the index of the key, the raw sensor reading and the distance in the output format.
-    print("OUT hkey%d=%d %d", keyState.index + 1, keyState.rawValue, keyState.distance);
-}
-
 void SerialHandler::boot()
 {
     // Set the RP2040 into bootloader mode.
@@ -212,15 +206,11 @@ void SerialHandler::name(char *name)
         memcpy(ConfigController.config.name, name + '\0', length + 1);
 }
 
-void SerialHandler::out(bool single, bool state)
+void SerialHandler::out()
 {
-    // If single is true, no argument was specified. In that case just output every key once.
-    if (single)
-        for (const HEKeyState &keyState : KeyHandler.heKeyStates)
-            printHEKeyOutput(keyState);
-    else
-        // Otherwise, set the calibration mode field of the keypad handler to the specified state.
-        KeyHandler.outputMode = state;
+    // Output the raw sensor value and magnet distance of every Hall Effect key once.
+    for (const HEKeyState &keyState : KeyHandler.heKeyStates)
+        print("OUT hkey%d=%d %d", keyState.index + 1, keyState.rawValue, keyState.distance);
 }
 
 void SerialHandler::echo(char *input)

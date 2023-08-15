@@ -7,14 +7,13 @@ inline class SerialHandler
 {
 public:
     void handleSerialInput(char *input);
-    void printHEKeyOutput(const HEKeyState &keyState);
 
 private:
     void boot();
     void save();
     void get();
     void name(char *name);
-    void out(bool single, bool state);
+    void out();
     void echo(char *input);
     void hkey_rt(HEKey &key, bool state);
     void hkey_crt(HEKey &key, bool state);
