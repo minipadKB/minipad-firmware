@@ -26,15 +26,31 @@
 // This value is important to reset the rapid trigger state properly with continuous rapid trigger.
 #define CONTINUOUS_RAPID_TRIGGER_THRESHOLD 10
 
-// This number will be added to the down position and substracted from the rest position on calibration
+// This number will be added to the down position and substracted from the rest position on bounary update
 // to introduce a deadzone at the boundaries. This might be desired since values might fluctuate.
 // e.g. if the value fluctuates around 1970 in rest position but peaks at 1975, this would counteract it.
-// 7 may seem like much at first but when "smashing" the button a lot it'll be just right.
-#define AUTO_CALIBRATION_DEADZONE 10
+// 10 may seem like much at first but when "smashing" the button a lot it'll be just right.
+#define SENSOR_BOUNDARY_DEADZONE 10
 
 // The minimum difference between the rest position and the deadzone-applied down position.
 // It is important to mantain a minimum analog range to prevent "crazy behavior".
-#define AUTO_CALIBRATION_MIN_DISTANCE 200
+#define SENSOR_BOUNDARY_MIN_DISTANCE 200
+
+// Flag for enabling gauss correction. This improves the accuracy of the sensor readings by correcting the curve of
+// the relation between the magnetic field strength near the sensor and the distance of the magnet from the sensor.
+// If this firmware is used on a device with different magnets, the values below have to be adjusted or gauss correction has to be disabled.
+#define USE_GAUSS_CORRECTION_LUT
+
+// Variables for the equation to calculate the ADC reading into a physical distance. These numbers are chosen by trial-and-error, making the curve fit.
+// These values are only effective on magnets like the ones used in the Gateron-KS 20 or the Wooting Lekkers, which are based on them.
+// This gauss correction is also dependent on the hardware specifications. The switch should be as close to the Hall Effect sensor as possible.
+// The Hall Effect sensor used is the 49E sensor, therefore these values are highly tailored towards the hardware of the minipad.
+// If this firmware is used on a device with different magnets/hardware, these values have to be adjusted or gauss correction has to be disabled.
+// The equation for the gauss correction is based off the following Desmos sheet and can be used for adjustments: https://www.desmos.com/calculator/ps4wd127tu
+#define GAUSS_CORRECTION_PARAM_A 6647.8446648
+#define GAUSS_CORRECTION_PARAM_B -0.00609446727442
+#define GAUSS_CORRECTION_PARAM_C -721.743991123
+#define GAUSS_CORRECTION_PARAM_D 4525.58542876
 
 // The resolution for the ADCs on the RP2040. The theoretical maximum value on it is 16 bit (uint16_t).
 #define ANALOG_RESOLUTION 12

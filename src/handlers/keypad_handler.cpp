@@ -58,12 +58,12 @@ const uint16_t TWO_EXP_ANALOG_RESOLUTION = 1 << ANALOG_RESOLUTION;
 
 void KeypadHandler::handle()
 {
-    // Go through all hall effect keys and run the checks.
+    // Go through all Hall Effect keys and run the checks.
     for (const HEKey &key : ConfigController.config.heKeys)
     {
-        // Read the value from the hall effect sensor and map it to the travel distance range.
+        // Read the value from the Hall Effect sensor and map it to the travel distance range.
         uint16_t value = readKey(key);
-        uint16_t mappedValue = mapSensorValueToTravelDistance(key, value);
+        uint16_t mappedValue = adcToDistance(key, value);
 
         // Make the values accessable for other components of the firmware via the key states.
         heKeyStates[key.index].lastSensorValue = value;
@@ -103,17 +103,17 @@ void KeypadHandler::handle()
 void KeypadHandler::updateSensorBoundaries(const HEKey &key, uint16_t value)
 {
     // Calculate the value with the deadzone in the positive and negative direction applied.
-    uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
-    uint16_t lowerValue = value + AUTO_CALIBRATION_DEADZONE;
+    uint16_t upperValue = value - SENSOR_BOUNDARY_DEADZONE;
+    uint16_t lowerValue = value + SENSOR_BOUNDARY_DEADZONE;
 
-    // If the read value with deadzone applied is bigger than the current rest position calibration, update it.
+    // If the read value with deadzone applied is bigger than the current rest position, update it.
     if (heKeyStates[key.index].restPosition < upperValue)
         heKeyStates[key.index].restPosition = upperValue;
 
     // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
-    // is at least AUTO_CALIBRATION_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
+    // is at least SENSOR_BOUNDARY_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
     else if (heKeyStates[key.index].downPosition > lowerValue &&
-             heKeyStates[key.index].restPosition - lowerValue >= AUTO_CALIBRATION_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
+             heKeyStates[key.index].restPosition - lowerValue >= SENSOR_BOUNDARY_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
         heKeyStates[key.index].downPosition = lowerValue;
 }
 
@@ -247,53 +247,17 @@ uint16_t KeypadHandler::readKey(const Key &key)
         return 0;
 }
 
-uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_t value) const
+uint16_t KeypadHandler::adcToDistance(const HEKey &key, uint16_t value)
 {
-    // Map the value with the calibrated down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
+        // If gauss correction is enabled, use the GaussLUT instance to get the distance based on the adc value and the rest position
+        // of the key, which is used to determine the offset from the "ideal" rest position set by the lookup table calculations.
+#ifdef USE_GAUSS_CORRECTION_LUT
+        return TRAVEL_DISTANCE_IN_0_01MM - gaussLUT.adcToDistance(value, heKeyStates[key.index].restPosition);
+#else
+    // Map the value with the down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
+    // NOTE: This calcuation disregards the non-linear nature of the relation between a magnet's distance and it's magnetic field strength.
+    //       This firmware has a gauss correction, which can be enabled and adjusted to match the hardware specifications of the device.
     return constrain(map(value, heKeyStates[key.index].downPosition, heKeyStates[key.index].restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
+#endif
 }
-
-// Uses desmos parameters to calculate the distance from the adc reading.
-uint16_t KeypadHandler::adcReadingToDistance(uint16_t adcReading) {
-    if (adcReading > lutPramA - lutParamD ) {
-        // To prevent log( <= 0 )
-        return 0;
-    } else {
-        return constrain(((log(1 - ((adc + lutParamD) / lutPramA)) / -lutParamB) - lutParamC), 0, TRAVEL_DISTANCE_IN_0_01MM)
-    }
-}
-
-// Uses desmos parameters to calculate the expected adc reading from a distance.
-uint16_t KeypadHandler::distanceToAdcReading(uint16_t distance) {
-    distance = constrain(distance, 0, TRAVEL_DISTANCE_IN_0_01MM);
-    return lutPramA * (1 - exp(-lutParamB * (distance + lutParamC))) - lutParamD;
-}
-
-// Offset is the difference between the sensor rest position and the lut rest position.
-void KeypadHandler::getSensorOffsets(const Key &key) { // TODO: Is this correct?
-    lutRestPosition = distanceToAdcReading(0) + 1;
-    for (each HE key) { // TODO: Psuedocode
-        key->offset = lutRestPosition - readKey(const Key &key);
-    }
-}
-// Takes raw adc reading to fully calibrated distance value. 0 - 400.
-void KeypadHandler::applyCalibrationToRawAdcReading(const HEKey &key, uint16_t value) {
-    key->value = map(lut[value + key->offset], key->downPosition, key->restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM);
-}
-
-// Generates lookup table from desmos parameters. https://www.desmos.com/calculator/ps4wd127tu
-static uint16_t lut[1 << ANALOG_RESOLUTION] = {0};
-void KeypadHandler::generate_lut(void) {
-    for (uint16_t i = 0; i < lutPramA - lutParamD; i++) {
-        lut[i] = adcReadingToDistance(i);
-    }
-}
-
-// Regenerates LUT and recalculate offsets.
-void KeypadHandler::calibrate(void) {
-    generate_lut();
-    getSensorOffsets();
-}
-
-// TODO: Rewrite scan logic to work in reverse by default.
