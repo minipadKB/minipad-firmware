@@ -8,7 +8,7 @@
 
 // Constant two to the power of the ANALOG_RESOLUTION definition since calculating it every loop is too expensive.
 // Used to invert the read sensor value in case the INVERT_SENSOR_READINGS definition is set.
-const uint16_t TWO_EXP_ANALOG_RESOLUTION = pow(2, ANALOG_RESOLUTION);
+const uint16_t TWO_EXP_ANALOG_RESOLUTION = 1 << ANALOG_RESOLUTION;
 
 /*
    Explanation of the Rapid Trigger Logic
@@ -223,3 +223,47 @@ uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
     return constrain(map(value, key.downPosition, key.restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
 }
+
+// Uses desmos parameters to calculate the distance from the adc reading.
+uint16_t KeypadHandler::adcReadingToDistance(uint16_t adcReading) {
+    if (adcReading > lutPramA - lutParamD ) {
+        // To prevent log( <= 0 )
+        return 0;
+    } else {
+        return constrain(((log(1 - ((adc + lutParamD) / lutPramA)) / -lutParamB) - lutParamC), 0, TRAVEL_DISTANCE_IN_0_01MM)
+    }
+}
+
+// Uses desmos parameters to calculate the expected adc reading from a distance.
+uint16_t KeypadHandler::distanceToAdcReading(uint16_t distance) {
+    distance = constrain(distance, 0, TRAVEL_DISTANCE_IN_0_01MM);
+    return lutPramA * (1 - exp(-lutParamB * (distance + lutParamC))) - lutParamD;
+}
+
+// Offset is the difference between the sensor rest position and the lut rest position.
+void KeypadHandler::getSensorOffsets(const Key &key) { // TODO: Is this correct?
+    lutRestPosition = distanceToAdcReading(0) + 1;
+    for (each HE key) { // TODO: Psuedocode
+        key->offset = lutRestPosition - readKey(const Key &key);
+    }
+}
+// Takes raw adc reading to fully calibrated distance value. 0 - 400.
+void KeypadHandler::applyCalibrationToRawAdcReading(const HEKey &key, uint16_t value) {
+    key->value = map(lut[value + key->offset], key->downPosition, key->restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM);
+}
+
+// Generates lookup table from desmos parameters. https://www.desmos.com/calculator/ps4wd127tu
+static uint16_t lut[1 << ANALOG_RESOLUTION] = {0};
+void KeypadHandler::generate_lut(void) {
+    for (uint16_t i = 0; i < lutPramA - lutParamD; i++) {
+        lut[i] = adcReadingToDistance(i);
+    }
+}
+
+// Regenerates LUT and recalculate offsets.
+void KeypadHandler::calibrate(void) {
+    generate_lut();
+    getSensorOffsets();
+}
+
+// TODO: Rewrite scan logic to work in reverse by default.
