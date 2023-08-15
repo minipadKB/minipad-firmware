@@ -40,7 +40,7 @@ private:
     void generate_lut(void);
     void calibrate(void);
 
-    void updateSensorBoundaries(void);
+    void updateSensorBoundaries(const HEKey &key, uint16_t value);
     void checkHEKey(const HEKey &key, uint16_t value);
     void checkDigitalKey(const DigitalKey &key, bool pressed);
     void pressKey(const Key &key);
