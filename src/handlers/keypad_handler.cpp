@@ -80,7 +80,7 @@ void KeypadHandler::handle()
 
         // Make sure to run checks on the boundaries of the sensors, updating them if available.
         // This is used for calibration by keeping track of the lowest and highest value reached on each key.
-        updateKeyBoundaries(key, value);
+        updateSensorBoundaries(key, value);
 
         // Run the checks on the HE key.
         checkHEKey(key, heKeyStates[key.index].lastMappedValue);
@@ -100,7 +100,7 @@ void KeypadHandler::handle()
     Keyboard.sendReport();
 }
 
-void KeypadHandler::updateKeyBoundaries(const HEKey &key, uint16_t value)
+void KeypadHandler::updateSensorBoundaries(const HEKey &key, uint16_t value)
 {
     // Calculate the value with the deadzone in the positive and negative direction applied.
     uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
