@@ -252,7 +252,10 @@ uint16_t KeypadHandler::adcToDistance(const HEKey &key, uint16_t value)
         // If gauss correction is enabled, use the GaussLUT instance to get the distance based on the adc value and the rest position
         // of the key, which is used to determine the offset from the "ideal" rest position set by the lookup table calculations.
 #ifdef USE_GAUSS_CORRECTION_LUT
-        return TRAVEL_DISTANCE_IN_0_01MM - gaussLUT.adcToDistance(value, heKeyStates[key.index].restPosition);
+        uint16_t distance = gaussLUT.adcToDistance(value, heKeyStates[key.index].restPosition);
+
+        distance = distance * TRAVEL_DISTANCE_IN_0_01MM / gaussLUT.adcToDistance(heKeyStates[key.index].downPosition, heKeyStates[key.index].restPosition);
+        return TRAVEL_DISTANCE_IN_0_01MM - constrain(distance, 0, 400);
 #else
     // Map the value with the down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.

@@ -27,7 +27,7 @@ struct HEKeyState : KeyState
     // specifically mapping future values read from the sensors from this range to 0.01mm steps.
     // By default, set the range from (1<<analog_resolution)-1 to 0 so it can be updated.
     uint16_t restPosition = 0;
-    uint16_t downPosition = 1 << ANALOG_RESOLUTION - 1;
+    uint16_t downPosition = (1 << ANALOG_RESOLUTION) - 1;
 
     // The simple moving average filter for stabilizing the analog outpt.
     SMAFilter filter = SMAFilter(SMA_FILTER_SAMPLE_EXPONENT);

@@ -16,7 +16,7 @@ GaussLUT::GaussLUT(double a, double b, double c, double d)
 uint16_t GaussLUT::adcToDistance(const uint16_t adc, const uint16_t restPosition)
 {
     // Get the offset by the difference between the "ideal" rest position of the LUT and the one of the sensor.
-    uint16_t offset = lutRestPosition - restPosition;
+    int16_t offset = lutRestPosition - restPosition;
 
     // Return the value at the index of the adc value, shifted by the offset determined above.
     return lut[adc + offset];
