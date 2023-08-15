@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC diagnostic ignored "-Wtype-limits"
 
 #include "config/configuration_controller.hpp"
 #include "helpers/sma_filter.hpp"
@@ -16,9 +17,7 @@ public:
             heKeyStates[i] = HEKeyState();
 
         // Initialize the digital key states with their default values.
-#pragma GCC diagnostic ignored "-Wtype-limits"
         for (uint8_t i = 0; i < DIGITAL_KEYS; i++)
-#pragma GCC diagnostic pop
             digitalKeyStates[i] = DigitalKeyState();
     }
 
