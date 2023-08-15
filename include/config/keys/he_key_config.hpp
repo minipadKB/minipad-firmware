@@ -1,19 +1,17 @@
 #pragma once
 
 #include <cstdint>
-#include "config/keys/key.hpp"
-#include "config/keys/key_type.hpp"
+#include "config/keys/key_config.hpp"
 #include "definitions.hpp"
 
-// Configuration for the hall effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
-struct HEKey : Key
+// Configuration for the Hall Effect keys of the keypad, containing the actuation points, calibration, sensitivities etc. of the key.
+struct HEKeyConfig : KeyConfig
 {
-    // Default constructor for the HEKey struct for initializing the arrays in the Configuration struct.
-    HEKey() : Key(KeyType::HallEffect, 0, '\0') {}
+    // Default constructor for the HEKeyConfig struct for initializing the arrays in the Configuration struct.
+    HEKeyConfig() : KeyConfig('\0') {}
 
-    // Initialize with the correct type for identifying the type of key that a Key object was initialized as (e.g. HEKey) and index.
-    // Assign the key char from z downwards (z, y, x, w, v, ...). After 26 keys, stick to an 'a' key to not overflow.
-    HEKey(uint8_t index) : Key(KeyType::HallEffect, index, index >= 26 ? 'a' : (char)('z' - index)) {}
+    // Initialize with the specified key char.
+    HEKeyConfig(char keyChar) : KeyConfig(keyChar) {}
 
     // Bool whether rapid trigger is enabled or not.
     bool rapidTrigger = false;

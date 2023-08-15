@@ -1,13 +1,23 @@
 #pragma once
 
 #include <Arduino.h>
-#include "handlers/key_states/key_state.hpp"
+#include "config/keys/he_key_config.hpp"
+#include "handlers/keys/key.hpp"
 #include "helpers/sma_filter.hpp"
 #include "definitions.hpp"
 
-// A struct containing info about the state of a hall effect key for the keypad handler.
-struct HEKeyState : KeyState
+// A struct representing a Hall Effect key, including it's current runtime state and HEKeyConfig object.
+struct HEKey : Key
 {
+    // Default constructor for the HEKey struct for initializing the arrays in the KeyHandler class.
+    HEKey() : Key(0, nullptr) {}
+
+    // Require every HEKey object to pass a KeyConfig object to the underlaying Key object.
+    HEKey(uint8_t index, HEKeyConfig *config) : Key(index, config), config(config) {}
+
+    // The HEKeyConfig object of this Hall Effect key.
+    HEKeyConfig *config;
+
     // State whether the hall effect key is currently inside the rapid trigger zone (below the lower hysteresis).
     bool inRapidTriggerZone = false;
 

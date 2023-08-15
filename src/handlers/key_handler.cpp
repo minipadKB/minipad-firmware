@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Keyboard.h>
-#include "config/keys/key_type.hpp"
 #include "handlers/key_handler.hpp"
 #include "handlers/serial_handler.hpp"
 #include "helpers/string_helper.hpp"
@@ -55,82 +54,76 @@
 void KeyHandler::handle()
 {
     // Go through all Hall Effect keys and run the checks.
-    for (const HEKey &key : ConfigController.config.heKeys)
+    for (HEKey &key : heKeys)
     {
-        // Get the key state for further use.
-        HEKeyState &keyState = heKeyStates[key.index];
-
-        // Scan the Hall Effect key to update the values in the key state.
-        scanHEKey(keyState);
+        // Scan the Hall Effect key to update the sensor and distance value.
+        scanHEKey(key);
 
         // Only go further if the SMA filter is fully initialized.
         // This is necessary to ensure that read values are not influenced by default zeroes in the filters' buffer.
-        if (!keyState.filter.initialized)
+        if (!key.filter.initialized)
             continue;
 
         // Make sure to run checks on the boundaries of the sensors, updating them if available.
         // This is used for calibration by keeping track of the lowest and highest value reached on each key.
-        updateSensorBoundaries(keyState);
+        updateSensorBoundaries(key);
 
         // Run the checks on the HE key.
-        checkHEKey(key, keyState);
+        checkHEKey(key);
     }
 
     // Go through all digital keys and run the checks.
-    for (const DigitalKey &key : ConfigController.config.digitalKeys)
+    for (DigitalKey &key : digitalKeys)
     {
-        // Get the key state for further use.
-        DigitalKeyState &keyState = digitalKeyStates[key.index];
-
-        // Read the digital value from the key pin.
-        scanDigitalKey(keyState);
+        // Scan the digital key to update the pin status.
+        scanDigitalKey(key);
 
         // Run the checks on the digital key.
-        checkDigitalKey(key, keyState);
+        checkDigitalKey(key);
     }
 
     // Send the key report via the HID interface after updating the report.
     Keyboard.sendReport();
 }
 
-void KeyHandler::updateSensorBoundaries(HEKeyState &keyState)
+void KeyHandler::updateSensorBoundaries(HEKey &key)
 {
     // Calculate the value with the deadzone in the positive and negative direction applied.
-    uint16_t upperValue = keyState.rawValue - SENSOR_BOUNDARY_DEADZONE;
-    uint16_t lowerValue = keyState.rawValue + SENSOR_BOUNDARY_DEADZONE;
+    uint16_t upperValue = key.rawValue - SENSOR_BOUNDARY_DEADZONE;
+    uint16_t lowerValue = key.rawValue + SENSOR_BOUNDARY_DEADZONE;
 
     // If the read value with deadzone applied is bigger than the current rest position, update it.
-    if (keyState.restPosition < upperValue)
-        keyState.restPosition = upperValue;
+    if (key.restPosition < upperValue)
+        key.restPosition = upperValue;
 
     // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
     // is at least SENSOR_BOUNDARY_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
-    else if (keyState.downPosition > lowerValue &&
-             keyState.restPosition - lowerValue >= SENSOR_BOUNDARY_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
-        keyState.downPosition = lowerValue;
+    else if (key.downPosition > lowerValue &&
+             key.restPosition - lowerValue >= SENSOR_BOUNDARY_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
+        key.downPosition = lowerValue;
 }
 
-void KeyHandler::scanHEKey(HEKeyState &keyState)
+void KeyHandler::scanHEKey(HEKey &key)
 {
     // Read the value from the port of the specified key and run it through the SMA filter.
-    keyState.rawValue = keyState.filter(analogRead(HE_PIN(keyState.index)));
+    key.rawValue = key.filter(analogRead(HE_PIN(key.index)));
 
     // Invert the value if the definition is set since in rare fields of application the sensor
     // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
     // Since this firmware expects the value to go down when the button is pressed down, this is needed.
 #ifdef INVERT_SENSOR_READINGS
-    value = (1 << ANALOG_RESOLUTION) - 1 - keyState.rawValue;
+    value = (1 << ANALOG_RESOLUTION) - 1 - state.rawValue;
 #endif
 
 #ifdef USE_GAUSS_CORRECTION_LUT
 
     // If gauss correction is enabled, use the GaussLUT instance to get the distance based on the adc value and the rest position
     // of the key, which is used to determine the offset from the "ideal" rest position set by the lookup table calculations.
-    uint16_t distance = gaussLUT.adcToDistance(keyState.rawValue, keyState.restPosition);
+    uint16_t distance = gaussLUT.adcToDistance(key.rawValue, key.restPosition);
 
     // Stretch the value to the full travel distance using our down position since the LUT is rest-position based. Then invert and constrain it.
-    distance = TRAVEL_DISTANCE_IN_0_01MM - constrain(distance * TRAVEL_DISTANCE_IN_0_01MM / gaussLUT.adcToDistance(keyState.downPosition, keyState.restPosition), 0, 400);
-    keyState.distance = constrain(TRAVEL_DISTANCE_IN_0_01MM - distance, 0, 400);
+    distance = TRAVEL_DISTANCE_IN_0_01MM - constrain(distance * TRAVEL_DISTANCE_IN_0_01MM / gaussLUT.adcToDistance(key.downPosition, key.restPosition), 0, TRAVEL_DISTANCE_IN_0_01MM);
+    key.distance = constrain(TRAVEL_DISTANCE_IN_0_01MM - distance, 0, TRAVEL_DISTANCE_IN_0_01MM);
 
 #else
 
@@ -138,29 +131,29 @@ void KeyHandler::scanHEKey(HEKeyState &keyState)
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
     // NOTE: This calcuation disregards the non-linear nature of the relation between a magnet's distance and it's magnetic field strength.
     //       This firmware has a gauss correction, which can be enabled and adjusted to match the hardware specifications of the device.
-    return constrain(map(value, heKeyStates[key.index].downPosition, heKeyStates[key.index].restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
+    return constrain(map(value, key.downPosition, key.restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
 
 #endif
 }
 
-void KeyHandler::scanDigitalKey(DigitalKeyState &keyState)
+void KeyHandler::scanDigitalKey(DigitalKey &key)
 {
-    // Read the digital key and save the pin status in the key state.
-    keyState.isHigh = digitalRead(DIGITAL_PIN(keyState.index)) == PinStatus::HIGH;
+    // Read the digital key and save the pin status in the key.
+    key.isHigh = digitalRead(DIGITAL_PIN(key.index)) == PinStatus::HIGH;
 }
 
-void KeyHandler::checkHEKey(const HEKey &key, HEKeyState &keyState)
+void KeyHandler::checkHEKey(HEKey &key)
 {
     // If the key is in traditional mode, do the usual hysteresis checks.
-    if (!key.rapidTrigger)
+    if (!key.config->rapidTrigger)
     {
         // Check whether the value passes the lower or upper hysteresis.
         // If the value drops <= the lower hysteresis, the key is pressed down.
         // If the value rises >= the upper hysteresis, the key is released.
-        if (keyState.rawValue <= key.lowerHysteresis)
-            setPressedState(key, keyState, true);
-        else if (keyState.rawValue >= key.upperHysteresis)
-            setPressedState(key, keyState, false);
+        if (key.rawValue <= key.config->lowerHysteresis)
+            setPressedState(key, true);
+        else if (key.rawValue >= key.config->upperHysteresis)
+            setPressedState(key, false);
 
         // Return here to not run into the rapid trigger code.
         return;
@@ -170,64 +163,64 @@ void KeyHandler::checkHEKey(const HEKey &key, HEKeyState &keyState)
     // If the value is above the upper hysteresis the value is not (anymore) inside the rapid trigger zone
     // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
     // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
-    if (keyState.rawValue >= key.upperHysteresis && !key.continuousRapidTrigger)
-        keyState.inRapidTriggerZone = false;
+    if (key.rawValue >= key.config->upperHysteresis && !key.config->continuousRapidTrigger)
+        key.inRapidTriggerZone = false;
     // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm).
-    else if (keyState.rawValue >= TRAVEL_DISTANCE_IN_0_01MM - CONTINUOUS_RAPID_TRIGGER_THRESHOLD && key.continuousRapidTrigger)
-        keyState.inRapidTriggerZone = false;
+    else if (key.rawValue >= TRAVEL_DISTANCE_IN_0_01MM - CONTINUOUS_RAPID_TRIGGER_THRESHOLD && key.config->continuousRapidTrigger)
+        key.inRapidTriggerZone = false;
 
     // RT STEP 2: If the value entered the rapid trigger zone, perform a press and set the rapid trigger state to true.
     // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
     // the rapid trigger zone is already counted as a trigger. From there on, the actuation point moves dynamically in that zone.
     // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
-    if (keyState.rawValue <= key.lowerHysteresis && !keyState.inRapidTriggerZone)
+    if (key.rawValue <= key.config->lowerHysteresis && !key.inRapidTriggerZone)
     {
-        setPressedState(key, keyState, true);
-        keyState.inRapidTriggerZone = true;
+        setPressedState(key, true);
+        key.inRapidTriggerZone = true;
     }
 
     // RT STEP 3: If the key *already is* in the rapid trigger zone (hence the 'else if'), check whether the key has travelled the sufficient amount.
     // Check whether the key should be pressed. This is the case if the key is currently not pressed,
     // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
-    else if (!keyState.pressed && keyState.inRapidTriggerZone && keyState.rawValue + key.rapidTriggerDownSensitivity <= keyState.rapidTriggerPeak)
-        setPressedState(key, keyState, true);
+    else if (!key.pressed && key.inRapidTriggerZone && key.rawValue + key.config->rapidTriggerDownSensitivity <= key.rapidTriggerPeak)
+        setPressedState(key, true);
     // Check whether the key should be released. This is the case if the key is currently pressed down and either the
     // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
-    else if (keyState.pressed && (!keyState.inRapidTriggerZone || keyState.rawValue >= keyState.rapidTriggerPeak + key.rapidTriggerUpSensitivity))
-        setPressedState(key, keyState, false);
+    else if (key.pressed && (!key.inRapidTriggerZone || key.rawValue >= key.rapidTriggerPeak + key.config->rapidTriggerUpSensitivity))
+        setPressedState(key, false);
 
     // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
-    if ((keyState.pressed && keyState.rawValue < keyState.rapidTriggerPeak) || (!keyState.pressed && keyState.rawValue > keyState.rapidTriggerPeak))
-        keyState.rapidTriggerPeak = keyState.rawValue;
+    if ((key.pressed && key.rawValue < key.rapidTriggerPeak) || (!key.pressed && key.rawValue > key.rapidTriggerPeak))
+        key.rapidTriggerPeak = key.rawValue;
 }
 
-void KeyHandler::checkDigitalKey(const DigitalKey &key, DigitalKeyState &keyState)
+void KeyHandler::checkDigitalKey(DigitalKey &key)
 {
     // Check whether the pin status on the key is HIGH and the key is fully debounced.
-    if (keyState.isHigh && millis() - keyState.lastDebounce >= DIGITAL_DEBOUNCE_DELAY)
+    if (key.isHigh && millis() - key.lastDebounce >= DIGITAL_DEBOUNCE_DELAY)
     {
         // Set the key to pressed and update the last debounce time.
-        setPressedState(key, keyState, true);
-        keyState.lastDebounce = millis();
+        setPressedState(key, true);
+        key.lastDebounce = millis();
     }
     // If the key is not pressed, just set it to unpressed.
-    else if (!keyState.isHigh)
-        setPressedState(key, keyState, false);
+    else if (!key.isHigh)
+        setPressedState(key, false);
 }
 
-void KeyHandler::setPressedState(const Key &key, KeyState &keyState, bool pressed)
+void KeyHandler::setPressedState(Key &key, bool pressed)
 {
     // Check whether the pressed state changes or HID is not enabled.
-    if (keyState.pressed == pressed || !key.hidEnabled)
+    if (key.pressed == pressed || !key.config->hidEnabled)
         return;
 
     // Send the HID instruction to the computer.
     if (pressed)
-        Keyboard.press(key.keyChar);
+        Keyboard.press(key.config->keyChar);
     else
-        Keyboard.release(key.keyChar);
+        Keyboard.release(key.config->keyChar);
 
-    // Update the pressed value in the key state.
-    keyState.pressed = pressed;
+    // Update the pressed value state.
+    key.pressed = pressed;
 }
