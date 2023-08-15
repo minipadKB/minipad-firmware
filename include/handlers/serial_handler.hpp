@@ -21,8 +21,6 @@ private:
     void hkey_rtds(HEKey &key, uint16_t value);
     void hkey_lh(HEKey &key, uint16_t value);
     void hkey_uh(HEKey &key, uint16_t value);
-    void hkey_rest(HEKey &key, uint16_t value);
-    void hkey_down(HEKey &key, uint16_t value);
     void key_char(Key &key, uint8_t keyChar);
     void key_hid(Key &key, bool state);
 } SerialHandler;

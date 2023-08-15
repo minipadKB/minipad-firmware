@@ -13,6 +13,10 @@ uint16_t SMAFilter::operator()(uint16_t value)
     // Move the index by 1 or restart at 0 if the end is reached.
     index = (index + 1) % samples;
 
+    // If the index is 0 here (meaning the circular index just reset), set the fully initialized state to true.
+    if(index == 0)
+        initialized = true;
+
     // Divide the number by the amount of samples using bitshifting and return it.
     return sum >> samplesExponent;
 }
