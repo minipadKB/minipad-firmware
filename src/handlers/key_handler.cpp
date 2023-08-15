@@ -171,35 +171,35 @@ void KeyHandler::checkHEKey(const HEKey &key, HEKeyState &keyState)
     // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
     // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
     if (keyState.rawValue >= key.upperHysteresis && !key.continuousRapidTrigger)
-        heKeyStates[key.index].inRapidTriggerZone = false;
+        keyState.inRapidTriggerZone = false;
     // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm).
     else if (keyState.rawValue >= TRAVEL_DISTANCE_IN_0_01MM - CONTINUOUS_RAPID_TRIGGER_THRESHOLD && key.continuousRapidTrigger)
-        heKeyStates[key.index].inRapidTriggerZone = false;
+        keyState.inRapidTriggerZone = false;
 
     // RT STEP 2: If the value entered the rapid trigger zone, perform a press and set the rapid trigger state to true.
     // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
     // the rapid trigger zone is already counted as a trigger. From there on, the actuation point moves dynamically in that zone.
     // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
-    if (keyState.rawValue <= key.lowerHysteresis && !heKeyStates[key.index].inRapidTriggerZone)
+    if (keyState.rawValue <= key.lowerHysteresis && !keyState.inRapidTriggerZone)
     {
         setPressedState(key, keyState, true);
-        heKeyStates[key.index].inRapidTriggerZone = true;
+        keyState.inRapidTriggerZone = true;
     }
 
     // RT STEP 3: If the key *already is* in the rapid trigger zone (hence the 'else if'), check whether the key has travelled the sufficient amount.
     // Check whether the key should be pressed. This is the case if the key is currently not pressed,
     // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
-    else if (!heKeyStates[key.index].pressed && heKeyStates[key.index].inRapidTriggerZone && keyState.rawValue + key.rapidTriggerDownSensitivity <= heKeyStates[key.index].rapidTriggerPeak)
+    else if (!keyState.pressed && keyState.inRapidTriggerZone && keyState.rawValue + key.rapidTriggerDownSensitivity <= keyState.rapidTriggerPeak)
         setPressedState(key, keyState, true);
     // Check whether the key should be released. This is the case if the key is currently pressed down and either the
     // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
-    else if (heKeyStates[key.index].pressed && (!heKeyStates[key.index].inRapidTriggerZone || keyState.rawValue >= heKeyStates[key.index].rapidTriggerPeak + key.rapidTriggerUpSensitivity))
+    else if (keyState.pressed && (!keyState.inRapidTriggerZone || keyState.rawValue >= keyState.rapidTriggerPeak + key.rapidTriggerUpSensitivity))
         setPressedState(key, keyState, false);
 
     // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
     // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
-    if ((heKeyStates[key.index].pressed && keyState.rawValue < heKeyStates[key.index].rapidTriggerPeak) || (!heKeyStates[key.index].pressed && keyState.rawValue > heKeyStates[key.index].rapidTriggerPeak))
-        heKeyStates[key.index].rapidTriggerPeak = keyState.rawValue;
+    if ((keyState.pressed && keyState.rawValue < keyState.rapidTriggerPeak) || (!keyState.pressed && keyState.rawValue > keyState.rapidTriggerPeak))
+        keyState.rapidTriggerPeak = keyState.rawValue;
 }
 
 void KeyHandler::checkDigitalKey(const DigitalKey &key, DigitalKeyState &keyState)
