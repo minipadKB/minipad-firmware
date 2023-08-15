@@ -62,12 +62,24 @@ void KeypadHandler::handle()
     for (const HEKey &key : ConfigController.config.heKeys)
     {
         // Read the value from the hall effect sensor and map it to the travel distance range.
-        heKeyStates[key.index].lastSensorValue = readKey(key);
-        heKeyStates[key.index].lastMappedValue = mapSensorValueToTravelDistance(key, heKeyStates[key.index].lastSensorValue);
+        uint16_t value = readKey(key);
+        uint16_t mappedValue = mapSensorValueToTravelDistance(key, value);
+
+        // Make the values accessable for other components of the firmware via the key states.
+        heKeyStates[key.index].lastSensorValue = value;
+        heKeyStates[key.index].lastMappedValue = mappedValue;
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
             SerialHandler.printHEKeyOutput(key);
+
+        // Only go further if the keys' SMA filter is fully initialized.
+        // This is necessary to ensure that read values are not influenced by default zeroes in the filters' buffer.
+        if (!heKeyStates[key.index].filter.initialized)
+            continue;
+
+        // Make sure to run checks on the calibration values, updating them if available.
+        calibrate(key, value);
 
         // Run the checks on the HE key.
         checkHEKey(key, heKeyStates[key.index].lastMappedValue);
@@ -85,6 +97,23 @@ void KeypadHandler::handle()
 
     // Send the key report via the HID interface after updating the report.
     Keyboard.sendReport();
+}
+
+void KeypadHandler::calibrate(const HEKey &key, uint16_t value)
+{
+    // Calculate the value with the deadzone in the positive and negative direction applied.
+    uint16_t upperValue = value - AUTO_CALIBRATION_DEADZONE;
+    uint16_t lowerValue = value + AUTO_CALIBRATION_DEADZONE;
+
+    // If the read value with deadzone applied is bigger than the current rest position calibration, update it.
+    if (heKeyStates[key.index].restPosition < upperValue)
+        heKeyStates[key.index].restPosition = upperValue;
+
+    // If the read value with deadzone applied is lower than the current down position, update it. Make sure that the distance to the rest position
+    // is at least AUTO_CALIBRATION_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
+    else if (heKeyStates[key.index].downPosition > lowerValue &&
+             heKeyStates[key.index].restPosition - lowerValue >= AUTO_CALIBRATION_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
+        heKeyStates[key.index].downPosition = lowerValue;
 }
 
 void KeypadHandler::checkHEKey(const HEKey &key, uint16_t value)
@@ -221,7 +250,7 @@ uint16_t KeypadHandler::mapSensorValueToTravelDistance(const HEKey &key, uint16_
 {
     // Map the value with the calibrated down and rest position values to a range between 0 and TRAVEL_DISTANCE_IN_0_01MM and constrain it.
     // This is done to guarantee that the unit for the numbers used across the firmware actually matches the milimeter metric.
-    return constrain(map(value, key.downPosition, key.restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
+    return constrain(map(value, heKeyStates[key.index].downPosition, heKeyStates[key.index].restPosition, 0, TRAVEL_DISTANCE_IN_0_01MM), 0, TRAVEL_DISTANCE_IN_0_01MM);
 }
 
 // Uses desmos parameters to calculate the distance from the adc reading.
