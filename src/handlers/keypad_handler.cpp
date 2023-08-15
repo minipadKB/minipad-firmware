@@ -66,8 +66,8 @@ void KeypadHandler::handle()
         uint16_t mappedValue = adcToDistance(key, value);
 
         // Make the values accessable for other components of the firmware via the key states.
-        heKeyStates[key.index].lastSensorValue = value;
-        heKeyStates[key.index].lastMappedValue = mappedValue;
+        heKeyStates[key.index].rawValue = value;
+        heKeyStates[key.index].distance = mappedValue;
 
         // If the output mode is enabled, output the raw and mapped values.
         if (outputMode)
