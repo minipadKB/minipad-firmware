@@ -1,12 +1,13 @@
 #pragma once
 
 #include "config/configuration_controller.hpp"
+#include "handlers/key_states/he_key_state.hpp"
 
 inline class SerialHandler
 {
 public:
     void handleSerialInput(char *input);
-    void printHEKeyOutput(const HEKey &key);
+    void printHEKeyOutput(const HEKeyState &keyState);
 
 private:
     void boot();

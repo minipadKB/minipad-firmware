@@ -3,7 +3,7 @@
 #include <Keyboard.h>
 #include "config/configuration_controller.hpp"
 #include "handlers/serial_handler.hpp"
-#include "handlers/keypad_handler.hpp"
+#include "handlers/key_handler.hpp"
 #include "definitions.hpp"
 
 void setup()
@@ -27,7 +27,7 @@ void setup()
 void loop()
 {
     // Run the keypad handler checks to handle the actual keypad functionality.
-    KeypadHandler.handle();
+    KeyHandler.handle();
 }
 
 void serialEvent()

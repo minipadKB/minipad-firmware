@@ -1,6 +1,7 @@
 #include <Arduino.h>
+#include "handlers/key_states/he_key_state.hpp"
 #include "handlers/serial_handler.hpp"
-#include "handlers/keypad_handler.hpp"
+#include "handlers/key_handler.hpp"
 #include "helpers/string_helper.hpp"
 #include "definitions.hpp"
 extern "C"
@@ -146,10 +147,10 @@ void SerialHandler::handleSerialInput(char *input)
     }
 }
 
-void SerialHandler::printHEKeyOutput(const HEKey &key)
+void SerialHandler::printHEKeyOutput(const HEKeyState &keyState)
 {
-    // Print out the index of the key, the last sensor reading and the last mapped value in the output format.
-    print("OUT hkey%d=%d %d", key.index + 1, KeypadHandler.heKeyStates[key.index].lastSensorValue, KeypadHandler.heKeyStates[key.index].lastMappedValue);
+    // Print out the index of the key, the raw sensor reading and the distance in the output format.
+    print("OUT hkey%d=%d %d", keyState.index + 1, keyState.rawValue, keyState.distance);
 }
 
 void SerialHandler::boot()
@@ -187,8 +188,8 @@ void SerialHandler::get()
         print("GET hkey%d.lh=%d", key.index + 1, key.lowerHysteresis);
         print("GET hkey%d.uh=%d", key.index + 1, key.upperHysteresis);
         print("GET hkey%d.char=%d", key.index + 1, key.keyChar);
-        print("GET hkey%d.rest=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].restPosition);
-        print("GET hkey%d.down=%d", key.index + 1, KeypadHandler.heKeyStates[key.index].downPosition);
+        print("GET hkey%d.rest=%d", key.index + 1, KeyHandler.heKeyStates[key.index].restPosition);
+        print("GET hkey%d.down=%d", key.index + 1, KeyHandler.heKeyStates[key.index].downPosition);
         print("GET hkey%d.hid=%d", key.index + 1, key.hidEnabled);
     }
 
@@ -215,11 +216,11 @@ void SerialHandler::out(bool single, bool state)
 {
     // If single is true, no argument was specified. In that case just output every key once.
     if (single)
-        for (const HEKey &key : ConfigController.config.heKeys)
-            printHEKeyOutput(key);
+        for (const HEKeyState &keyState : KeyHandler.heKeyStates)
+            printHEKeyOutput(keyState);
     else
         // Otherwise, set the calibration mode field of the keypad handler to the specified state.
-        KeypadHandler.outputMode = state;
+        KeyHandler.outputMode = state;
 }
 
 void SerialHandler::echo(char *input)

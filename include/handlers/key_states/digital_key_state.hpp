@@ -10,4 +10,7 @@ struct DigitalKeyState : KeyState
 {
     // The last time a key press on the digital key was sent, in milliseconds since firmware bootup.
     unsigned long lastDebounce = 0;
+
+    // Bool whether the pin status on the key is currently HIGH.
+    bool isHigh;
 };

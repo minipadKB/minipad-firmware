@@ -8,9 +8,6 @@
 // A struct containing info about the state of a hall effect key for the keypad handler.
 struct HEKeyState : KeyState
 {
-    // State whether the hall effect key is currently pressed down.
-    bool pressed = false;
-
     // State whether the hall effect key is currently inside the rapid trigger zone (below the lower hysteresis).
     bool inRapidTriggerZone = false;
 
