@@ -17,11 +17,11 @@ struct HEKeyState : KeyState
     // The current peak value for the rapid trigger logic.
     uint16_t rapidTriggerPeak = UINT16_MAX;
 
-    // The last value read from the hall effect sensor.
-    uint16_t lastSensorValue = 0;
+    // The raw value with low-pass filter applied read from the Hall Effect sensor.
+    uint16_t rawValue = 0;
 
-    // The mapped version of the value read from the hall effect sensor.
-    uint16_t lastMappedValue = 0;
+    // The distance of the magnet from the sensor, calculated through the raw value.
+    uint16_t distance = 0;
 
     // The highest and lowest values ever read on the sensor. Used for calibration purposes,
     // specifically mapping future values read from the sensors from this range to 0.01mm steps.
