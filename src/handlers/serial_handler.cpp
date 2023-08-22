@@ -172,26 +172,30 @@ void SerialHandler::get()
     print("GET ares=%d", ANALOG_RESOLUTION);
 
     // Output all hall effect key-specific settings.
+    uint8_t index = 1;
     for (const HEKey &key : KeyHandler.heKeys)
     {
         // Format the base for all lines being written.
-        print("GET hkey%d.rt=%d", key.index + 1, key.config->rapidTrigger);
-        print("GET hkey%d.crt=%d", key.index + 1, key.config->continuousRapidTrigger);
-        print("GET hkey%d.rtus=%d", key.index + 1, key.config->rapidTriggerUpSensitivity);
-        print("GET hkey%d.rtds=%d", key.index + 1, key.config->rapidTriggerDownSensitivity);
-        print("GET hkey%d.lh=%d", key.index + 1, key.config->lowerHysteresis);
-        print("GET hkey%d.uh=%d", key.index + 1, key.config->upperHysteresis);
-        print("GET hkey%d.char=%d", key.index + 1, key.config->keyChar);
-        print("GET hkey%d.hid=%d", key.index + 1, key.config->hidEnabled);
-        print("GET hkey%d.rest=%d", key.index + 1, key.restPosition);
-        print("GET hkey%d.down=%d", key.index + 1, key.downPosition);
+        print("GET hkey%d.rt=%d", index, key.config->rapidTrigger);
+        print("GET hkey%d.crt=%d", index, key.config->continuousRapidTrigger);
+        print("GET hkey%d.rtus=%d", index, key.config->rapidTriggerUpSensitivity);
+        print("GET hkey%d.rtds=%d", index, key.config->rapidTriggerDownSensitivity);
+        print("GET hkey%d.lh=%d", index, key.config->lowerHysteresis);
+        print("GET hkey%d.uh=%d", index, key.config->upperHysteresis);
+        print("GET hkey%d.char=%d", index, key.config->keyChar);
+        print("GET hkey%d.hid=%d", index, key.config->hidEnabled);
+        print("GET hkey%d.rest=%d", index, key.restPosition);
+        print("GET hkey%d.down=%d", index, key.downPosition);
+        index++;
     }
 
     // Output all digital key-specific settings.
+    index = 1;
     for (const DigitalKey &key : KeyHandler.digitalKeys)
     {
-        print("GET dkey%d.char=%d", key.index + 1, key.config->keyChar);
-        print("GET dkey%d.hid=%d", key.index + 1, key.config->hidEnabled);
+        print("GET dkey%d.char=%d", index, key.config->keyChar);
+        print("GET dkey%d.hid=%d", index, key.config->hidEnabled);
+        index++;
     }
 
     // Print this line to signalize the end of printing the settings to the listener.
@@ -209,8 +213,9 @@ void SerialHandler::name(char *name)
 void SerialHandler::out()
 {
     // Output the raw sensor value and magnet distance of every Hall Effect key once.
+    uint8_t index = 1;
     for (const HEKey &key : KeyHandler.heKeys)
-        print("OUT hkey%d=%d %d", key.index + 1, key.rawValue, key.distance);
+        print("OUT hkey%d=%d %d", index++, key.rawValue, key.distance);
 }
 
 void SerialHandler::echo(char *input)

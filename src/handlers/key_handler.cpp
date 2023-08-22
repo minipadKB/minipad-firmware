@@ -106,7 +106,7 @@ void KeyHandler::updateSensorBoundaries(HEKey &key)
 void KeyHandler::scanHEKey(HEKey &key)
 {
     // Read the value from the port of the specified key and run it through the SMA filter.
-    key.rawValue = key.filter(analogRead(HE_PIN(key.index)));
+    key.rawValue = key.filter(analogRead(key.pin));
 
     // Invert the value if the definition is set since in rare fields of application the sensor
     // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
@@ -139,7 +139,7 @@ void KeyHandler::scanHEKey(HEKey &key)
 void KeyHandler::scanDigitalKey(DigitalKey &key)
 {
     // Read the digital key and save the pin status in the key.
-    key.isHigh = digitalRead(DIGITAL_PIN(key.index)) == PinStatus::HIGH;
+    key.isHigh = digitalRead(key.pin) == PinStatus::HIGH;
 }
 
 void KeyHandler::checkHEKey(HEKey &key)

@@ -12,8 +12,8 @@ struct HEKey : Key
     // Default constructor for the HEKey struct for initializing the arrays in the KeyHandler class.
     HEKey() : Key(0, nullptr) {}
 
-    // Require every HEKey object to pass a KeyConfig object to the underlaying Key object.
-    HEKey(uint8_t index, HEKeyConfig *config) : Key(index, config), config(config) {}
+    // Require every HEKey object to pass a pin and a KeyConfig object to the underlaying Key object.
+    HEKey(uint8_t pin, HEKeyConfig *config) : Key(pin, config), config(config) {}
 
     // The HEKeyConfig object of this Hall Effect key.
     HEKeyConfig *config;

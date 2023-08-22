@@ -12,8 +12,8 @@ struct DigitalKey : Key
     // Default constructor for the DigitalKey struct for initializing the arrays in the KeyHandler class.
     DigitalKey() : Key(0, nullptr) {}
 
-    // Require every DigitalKey object to pass a KeyConfig object to the underlaying Key object.
-    DigitalKey(uint8_t index, DigitalKeyConfig *config) : Key(index, config), config(config) {}
+    // Require every DigitalKey object to pass a pin and a KeyConfig object to the underlaying Key object.
+    DigitalKey(uint8_t pin, DigitalKeyConfig *config) : Key(pin, config), config(config) {}
 
     // The HEKeyConfig object of this digital key.
     DigitalKeyConfig *config;

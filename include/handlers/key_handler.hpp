@@ -13,11 +13,20 @@ inline class KeyHandler
 public:
     KeyHandler()
     {
-        // Assign indicies and their corresponding HEKeyConfig to all Hall Effect keys.
+        // Create the HEKey instances with their corresponding pin and HEKeyConfig objects.
         for (uint8_t i = 0; i < HE_KEYS; i++)
-            heKeys[i] = HEKey(i, &ConfigController.config.heKeys[i]);
+        {
+            uint8_t found = 0;
+            uint8_t pin = 0;
+            for(int i = 0; i < HE_KEYS + DIGITAL_KEYS; i++)
+              if(TYPEMAP[i] == HE)
+                  if(++found == i + 1)
+                  pin = PINMAP[i];
 
-        // Assign indicies and their corresponding DigitalKeyConfig to all digital keys.
+            heKeys[i] = HEKey(pin, &ConfigController.config.heKeys[i]);
+        }
+
+        // Create the DigitalKey instances with their corresponding pin and DigitalKeyConfig objects.
         for (uint8_t i = 0; i < DIGITAL_KEYS; i++)
             digitalKeys[i] = DigitalKey(i, &ConfigController.config.digitalKeys[i]);
     }
