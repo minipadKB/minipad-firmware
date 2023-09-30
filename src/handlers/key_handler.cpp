@@ -51,8 +51,20 @@
    Step 4: Depending on whether the key is pressed or not, remember the lowest/highest peak achieved
 */
 
+unsigned long lastPress = 0;
+unsigned long count = 0;
+
 void KeyHandler::handle()
 {
+    unsigned long now = millis();
+
+    if(lastPress + 1000 == now)
+    {
+        Serial.printf("Inputs done this rake: %d\n", count);
+        count = 0;
+        lastPress = 0;
+    }
+
     // Go through all Hall Effect keys and run the checks.
     for (HEKey &key : heKeys)
     {
@@ -68,8 +80,18 @@ void KeyHandler::handle()
         // This is used for calibration by keeping track of the lowest and highest value reached on each key.
         updateSensorBoundaries(key);
 
+        bool pressed = key.pressed;
+
         // Run the checks on the HE key.
         checkHEKey(key);
+
+        if (!pressed && key.pressed)
+        {
+            Serial.printf("key %d was pressed, time since last key down: %dms\n", key.index + 1, now - key.lastPress);
+            key.lastPress = now;
+            lastPress = now;
+            count++;
+        }
     }
 
     // Go through all digital keys and run the checks.

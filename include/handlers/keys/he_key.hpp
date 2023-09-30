@@ -30,6 +30,8 @@ struct HEKey : Key
     // The distance of the magnet from the sensor, calculated through the raw value.
     uint16_t distance = 0;
 
+    unsigned long lastPress = 0;
+
     // The highest and lowest values ever read on the sensor. Used for calibration purposes,
     // specifically mapping future values read from the sensors from this range to 0.01mm steps.
     // By default, set the range from (1<<analog_resolution)-1 to 0 so it can be updated.
