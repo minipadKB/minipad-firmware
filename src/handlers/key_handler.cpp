@@ -117,11 +117,11 @@ void KeyHandler::scanHEKey(HEKey &key)
         updateSensorBoundaries(key);
 
     // Make sure that the key is calibrated, which means that the down position (default 4095) was updated to be  smaller than the rest position.
-    // If that's not the case, we go with a distance of 400 representing a key that is fully up, effectively disabling any value processing.
+    // If that's not the case, we go with the total switch travel distance representing a key that is fully up, effectively disabling any value processing.
     // This if-branch is inheritly triggered if the SMA filter is not initialized yet, as the default down position of 4095 was not updated yet.
     if(!key.calibrated)
     {
-        key.distance = 400;
+        key.distance = TRAVEL_DISTANCE_IN_0_01MM;
         return;
     }
 
