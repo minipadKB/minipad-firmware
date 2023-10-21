@@ -221,8 +221,9 @@ void KeyHandler::checkDigitalKey(DigitalKey &key)
 
 void KeyHandler::setPressedState(Key &key, bool pressed)
 {
-    // Check whether the pressed state changes or HID is not enabled.
-    if (key.pressed == pressed || !key.config->hidEnabled)
+    // Check whether either the pressed state changes or HID is not enabled and a press is performed.
+    // HID may not be blocked on releases in case it is being deactivated while a key is still held down.
+    if (key.pressed == pressed || (!key.config->hidEnabled && pressed))
         return;
 
     // Send the HID instruction to the computer.
