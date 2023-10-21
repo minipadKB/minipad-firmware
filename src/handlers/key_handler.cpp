@@ -111,7 +111,7 @@ void KeyHandler::scanHEKey(HEKey &key)
     // Invert the value if the definition is set since in rare fields of application the sensor
     // is mounted the other way around, resulting in a different polarity and inverted sensor readings.
     // Since this firmware expects the value to go down when the button is pressed down, this is needed.
-#ifndef INVERT_SENSOR_READINGS
+#ifdef INVERT_SENSOR_READINGS
     key.rawValue = (1 << ANALOG_RESOLUTION) - 1 - key.rawValue;
 #endif
 
