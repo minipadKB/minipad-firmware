@@ -59,15 +59,6 @@ void KeyHandler::handle()
         // Scan the Hall Effect key to update the sensor and distance value.
         scanHEKey(key);
 
-        // Only go further if the SMA filter is fully initialized.
-        // This is necessary to ensure that read values are not influenced by default zeroes in the filters' buffer.
-        if (!key.filter.initialized)
-            continue;
-
-        // Make sure to run checks on the boundaries of the sensors, updating them if available.
-        // This is used for calibration by keeping track of the lowest and highest value reached on each key.
-        updateSensorBoundaries(key);
-
         // Run the checks on the HE key.
         checkHEKey(key);
     }
@@ -100,7 +91,12 @@ void KeyHandler::updateSensorBoundaries(HEKey &key)
     // is at least SENSOR_BOUNDARY_MIN_DISTANCE (scaled with travel distance @ 4.00mm) to prevent poor calibration/analog range resulting in "crazy behaviour".
     else if (key.downPosition > lowerValue &&
              key.restPosition - lowerValue >= SENSOR_BOUNDARY_MIN_DISTANCE * TRAVEL_DISTANCE_IN_0_01MM / 400)
+    {
+        // From here on, the down position has been set < rest position, therefore the key can be considered calibrated, allowing distance calculation.
+        key.calibrated = true;
+
         key.downPosition = lowerValue;
+    }
 }
 
 void KeyHandler::scanHEKey(HEKey &key)
@@ -114,6 +110,20 @@ void KeyHandler::scanHEKey(HEKey &key)
 #ifdef INVERT_SENSOR_READINGS
     key.rawValue = (1 << ANALOG_RESOLUTION) - 1 - key.rawValue;
 #endif
+
+    // If the SMA filter is fully initalized (at least one full circular buffering has been performed), calibration can be performed.
+    // This keeps track of the lowest and highest value reached on each key, giving us boundaries to map to an actual milimeter distance.
+    if (key.filter.initialized)
+        updateSensorBoundaries(key);
+
+    // Make sure that the key is calibrated, which means that the down position (default 4095) was updated to be  smaller than the rest position.
+    // If that's not the case, we go with a distance of 400 representing a key that is fully up, effectively disabling any value processing.
+    // This if-branch is inheritly triggered if the SMA filter is not initialized yet, as the default down position of 4095 was not updated yet.
+    if(!key.calibrated)
+    {
+        key.distance = 400;
+        return;
+    }
 
 #ifdef USE_GAUSS_CORRECTION_LUT
 

@@ -36,6 +36,9 @@ struct HEKey : Key
     uint16_t restPosition = 0;
     uint16_t downPosition = (1 << ANALOG_RESOLUTION) - 1;
 
+    // A bool whether the key is "calibrated", meaning the down position boundary has been updated from it's 4095 default value.
+    bool calibrated = false;
+
     // The simple moving average filter for stabilizing the analog outpt.
     SMAFilter filter = SMAFilter(SMA_FILTER_SAMPLE_EXPONENT);
 };
