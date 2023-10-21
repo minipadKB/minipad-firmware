@@ -160,9 +160,9 @@ void KeyHandler::checkHEKey(HEKey &key)
         // Check whether the value passes the lower or upper hysteresis.
         // If the value drops <= the lower hysteresis, the key is pressed down.
         // If the value rises >= the upper hysteresis, the key is released.
-        if (key.rawValue <= key.config->lowerHysteresis)
+        if (key.distance <= key.config->lowerHysteresis)
             setPressedState(key, true);
-        else if (key.rawValue >= key.config->upperHysteresis)
+        else if (key.distance >= key.config->upperHysteresis)
             setPressedState(key, false);
 
         // Return here to not run into the rapid trigger code.
