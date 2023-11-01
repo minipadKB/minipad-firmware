@@ -37,8 +37,8 @@ void serialEvent()
     {
         // Read the incoming serial data until a newline into a buffer and terminate it with a null terminator.
         char input[SERIAL_INPUT_BUFFER_SIZE];
-        const size_t inputLength = Serial.readBytesUntil('\n', input, SERIAL_INPUT_BUFFER_SIZE);
-        input[inputLength] = '\0';
+        const size_t length = Serial.readBytesUntil('\n', input, SERIAL_INPUT_BUFFER_SIZE);
+        input[length] = '\0';
 
         // Pass the read input to the serial handler to handle it.
         SerialHandler.handleSerialInput(input);
