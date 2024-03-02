@@ -32,7 +32,7 @@ Here is a list of features that are both planned and available:
 - Software-based low pass filter for analog stability
 - Configurable keychar pressed upon key interaction
 - Serial communication protocol for configuration
-- UI application for configuration, [minitility](https://github.com/minipadkb/minitility)
+- A command-line tool for configuration, [minitool](https://github.com/minipadkb/minitool)
 
 Planned Features 🗒️
 -
@@ -41,7 +41,7 @@ Planned Features 🗒️
 
 # Installation ⚡
 
-To flash this firmware on your minipad or other RP2040 board, please refer to our [firmware installation guide](https://minipad.minii.moe/docs/minipad/install-firmware). In there, you can find the instructions on how to initially load the firmware on the keypad, and how to update it later on.
+To flash this firmware on your minipad or other RP2040 board, please refer to our [firmware installation guide](https://minipadkb.github.io/minipad-wiki/docs/minipad/install-firmware). In there, you can find the instructions on how to initially load the firmware on the keypad, and how to update it later on.
 
 # Setup for development 💻
 
@@ -52,12 +52,12 @@ After that is done, clone the repository with `git clone https://github.com/mini
 
 If you are not familiar with the usage of PlatformIO, a Quick Start guide can be found [here](https://docs.platformio.org/en/stable/integration/ide/vscode.html).
 
-Note: Uploading the firmware only works if the micro controller is set into bootloader mode. This can be done using the BOOTSEL button on development boards or setting the minipad into bootloader mode via minitility. A guide on the latter can be found [here](https://minipad.minii.moe/docs/minitility/get-started).
+Note: Uploading the firmware only works if the micro controller is set into bootloader mode. This can be done using the BOOTSEL button on development boards or setting the minipad into bootloader mode/flashing directly via minitool. Help on the latter can be found [here](https://github.com/minipadkb/minitool?tab=readme-ov-file#usage).
 
 # Minipad Serial Protocol (MSP) 🔗
 
 The firmware is being configured and accessed from the host device via Serial communication at a baud rate of 115200.
-We are working on a web-based UI application called "minitility" for communicating with the firmware. You can find the git repository [here](https://github.com/minipadkb/minitility).
+There is a command-line utility tool called "minitool" for communicating with the firmware. You can find the git repository [here](https://github.com/minipadkb/minitool).
 
 All data sent via the serial interface is being interpreted as a command with the following syntax:
 `command arg0 arg1 arg2 ...`. The command and it's arguments are split by whitespaces, ending with a newline character.
