@@ -15,7 +15,9 @@
         "iosfwd": "cpp",
         "limits": "cpp",
         "streambuf": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "cstdint": "cpp",
+        "random": "cpp"
     },
     "cmake.configureOnOpen": false
 }
