@@ -15,7 +15,7 @@ struct HEKeyState : KeyState
     bool inRapidTriggerZone = false;
 
     // The current peak value for the rapid trigger logic.
-    uint16_t rapidTriggerPeak = 65535;
+    uint16_t rapidTriggerPeak = UINT16_MAX;
 
     // The last value read from the hall effect sensor.
     uint16_t lastSensorValue = 0;
@@ -25,9 +25,9 @@ struct HEKeyState : KeyState
 
     // The highest and lowest values ever read on the sensor. Used for calibration purposes,
     // specifically mapping future values read from the sensors from this range to 0.01mm steps.
-    // By default, set the range from analog_resolution²-1 to 0 so it can be updated.
+    // By default, set the range from (1<<analog_resolution)-1 to 0 so it can be updated.
     uint16_t restPosition = 0;
-    uint16_t downPosition = 4095;
+    uint16_t downPosition = (1 << ANALOG_RESOLUTION) - 1;
 
     // The simple moving average filter for stabilizing the analog outpt.
     SMAFilter filter = SMAFilter(SMA_FILTER_SAMPLE_EXPONENT);

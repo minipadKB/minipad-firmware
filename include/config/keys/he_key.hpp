@@ -32,8 +32,4 @@ struct HEKey : Key
 
     // The value below which the key is no longer pressed and rapid trigger is no longer active in rapid trigger mode.
     uint16_t upperHysteresis = (uint16_t)(TRAVEL_DISTANCE_IN_0_01MM * 0.675);
-
-    // The value read when the keys are in rest position/all the way down.
-    uint16_t restPosition = pow(2, ANALOG_RESOLUTION) - 1; // Set to the outer boundaries in order to make
-    uint16_t downPosition = 0;                             // them overwritable by the calibration code.
 };
