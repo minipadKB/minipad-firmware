@@ -119,7 +119,7 @@ void KeyHandler::scanHEKey(HEKey &key)
     // Make sure that the key is calibrated, which means that the down position (default 4095) was updated to be  smaller than the rest position.
     // If that's not the case, we go with the total switch travel distance representing a key that is fully up, effectively disabling any value processing.
     // This if-branch is inheritly triggered if the SMA filter is not initialized yet, as the default down position of 4095 was not updated yet.
-    if(!key.calibrated)
+    if (!key.calibrated)
     {
         key.distance = TRAVEL_DISTANCE_IN_0_01MM;
         return;
@@ -154,55 +154,22 @@ void KeyHandler::scanDigitalKey(DigitalKey &key)
 
 void KeyHandler::checkHEKey(HEKey &key)
 {
-    // If the key is in traditional mode, do the usual hysteresis checks.
-    if (!key.config->rapidTrigger)
+    if (key.index > 1)
     {
-        // Check whether the value passes the lower or upper hysteresis.
-        // If the value drops <= the lower hysteresis, the key is pressed down.
-        // If the value rises >= the upper hysteresis, the key is released.
         if (key.distance <= key.config->lowerHysteresis)
             setPressedState(key, true);
         else if (key.distance >= key.config->upperHysteresis)
             setPressedState(key, false);
 
-        // Return here to not run into the rapid trigger code.
         return;
     }
 
-    // RT STEP 1: Reset the rapid trigger state if the value left the rapid trigger zone (normal) or was fully released (CRT).
-    // If the value is above the upper hysteresis the value is not (anymore) inside the rapid trigger zone
-    // meaning the rapid trigger state for the key has to be set to false in order to be processed by further checks.
-    // This only applies if continuous rapid trigger is not enabled as it only resets the state when the key is fully released.
-    if (key.distance >= key.config->upperHysteresis && !key.config->continuousRapidTrigger)
-        key.inRapidTriggerZone = false;
-    // If continuous rapid trigger is enabled, the state is only reset to false when the key is fully released (<0.1mm).
-    else if (key.distance >= TRAVEL_DISTANCE_IN_0_01MM - CONTINUOUS_RAPID_TRIGGER_THRESHOLD && key.config->continuousRapidTrigger)
-        key.inRapidTriggerZone = false;
+    HEKey &otherKey = heKeys[key.index == 0 ? 1 : 0];
 
-    // RT STEP 2: If the value entered the rapid trigger zone, perform a press and set the rapid trigger state to true.
-    // If the value is below the lower hysteresis and the rapid trigger state is false on the key, press the key because the action of entering
-    // the rapid trigger zone is already counted as a trigger. From there on, the actuation point moves dynamically in that zone.
-    // Also the rapid trigger state for the key has to be set to true in order to be processed by furture loops.
-    if (key.distance <= key.config->lowerHysteresis && !key.inRapidTriggerZone)
-    {
+    if (key.distance <= key.config->lowerHysteresis && key.distance < otherKey.distance)
         setPressedState(key, true);
-        key.inRapidTriggerZone = true;
-    }
-
-    // RT STEP 3: If the key *already is* in the rapid trigger zone (hence the 'else if'), check whether the key has travelled the sufficient amount.
-    // Check whether the key should be pressed. This is the case if the key is currently not pressed,
-    // the rapid trigger state is true and the value drops more than (down sensitivity) below the highest recorded value.
-    else if (!key.pressed && key.inRapidTriggerZone && key.distance + key.config->rapidTriggerDownSensitivity <= key.rapidTriggerPeak)
-        setPressedState(key, true);
-    // Check whether the key should be released. This is the case if the key is currently pressed down and either the
-    // rapid trigger state is no longer true or the value rises more than (up sensitivity) above the lowest recorded value.
-    else if (key.pressed && (!key.inRapidTriggerZone || key.distance >= key.rapidTriggerPeak + key.config->rapidTriggerUpSensitivity))
+    else if (key.distance >= key.config->upperHysteresis || key.distance > otherKey.distance)
         setPressedState(key, false);
-
-    // RT STEP 4: Always remember the peaks of the values, depending on the current pressed state.
-    // If the key is pressed and at an all-time low or not pressed and at an all-time high, save the value.
-    if ((key.pressed && key.distance < key.rapidTriggerPeak) || (!key.pressed && key.distance > key.rapidTriggerPeak))
-        key.rapidTriggerPeak = key.distance;
 }
 
 void KeyHandler::checkDigitalKey(DigitalKey &key)
